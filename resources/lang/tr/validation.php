@@ -67,7 +67,7 @@ return array(
     'not_in'               => ':attribute geçersiz.',
     'numeric'              => ':attribute sayı olmalıdır.',
     'present'              => ': Attribute alanı bulunmalıdır.',
-    'valid_regex'          => 'That is not a valid regex. ',
+    'valid_regex'          => 'Bu geçerli bir regex değildir.',
     'regex'                => ':attribute formatı geçersiz.',
     'required'             => ':attribute alanı zorunludur.',
     'required_if'          => ':attribute :other :value geçersiz.',
@@ -88,7 +88,7 @@ return array(
     'unique'               => ':attribute zaten alınmış.',
     'uploaded'             => ': Özniteliği yüklenemedi.',
     'url'                  => ':attribute biçim geçersiz.',
-    "unique_undeleted"     => "The :attribute must be unique.",
+    "unique_undeleted"     => ":attribute benzersiz olmalıdır.",
 
     /*
     |--------------------------------------------------------------------------

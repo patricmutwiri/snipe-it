@@ -33,4 +33,10 @@ return array(
         'success' 		=> 'Modelele au fost actualizate.'
     ),
 
+    'bulkdelete' => array(
+        'error'   		    => 'Nu au fost selectate câmpuri, deci nimic nu a fost actualizat.',
+        'success' 		    => 'Au fost șterse :success_count model(e)!',
+        'success_partial' 	=> 'Au fost șterse :success_count modele, cu toate acestea :fail_count nu au putut fi șterse deoarece au în continuare active asociate cu acestea.'
+    ),
+
 );

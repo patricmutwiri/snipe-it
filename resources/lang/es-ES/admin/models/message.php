@@ -33,4 +33,10 @@ return array(
         'success' 		=> 'Modelos actualizados.'
     ),
 
+    'bulkdelete' => array(
+        'error'   		    => 'Ningún modelo fue seleccionado, así que nada fue eliminado.',
+        'success' 		    => '¡:success_count modelo(s) eliminado(s)!',
+        'success_partial' 	=> ':success_count modelo(s) se han eliminado, sin embargo, :fail_count no se pudieron eliminar debido a que aún tienen activos asociados a ellos.'
+    ),
+
 );

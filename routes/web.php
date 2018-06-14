@@ -26,6 +26,12 @@ Route::group(['middleware' => 'auth'], function () {
     /*
     * Manufacturers
     */
+
+    Route::group([ 'prefix' => 'manufacturers', 'middleware' => ['auth'] ], function () {
+
+        Route::get('{manufacturers_id}/restore', [ 'as' => 'restore/manufacturer', 'uses' => 'ManufacturersController@restore']);
+    });
+
     Route::resource('manufacturers', 'ManufacturersController', [
         'parameters' => ['manufacturer' => 'manufacturers_id']
     ]);
@@ -66,6 +72,13 @@ Route::group(['middleware' => 'auth'], function () {
         'parameters' => ['department' => 'department_id']
     ]);
 
+    /*
+    * Marketing 
+    */
+    Route::resource('marketing', 'MarketingController', [
+        'parameters' => ['user' => 'user_id']
+    ]);
+
 
 });
 
@@ -82,6 +95,8 @@ Route::group(['middleware' => 'auth'], function () {
 
 Route::group(['middleware' => 'auth','prefix' => 'modals'], function () {
     Route::get('location',['as' => 'modal.location','uses' => 'ModalController@location']);
+    Route::get('category',['as' => 'modal.category','uses' => 'ModalController@category']);
+    Route::get('manufacturer',['as' => 'modal.manufacturer','uses' => 'ModalController@manufacturer']);
     Route::get('model',['as' => 'modal.model','uses' => 'ModalController@model']);
     Route::get('statuslabel',['as' => 'modal.statuslabel','uses' => 'ModalController@statuslabel']);
     Route::get('supplier',['as' => 'modal.supplier','uses' => 'ModalController@supplier']);
@@ -122,7 +137,7 @@ Route::group(['middleware' => 'auth'], function () {
 
 
 
-Route::group([ 'prefix' => 'admin','middleware' => ['authorize:superuser']], function () {
+Route::group([ 'prefix' => 'admin','middleware' => ['auth', 'authorize:superuser']], function () {
 
     Route::get('settings', ['as' => 'settings.general.index','uses' => 'SettingsController@getSettings' ]);
     Route::post('settings', ['as' => 'settings.general.save','uses' => 'SettingsController@postSettings' ]);
@@ -241,6 +256,8 @@ Route::group([ 'prefix' => 'account', 'middleware' => ['auth']], function () {
     # View Assets
     Route::get('view-assets', [ 'as' => 'view-assets', 'uses' => 'ViewAssetsController@getIndex' ]);
 
+    Route::get('requested', [ 'as' => 'account.requested', 'uses' => 'ViewAssetsController@getRequestedAssets' ]);
+
     # Accept Asset
     Route::get(
         'accept-asset/{logID}',
@@ -306,11 +323,7 @@ Route::group(['middleware' => ['auth']], function () {
         'reports/export/licenses',
         [ 'as' => 'reports/export/licenses', 'uses' => 'ReportsController@exportLicenseReport' ]
     );
-    Route::get('reports/assets', [ 'as' => 'reports/assets', 'uses' => 'ReportsController@getAssetsReport'    ]);
-    Route::get(
-        'reports/export/assets',
-        [ 'as' => 'reports.export.assets', 'uses' => 'ReportsController@exportAssetReport' ]
-    );
+
     Route::get('reports/accessories', [ 'as' => 'reports/accessories', 'uses' => 'ReportsController@getAccessoryReport' ]);
     Route::get(
         'reports/export/accessories',

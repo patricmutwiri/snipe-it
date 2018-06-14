@@ -33,4 +33,10 @@ return array(
         'success' 		=> 'Model güncellendi.'
     ),
 
+    'bulkdelete' => array(
+        'error'   		    => 'Hiçbir model seçilmedi, bu nedenle hiçbir şey silinmedi.',
+        'success' 		    => ': success_count model (ler) silindi!',
+        'success_partial' 	=> ':success_count adet model(ler) silindi, ancak :fail_count adet için silme işlemini tamamlayamadık, çünkü bunlar halâ varlıklarla ilişkilendirilmiş durumda.'
+    ),
+
 );

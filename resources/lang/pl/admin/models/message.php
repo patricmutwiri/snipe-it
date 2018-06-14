@@ -33,4 +33,10 @@ return array(
         'success' 		=> 'Modele zostały uaktualnione.'
     ),
 
+    'bulkdelete' => array(
+        'error'   		    => 'Nie wybrano modeli, więc nic nie zostało usunięte.',
+        'success' 		    => 'Zostało usunięte :success_count model(i)!',
+        'success_partial' 	=> ':success_count model(i) zostało usuniętych, jednakże :fail_count nie udało się usunąć, ponieważ wciąż są powiązane z nimi zasoby.'
+    ),
+
 );

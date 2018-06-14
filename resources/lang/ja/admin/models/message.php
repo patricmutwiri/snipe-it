@@ -33,4 +33,10 @@ return array(
         'success' 		=> '型番を更新しました。'
     ),
 
+    'bulkdelete' => array(
+        'error'   		    => 'モデルが選択されていないため、何も削除されませんでした。',
+        'success' 		    => ':success_count モデルが削除されました！',
+        'success_partial' 	=> ':success_count モデルが削除されましたが、:fail_count 個はアセットが関連付けられているため、削除できませんでした。'
+    ),
+
 );

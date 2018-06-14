@@ -20,7 +20,7 @@ return array(
     'field_element_short'     => 'Элемент',
     'field_format'            => 'Формат',
     'field_custom_format'     => 'Пользовательский формат',
-    'field_custom_format_help'     => 'This field allows you to use a regex expression for validation. It should start with "regex:" - for example, to validate that a custom field value contains a valid IMEI (15 numeric digits), you would use <code>regex:/^[0-9]{15}$/</code>.',
+    'field_custom_format_help'     => 'Это поле позволяет использовать регулярное выражения для проверки. Оно должен начинаться с «regex:». Например, чтобы проверить, что значение настраиваемого поля содержит допустимый IMEI (15 цифр), вы должны использовать <code>regex:/^[0-9]{15}$/</code>.',
     'required'   		          => 'Обязательно',
     'req'   		              => 'Треб.',
     'used_by_models'   		    => 'Использован в моделях',
@@ -28,4 +28,5 @@ return array(
     'create_fieldset'         => 'Новый набор полей',
     'create_field'            => 'Новое настраиваемое поле',
     'value_encrypted'      	        => 'Значение этого поля зашифровано в базе данных. Только администраторам будет доступно для просмотра расшифрованное значение',
+    'show_in_email'     => 'Include the value of this field in checkout emails sent to the user? Encrypted fields cannot be included in emails.',
 );

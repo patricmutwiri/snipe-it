@@ -19,6 +19,14 @@ class Component extends SnipeModel
 
     protected $dates = ['deleted_at', 'purchase_date'];
     protected $table = 'components';
+
+    /**
+     * Set static properties to determine which checkout/checkin handlers we should use
+     */
+    public static $checkoutClass = null;
+    public static $checkinClass = null;
+
+    
     /**
     * Category validation rules
     */
@@ -54,7 +62,9 @@ class Component extends SnipeModel
         'purchase_cost',
         'purchase_date',
         'min_amt',
+        'order_number',
         'qty',
+        'serial',
     ];
 
     public function location()
@@ -143,8 +153,7 @@ class Component extends SnipeModel
                     })->orWhere('components.name', 'LIKE', '%'.$search.'%')
                             ->orWhere('components.order_number', 'LIKE', '%'.$search.'%')
                             ->orWhere('components.serial', 'LIKE', '%'.$search.'%')
-                            ->orWhere('components.purchase_cost', 'LIKE', '%'.$search.'%')
-                            ->orWhere('components.purchase_date', 'LIKE', '%'.$search.'%');
+                            ->orWhere('components.purchase_cost', 'LIKE', '%'.$search.'%');
             }
         });
     }

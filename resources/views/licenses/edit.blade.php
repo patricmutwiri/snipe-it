@@ -9,7 +9,7 @@
 {{-- Page content --}}
 @section('inputFields')
 @include ('partials.forms.edit.name', ['translated_name' => trans('admin/licenses/form.name')])
-
+@include ('partials.forms.edit.category-select', ['translated_name' => trans('admin/categories/general.category_name'), 'fieldname' => 'category_id', 'required' => 'true', 'category_type' => 'license'])
 <!-- Serial-->
 <div class="form-group {{ $errors->has('serial') ? ' has-error' : '' }}">
     <label for="serial" class="col-md-3 control-label">{{ trans('admin/licenses/form.license_key') }}</label>
@@ -31,7 +31,7 @@
 </div>
 
 @include ('partials.forms.edit.company-select', ['translated_name' => trans('general.company'), 'fieldname' => 'company_id'])
-@include ('partials.forms.edit.manufacturer-select', ['translated_name' => trans('general.manufacturer'), 'fieldname' => 'manufacturer_id'])
+@include ('partials.forms.edit.manufacturer-select', ['translated_name' => trans('general.manufacturer'), 'fieldname' => 'manufacturer_id', 'required' => 'true'])
 
 <!-- Licensed to name -->
 <div class="form-group {{ $errors->has('license_name') ? ' has-error' : '' }}">

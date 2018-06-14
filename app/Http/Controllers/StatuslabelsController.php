@@ -32,12 +32,13 @@ class StatuslabelsController extends Controller
 
     public function index()
     {
+        $this->authorize('view', Statuslabel::class);
         return view('statuslabels.index', compact('statuslabels'));
     }
 
     public function show($id)
     {
-
+        $this->authorize('view', Statuslabel::class);
         if ($statuslabel = Statuslabel::find($id)) {
             return view('statuslabels.view')->with('statuslabel', $statuslabel);
         }
@@ -55,6 +56,7 @@ class StatuslabelsController extends Controller
     public function create()
     {
         // Show the page
+        $this->authorize('create', Statuslabel::class);
         $item = new Statuslabel;
         $use_statuslabel_type = $item->getStatuslabelType();
         $statuslabel_types = Helper::statusTypeList();
@@ -72,6 +74,7 @@ class StatuslabelsController extends Controller
     public function store(Request $request)
     {
 
+        $this->authorize('create', Statuslabel::class);
         // create a new model instance
         $statusLabel = new Statuslabel();
 
@@ -90,9 +93,9 @@ class StatuslabelsController extends Controller
         $statusLabel->archived          =  $statusType['archived'];
         $statusLabel->color             =  Input::get('color');
         $statusLabel->show_in_nav       =  Input::get('show_in_nav', 0);
+        $statusLabel->default_label       =  Input::get('default_label', 0);
 
 
-        // Was the asset created?
         if ($statusLabel->save()) {
             // Redirect to the new Statuslabel  page
             return redirect()->route('statuslabels.index')->with('success', trans('admin/statuslabels/message.create.success'));
@@ -106,6 +109,7 @@ class StatuslabelsController extends Controller
      */
     public function apiStore(Request $request)
     {
+        $this->authorize('create', Statuslabel::class);
         $statuslabel = new Statuslabel();
         if (!$request->has('statuslabel_types')) {
             return JsonResponse::create(["error" => trans('validation.statuslabel_type')], 500);
@@ -137,6 +141,7 @@ class StatuslabelsController extends Controller
      */
     public function edit($statuslabelId = null)
     {
+        $this->authorize('update', Statuslabel::class);
         // Check if the Statuslabel exists
         if (is_null($item = Statuslabel::find($statuslabelId))) {
             // Redirect to the blogs management page
@@ -159,6 +164,7 @@ class StatuslabelsController extends Controller
      */
     public function update(Request $request, $statuslabelId = null)
     {
+        $this->authorize('update', Statuslabel::class);
         // Check if the Statuslabel exists
         if (is_null($statuslabel = Statuslabel::find($statuslabelId))) {
             // Redirect to the blogs management page
@@ -179,6 +185,7 @@ class StatuslabelsController extends Controller
         $statuslabel->archived          =  $statustype['archived'];
         $statuslabel->color          =  Input::get('color');
         $statuslabel->show_in_nav          =  Input::get('show_in_nav', 0);
+        $statuslabel->default_label          =  Input::get('default_label', 0);
 
 
         // Was the asset created?
@@ -197,6 +204,7 @@ class StatuslabelsController extends Controller
      */
     public function destroy($statuslabelId)
     {
+        $this->authorize('delete', Statuslabel::class);
         // Check if the Statuslabel exists
         if (is_null($statuslabel = Statuslabel::find($statuslabelId))) {
             return redirect()->route('statuslabels.index')->with('error', trans('admin/statuslabels/message.not_found'));

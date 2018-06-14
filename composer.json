@@ -16,7 +16,7 @@
     "fideloper/proxy": "^3.1",
     "intervention/image": "^2.3",
     "javiereguiluz/easyslugger": "^1.0",
-    "laravel/framework": "5.4.29",
+    "laravel/framework": "5.4.35",
     "laravel/passport": "^3.0",
     "laravel/tinker": "^1.0",
     "laravelcollective/html": "^5.3",
@@ -30,22 +30,23 @@
     "predis/predis": "^1.1",
     "rollbar/rollbar-laravel": "^2.2",
     "schuppo/password-strength": "~1.5",
-    "spatie/laravel-backup": "^3.0.0",
+    "spatie/laravel-backup": "3.11.0",
     "tecnickcom/tc-lib-barcode": "^1.15",
     "tightenco/ziggy": "^0.4.1",
     "unicodeveloper/laravel-password": "^1.0",
     "watson/validating": "^3.0"
   },
     "require-dev": {
-        "fzaninotto/faker": "~1.4",
-        "phpunit/phpunit": "~5.7",
-        "symfony/css-selector": "3.1.*",
-        "symfony/dom-crawler": "3.1.*",
-        "codeception/codeception": "2.3.6",
-        "squizlabs/php_codesniffer": "*",
-        "phpunit/php-token-stream": "1.4.11"
-
-    },
+    "codeception/codeception": "2.3.6",
+    "codeclimate/php-test-reporter": "^0.4.4",
+    "fzaninotto/faker": "~1.4",
+    "phpunit/php-token-stream": "1.4.11",
+    "phpunit/phpunit": "~5.7",
+    "roave/security-advisories": "dev-master",
+    "squizlabs/php_codesniffer": "*",
+    "symfony/css-selector": "3.1.*",
+    "symfony/dom-crawler": "3.1.*"
+  },
     "autoload": {
         "classmap": [
             "database"

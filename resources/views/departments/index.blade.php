@@ -17,23 +17,33 @@
             <div class="box box-default">
                 <div class="box-body">
                     <div class="table-responsive">
+
                         <table
-                                name="locations"
+                                data-cookie-id-table="departmentsTable"
+                                data-pagination="true"
+                                data-id-table="departmentsTable"
+                                data-search="true"
+                                data-side-pagination="server"
+                                data-show-columns="true"
+                                data-show-export="true"
+                                data-show-refresh="true"
+                                data-sort-order="asc"
+                                id="departmentsTable"
                                 class="table table-striped snipe-table"
-                                id="table"
                                 data-url="{{ route('api.departments.index') }}"
-                                data-cookie="true"
-                                data-click-to-select="true"
-                                data-cookie-id-table="departmentsTable-{{ config('version.hash_version') }}">
+                                data-export-options='{
+                              "fileName": "export-departments-{{ date('Y-m-d') }}",
+                              "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
+                              }'>
                             <thead>
                             <tr>
                                 <th data-sortable="true" data-field="id" data-visible="false">{{ trans('general.id') }}</th>
                                 <th data-sortable="true" data-field="company" data-visible="false" data-formatter="companiesLinkObjFormatter">{{ trans('general.company') }}</th>
                                 <th data-sortable="true" data-formatter="departmentsLinkFormatter" data-field="name" data-searchable="false">{{ trans('admin/departments/table.name') }}</th>
                                 <th data-sortable="true" data-field="image" data-visible="false" data-formatter="imageFormatter">{{ trans('general.image') }}</th>
-                                <th data-sortable="false" data-formatter="usersLinkObjFormatter" data-field="manager" data-searchable="false">{{ trans('admin/departments/table.manager') }}</th>
-                                <th data-sortable="false" data-field="users_count" data-searchable="false">{{ trans('general.users') }}</th>
-                                <th data-sortable="false" data-formatter="locationsLinkObjFormatter" data-field="location" data-searchable="false">{{ trans('admin/departments/table.location') }}</th>
+                                <th data-sortable="true" data-formatter="usersLinkObjFormatter" data-field="manager" data-searchable="false">{{ trans('admin/departments/table.manager') }}</th>
+                                <th data-sortable="true" data-field="users_count" data-searchable="false">{{ trans('general.users') }}</th>
+                                <th data-sortable="true" data-formatter="locationsLinkObjFormatter" data-field="location" data-searchable="false">{{ trans('admin/departments/table.location') }}</th>
                                 <th data-sortable="false" data-formatter="departmentsActionsFormatter" data-field="actions" data-searchable="false">{{ trans('table.actions') }}</th>
 
                             </tr>
@@ -48,6 +58,6 @@
 @stop
 
 @section('moar_scripts')
-    @include ('partials.bootstrap-table', ['exportFile' => 'locations-export', 'search' => true])
+    @include ('partials.bootstrap-table')
 
 @stop

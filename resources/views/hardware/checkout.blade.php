@@ -69,7 +69,7 @@
             <div class="form-group {{ $errors->has('checkout_at') ? 'error' : '' }}">
               {{ Form::label('name', trans('admin/hardware/form.checkout_date'), array('class' => 'col-md-3 control-label')) }}
               <div class="col-md-8">
-                  <div class="input-group date col-md-5" data-provide="datepicker" data-date-format="yyyy-mm-dd">
+                  <div class="input-group date col-md-5" data-provide="datepicker" data-date-format="yyyy-mm-dd" data-date-end-date="0d">
                       <input type="text" class="form-control" placeholder="{{ trans('general.select_date') }}" name="checkout_at" id="checkout_at" value="{{ Input::old('checkout_at') }}">
                       <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                   </div>
@@ -81,7 +81,7 @@
             <div class="form-group {{ $errors->has('expected_checkin') ? 'error' : '' }}">
               {{ Form::label('name', trans('admin/hardware/form.expected_checkin'), array('class' => 'col-md-3 control-label')) }}
               <div class="col-md-8">
-                  <div class="input-group date col-md-5" data-provide="datepicker" data-date-format="yyyy-mm-dd">
+                  <div class="input-group date col-md-5" data-provide="datepicker" data-date-format="yyyy-mm-dd" data-date-start-date="0d">
                       <input type="text" class="form-control" placeholder="{{ trans('general.select_date') }}" name="expected_checkin" id="expected_checkin" value="{{ Input::old('expected_checkin') }}">
                       <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                   </div>
@@ -98,7 +98,7 @@
               </div>
             </div>
 
-                @if ($asset->requireAcceptance() || $asset->getEula())
+                @if ($asset->requireAcceptance() || $asset->getEula() || ($snipeSettings->slack_endpoint!=''))
                     <div class="form-group notification-callout">
                         <div class="col-md-8 col-md-offset-3">
                             <div class="callout callout-info">
@@ -112,6 +112,12 @@
                                     @if ($asset->getEula())
                                         <i class="fa fa-envelope"></i>
                                        {{ trans('admin/categories/general.required_eula') }}
+                                        <br>
+                                    @endif
+
+                                    @if ($snipeSettings->slack_endpoint!='')
+                                        <i class="fa fa-slack"></i>
+                                       A slack message will be sent
                                     @endif
                             </div>
                         </div>
@@ -144,4 +150,15 @@
 
 @section('moar_scripts')
     @include('partials/assets-assigned')
+
+    <script>
+//        $('#checkout_at').datepicker({
+//            clearBtn: true,
+//            todayHighlight: true,
+//            endDate: '0d',
+//            format: 'yyyy-mm-dd'
+//        });
+
+
+    </script>
 @stop

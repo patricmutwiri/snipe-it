@@ -14,7 +14,9 @@
 
 {{-- Page title --}}
 @section('header_right')
-  <a href="{{ route('models.create') }}" class="btn btn-primary pull-right"></i> {{ trans('general.create') }}</a>
+  @can('create', \App\Models\AssetModel::class)
+    <a href="{{ route('models.create') }}" class="btn btn-primary pull-right"></i> {{ trans('general.create') }}</a>
+  @endcan
 
   @if (Input::get('status')=='deleted')
     <a class="btn btn-default pull-right" href="{{ route('models.index') }}" style="margin-right: 5px;">{{ trans('admin/models/general.view_models') }}</a>
@@ -45,21 +47,31 @@
               <div id="toolbar">
                 <select name="bulk_actions" class="form-control select2" style="width: 300px;">
                   <option value="edit">Bulk Edit</option>
+                  <option value="delete">Bulk Delete</option>
                 </select>
                 <button class="btn btn-primary" id="bulkEdit" disabled>Go</button>
               </div>
             @endif
+              <div class="table-responsive">
+              <table
+                  data-cookie-id-table="modelsTable"
+                  data-pagination="true"
+                  data-id-table="modelsTable"
+                  data-search="true"
+                  data-side-pagination="server"
+                  data-show-columns="true"
+                  data-toolbar="#toolbar"
+                  data-show-export="true"
+                  data-show-refresh="true"
+                  data-sort-order="asc"
+                  id="modelsTable"
+                  data-url="{{ route('api.models.index', ['status'=> e(Input::get('status'))]) }}"
+                  class="table table-striped snipe-table"
+                  data-export-options='{
+                "fileName": "export-asset-models-{{ date('Y-m-d') }}",
+                "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
+                }'>
 
-
-
-        <table
-        name="models"
-        class="table table-striped snipe-table"
-        id="table"
-        data-url="{{ route('api.models.index', ['status'=> e(Input::get('status'))]) }}"
-        data-cookie="true"
-        data-click-to-select="true"
-        data-cookie-id-table="modelsTable-{{ config('version.hash_version') }}">
           <thead>
             <tr>
               <th data-checkbox="true" data-field="checkbox"></th>
@@ -68,7 +80,7 @@
               <th data-sortable="true" data-field="image" data-formatter="imageFormatter" data-visible="false">{{ trans('admin/hardware/table.image') }}</th>
               <th data-sortable="true" data-field="manufacturer" data-formatter="manufacturersLinkObjFormatter">{{ trans('general.manufacturer') }}</th>
               <th data-sortable="true" data-field="model_number">{{ trans('admin/models/table.modelnumber') }}</th>
-              <th data-sortable="false" data-field="assets_count">{{ trans('admin/models/table.numassets') }}</th>
+              <th data-sortable="true" data-field="assets_count">{{ trans('admin/models/table.numassets') }}</th>
               <th data-sortable="false" data-field="depreciation" data-formatter="depreciationsLinkObjFormatter">{{ trans('general.depreciation') }}</th>
               <th data-sortable="false" data-field="category" data-formatter="categoriesLinkObjFormatter">{{ trans('general.category') }}</th>
               <th data-sortable="true" data-field="eol">{{ trans('general.eol') }}</th>
@@ -80,6 +92,7 @@
         </table>
               {{ Form::close() }}
           </div>
+        </div>
         </div>
       </div><!-- /.box-body -->
     </div><!-- /.box -->

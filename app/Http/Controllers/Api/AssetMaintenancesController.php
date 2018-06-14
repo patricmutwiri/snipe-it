@@ -40,16 +40,38 @@ class AssetMaintenancesController extends Controller
             $maintenances = $maintenances->TextSearch(e($request->input('search')));
         }
 
+        if ($request->has('asset_id')) {
+            $maintenances->where('asset_id', '=', $request->input('asset_id'));
+        }
+
         $offset = request('offset', 0);
         $limit = request('limit', 50);
 
-        $allowed_columns = ['id','title','asset_maintenance_time','asset_maintenance_type','cost','start_date','completion_date','notes','user_id'];
+        $allowed_columns = [
+                                'id',
+                                'title',
+                                'asset_maintenance_time',
+                                'asset_maintenance_type',
+                                'cost',
+                                'start_date',
+                                'completion_date',
+                                'notes',
+                                'asset_tag',
+                                'asset_name',
+                                'user_id'
+                            ];
         $order = Input::get('order') === 'asc' ? 'asc' : 'desc';
         $sort = in_array(Input::get('sort'), $allowed_columns) ? e($request->input('sort')) : 'created_at';
 
         switch ($sort) {
             case 'user_id':
                 $maintenances = $maintenances->OrderAdmin($order);
+                break;
+            case 'asset_tag':
+                $maintenances = $maintenances->OrderByTag($order);
+                break;
+            case 'asset_name':
+                $maintenances = $maintenances->OrderByAssetName($order);
                 break;
             default:
                 $maintenances = $maintenances->orderBy($sort, $order);

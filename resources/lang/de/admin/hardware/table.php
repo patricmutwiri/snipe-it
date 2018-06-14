@@ -12,13 +12,13 @@ return array(
     'dl_csv' 		=> 'CSV Herunterladen',
     'eol' 			=> 'EOL',
     'id'      		=> 'ID',
-    'location' 		=> 'Ort',
+    'location' 		=> 'Standort',
     'purchase_cost'	=> 'Kosten',
-    'purchase_date'	=> 'Gekauft',
+    'purchase_date'	=> 'Kaufdatum',
     'serial'   		=> 'Seriennummer',
     'status'   		=> 'Status',
     'title'      	=> 'Asset ',
-    'image'		=> 'Geräte-Image',
+    'image'		=> 'Geräte-Bild',
     'days_without_acceptance' => 'Tage ohne Akzeptierung'
 
 );

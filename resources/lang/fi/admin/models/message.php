@@ -33,4 +33,10 @@ return array(
         'success' 		=> 'Mallit päivitetty.'
     ),
 
+    'bulkdelete' => array(
+        'error'   		    => 'Ei malleja valittuna, mitään ei poistettu.',
+        'success' 		    => ': success_count mallit poistettu!',
+        'success_partial' 	=> ': success_count mallit poistettiin, mutta fail_count ei voitu poistaa, koska niillä on vielä niihin liittyviä nimikkeitä.'
+    ),
+
 );

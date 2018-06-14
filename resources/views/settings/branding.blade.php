@@ -61,20 +61,26 @@
 
 
                         <!-- Logo -->
+
                         <div class="form-group {{ $errors->has('image') ? 'has-error' : '' }}">
-                            <div class="col-md-3">
-                                {{ Form::label('logo', trans('admin/settings/general.logo')) }}
-                            </div>
+                            <label class="col-md-3 control-label" for="image">
+                                {{ Form::label('logo', trans('admin/settings/general.logo')) }}</label>
                             <div class="col-md-9">
                                 @if (config('app.lock_passwords'))
                                     <p class="help-block">{{ trans('general.lock_passwords') }}</p>
                                 @else
-                                    {{ Form::file('image') }}
-                                    {!! $errors->first('image', '<span class="alert-msg">:message</span>') !!}
-                                    {{ Form::checkbox('clear_logo', '1', Input::old('clear_logo'),array('class' => 'minimal')) }} Remove
-                                @endif
+                                <label class="btn btn-default">
+                                    {{ trans('button.select_file')  }}
+                                    <input type="file" name="image" accept="image/gif,image/jpeg,image/png,image/svg" hidden>
+                                </label>
+                                <p class="help-block">{{ trans('general.image_filetypes_help') }}</p>
+                                
+                                {!! $errors->first('image', '<span class="alert-msg">:message</span>') !!}
+                                {{ Form::checkbox('clear_logo', '1', Input::old('clear_logo'),array('class' => 'minimal')) }} Remove
+                               @endif
                             </div>
                         </div>
+
 
                         <!-- Branding -->
                         <div class="form-group {{ $errors->has('brand') ? 'error' : '' }}">
@@ -114,6 +120,18 @@
                             </div>
                         </div>
 
+                        <!-- Email format -->
+                        <div class="form-group {{ $errors->has('skin') ? 'error' : '' }}">
+                            <div class="col-md-3">
+                                {{ Form::label('skin', trans('general.skin')) }}
+                            </div>
+                            <div class="col-md-9">
+                                {!! Form::skin('skin', Input::old('skin', $setting->skin), 'select2') !!}
+                                {!! $errors->first('skin', '<span class="alert-msg">:message</span>') !!}
+                            </div>
+                        </div>
+
+
                         <!-- Custom css -->
                         <div class="form-group {{ $errors->has('custom_css') ? 'error' : '' }}">
                             <div class="col-md-3">
@@ -129,6 +147,42 @@
                                     {!! $errors->first('custom_css', '<span class="alert-msg">:message</span>') !!}
                                 @endif
                                 <p class="help-block">{{ trans('admin/settings/general.custom_css_help') }}</p>
+                            </div>
+                        </div>
+
+
+                        <!-- Support Footer -->
+                        <div class="form-group {{ $errors->has('support_footer') ? 'error' : '' }}">
+                            <div class="col-md-3">
+                                {{ Form::label('support_footer', trans('admin/settings/general.support_footer')) }}
+                            </div>
+                            <div class="col-md-9">
+                                @if (config('app.lock_passwords')===true)
+                                    {!! Form::select('support_footer', array('on'=>'Enabled','off'=>'Disabled','admin'=>'Superadmin Only'), Input::old('support_footer', $setting->support_footer), ['class' => 'form-control disabled', 'style'=>'width: 150px ;', 'disabled' => 'disabled']) !!}
+                                @else
+                                    {!! Form::select('support_footer', array('on'=>'Enabled','off'=>'Disabled','admin'=>'Superadmin Only'), Input::old('support_footer', $setting->support_footer), array('class' => 'form-control', 'style'=>'width: 150px ;')) !!}
+                                @endif
+
+                                <p class="help-block">{{ trans('admin/settings/general.support_footer_help') }}</p>
+                                {!! $errors->first('support_footer', '<span class="alert-msg">:message</span>') !!}
+                            </div>
+                        </div>
+
+                        <!-- Additional footer -->
+                        <div class="form-group {{ $errors->has('footer_text') ? 'error' : '' }}">
+                            <div class="col-md-3">
+                                {{ Form::label('custom_css', trans('admin/settings/general.footer_text')) }}
+                            </div>
+                            <div class="col-md-9">
+                                @if (config('app.lock_passwords')===true)
+                                    {{ Form::textarea('footer_text', Input::old('footer_text', $setting->footer_text), array('class' => 'form-control', 'rows' => '4', 'placeholder' => 'Optional footer text','disabled'=>'disabled')) }}
+                                    <p class="help-block">{{ trans('general.lock_passwords') }}</p>
+                                @else
+                                    {{ Form::textarea('footer_text', Input::old('footer_text', $setting->footer_text), array('class' => 'form-control','rows' => '4','placeholder' => 'Optional footer text')) }}
+                                @endif
+                                <p class="help-block">{!! trans('admin/settings/general.footer_text_help') !!}</p>
+                                 {!! $errors->first('footer_text', '<span class="alert-msg">:message</span>') !!}
+
                             </div>
                         </div>
 

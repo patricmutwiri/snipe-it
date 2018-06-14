@@ -20,7 +20,7 @@ return array(
     'field_element_short'     => 'Elemen',
     'field_format'            => 'Format',
     'field_custom_format'     => 'Format Ubahan',
-    'field_custom_format_help'     => 'This field allows you to use a regex expression for validation. It should start with "regex:" - for example, to validate that a custom field value contains a valid IMEI (15 numeric digits), you would use <code>regex:/^[0-9]{15}$/</code>.',
+    'field_custom_format_help'     => 'Kolom ini memungkinkan Anda menggunakan ekspresi regex untuk validasi. Ini harus dimulai dengan "regex:" - misalnya, untuk memvalidasi bahwa nilai kolom kustom berisi IMEI yang valid (15 angka numerik), Anda dapat menggunakan <code>regex:/^[0-9]{15}$/</code>.',
     'required'   		          => 'Harus diisi',
     'req'   		              => 'Req.',
     'used_by_models'   		    => 'Digunakan oleh Model',
@@ -28,4 +28,5 @@ return array(
     'create_fieldset'         => 'Set Kolom Baru',
     'create_field'            => 'Tambah Kolom Ubahan',
     'value_encrypted'      	        => 'Nilai dari kolom ini di database dienkripsi. hanya pengguna admin yang bisa melihat nilai deskripsinya',
+    'show_in_email'     => 'Include the value of this field in checkout emails sent to the user? Encrypted fields cannot be included in emails.',
 );

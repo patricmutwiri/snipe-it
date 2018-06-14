@@ -12,7 +12,6 @@ use DB;
 use Gate;
 use Input;
 use Lang;
-use Mail;
 use Redirect;
 use Illuminate\Http\Request;
 use Slack;
@@ -77,6 +76,7 @@ class AccessoriesController extends Controller
         $accessory->category_id             = request('category_id');
         $accessory->location_id             = request('location_id');
         $accessory->min_amt                 = request('min_amt');
+        $accessory->normal_amt                 = request('normal_amt');
         $accessory->company_id              = Company::getIdForCurrentUser(request('company_id'));
         $accessory->order_number            = request('order_number');
         $accessory->manufacturer_id         = request('manufacturer_id');
@@ -156,6 +156,7 @@ class AccessoriesController extends Controller
         $accessory->name                    = request('name');
         $accessory->location_id             = request('location_id');
         $accessory->min_amt                 = request('min_amt');
+        $accessory->normal_amt                 = request('normal_amt');
         $accessory->category_id             = request('category_id');
         $accessory->company_id              = Company::getIdForCurrentUser(request('company_id'));
         $accessory->manufacturer_id         = request('manufacturer_id');
@@ -259,10 +260,17 @@ class AccessoriesController extends Controller
             return redirect()->route('accessories.index')->with('error', trans('admin/accessories/message.not_found'));
         }
 
-        $this->authorize('checkout', $accessory);
+        if ($accessory->category) {
 
-        // Get the dropdown of users and then pass it to the checkout view
-        return view('accessories/checkout', compact('accessory'));
+            $this->authorize('checkout', $accessory);
+
+            // Get the dropdown of users and then pass it to the checkout view
+            return view('accessories/checkout', compact('accessory'));
+        }
+
+        return redirect()->back()->with('error', 'The category type for this accessory is not valid. Edit the accessory and select a valid accessory category.');
+
+
 
     }
 
@@ -313,16 +321,6 @@ class AccessoriesController extends Controller
         $data['expected_checkin'] = '';
         $data['note'] = $logaction->note;
         $data['require_acceptance'] = $accessory->requireAcceptance();
-        // TODO: Port this to new mail notifications
-
-        if ((($accessory->requireAcceptance()=='1')  || ($accessory->getEula())) && ($user->email!='')) {
-
-            Mail::send('emails.accept-accessory', $data, function ($m) use ($user) {
-                $m->to($user->email, $user->first_name . ' ' . $user->last_name);
-                $m->replyTo(config('mail.reply_to.address'), config('mail.reply_to.name'));
-                $m->subject(trans('mail.Confirm_accessory_delivery'));
-            });
-        }
 
       // Redirect to the new accessory page
         return redirect()->route('accessories.index')->with('success', trans('admin/accessories/message.checkout.success'));
@@ -369,7 +367,7 @@ class AccessoriesController extends Controller
       // Check if the accessory exists
         if (is_null($accessory_user = DB::table('accessories_users')->find($accessoryUserId))) {
             // Redirect to the accessory management page with error
-            return redirect()->route('accessories.index')->with('error', trans('admin/accessories/message.not_found'));
+            return redirect()->route('accessories.index')->with('error', trans('admin/accessories/message.does_not_exist'));
         }
 
         $accessory = Accessory::find($accessory_user->accessory_id);
@@ -387,19 +385,11 @@ class AccessoriesController extends Controller
 
             $data['log_id'] = $logaction->id;
             $data['first_name'] = e($user->first_name);
+            $data['last_name'] = e($user->last_name);
             $data['item_name'] = e($accessory->name);
             $data['checkin_date'] = e($logaction->created_at);
             $data['item_tag'] = '';
             $data['note'] = e($logaction->note);
-
-            if ((($accessory->checkin_email()=='1')) && ($user->email!='')) {
-
-                Mail::send('emails.checkin-asset', $data, function ($m) use ($user) {
-                    $m->to($user->email, $user->first_name . ' ' . $user->last_name);
-                    $m->replyTo(config('mail.reply_to.address'), config('mail.reply_to.name'));
-                    $m->subject(trans('mail.Confirm_Accessory_Checkin'));
-                });
-            }
 
             if ($backto=='user') {
                 return redirect()->route("users.show", $return_to)->with('success', trans('admin/accessories/message.checkin.success'));

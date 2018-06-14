@@ -33,4 +33,10 @@ return array(
         'success' 		=> '模板已更新。'
     ),
 
+    'bulkdelete' => array(
+        'error'   		    => '没有型号被选中，所以没有删除任何东西。',
+        'success' 		    => ':success_count 个已删除！',
+        'success_partial' 	=> ':success_count 个已删除, 但是 :fail_count 个因为还有关联资产所以没办法删除。'
+    ),
+
 );

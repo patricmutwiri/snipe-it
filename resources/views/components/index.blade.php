@@ -23,19 +23,30 @@
              'route' => ['component/bulk-form'],
              'class' => 'form-inline' ]) }}
 
-        <div id="toolbar">
-        </div>
 
         <table
-          data-toolbar="#toolbar"
-          name="components"
-          class="table table-striped snipe-table"
-          id="table"
-          data-url="{{route('api.components.index') }}"
-          data-cookie="true"
-          data-click-to-select="true"
-          data-cookie-id-table="componentsTable-{{ config('version.hash_version') }}">
+                data-columns="{{ \App\Presenters\ComponentPresenter::dataTableLayout() }}"
+                data-cookie-id-table="componentsTable"
+                data-toolbar="#toolbar"
+                data-pagination="true"
+                data-id-table="componentsTable"
+                data-search="true"
+                data-side-pagination="server"
+                data-show-columns="true"
+                data-show-export="true"
+                data-show-footer="true"
+                data-show-refresh="true"
+                data-sort-order="asc"
+                data-sort-name="name"
+                id="componentsTable"
+                class="table table-striped snipe-table"
+                data-url="{{ route('api.components.index') }}"
+                data-export-options='{
+                "fileName": "export-components-{{ date('Y-m-d') }}",
+                "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
+                }'>
         </table>
+
         {{ Form::close() }}
       </div><!-- /.box-body -->
     </div><!-- /.box -->
