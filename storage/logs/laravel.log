@@ -3142,3 +3142,47 @@ Stack trace:
 #75 /var/www/one/inventory/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(116): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
 #76 /var/www/one/inventory/public/index.php(59): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
 #77 {main}  
+[2018-06-14 09:18:56] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:19:00] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:19:35] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:19:53] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:20:11] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:20:12] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:20:25] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:21:27] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:21:28] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:21:28] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:22:33] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:22:33] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:22:34] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:22:48] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:23:06] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:23:06] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:23:06] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:23:06] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:23:06] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:23:06] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:23:06] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:23:07] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:23:07] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:23:07] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:23:07] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:23:07] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:23:07] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:23:07] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:23:07] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:23:07] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:23:07] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:23:07] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:23:51] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:23:52] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:23:52] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:24:07] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:25:17] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:25:18] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:25:18] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:26:47] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:27:01] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:27:02] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:27:02] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
+[2018-06-14 09:27:04] local.ERROR: Debugbar exception: filemtime(): stat failed for /var/www/inventory.local/public_html/vendor/maximebf/debugbar/src/DebugBar/Resources/vendor/highlightjs/styles/github.css  
