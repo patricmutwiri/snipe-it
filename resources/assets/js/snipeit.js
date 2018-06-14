@@ -206,7 +206,8 @@ $(document).ready(function () {
                 data: function (params) {
                     var data = {
                         search: params.term,
-                        page: params.page || 1
+                        page: params.page || 1,
+                        assetStatusType: link.data("asset-status-type"),
                     };
                     return data;
                 },
@@ -241,9 +242,9 @@ $(document).ready(function () {
         var markup = "<div class='clearfix'>" ;
         markup +="<div class='pull-left' style='padding-right: 10px;'>";
         if (datalist.image) {
-            markup += "<img src='" + datalist.image + "' style='max-height: 20px'>";
+            markup += "<div style='width: 30px;'><img src='" + datalist.image + "' style='max-height: 20px; max-width: 30px;'></div>";
         } else {
-            markup += "<div style='height: 20px; width: 20px;'></div>";
+            markup += "<div style='height: 20px; width: 30px;'></div>";
         }
 
         markup += "</div><div>" + datalist.text + "</div>";
@@ -288,7 +289,88 @@ $(document).ready(function () {
             }
         });
     });
-    
+
+
+    // ------------------------------------------------
+    // Deep linking for Bootstrap tabs
+    // ------------------------------------------------
+    var taburl = document.location.toString();
+
+    // Allow full page URL to activate a tab's ID
+    // ------------------------------------------------
+    // This allows linking to a tab on page load via the address bar.
+    // So a URL such as, http://snipe-it.local/hardware/2/#my_tab will
+    // cause the tab on that page with an ID of “my_tab” to be active.
+    if (taburl.match('#') ) {
+        $('.nav-tabs a[href="#'+taburl.split('#')[1]+'"]').tab('show');
+    }
+
+    // Allow internal page links to activate a tab's ID.
+    // ------------------------------------------------
+    // This allows you to link to a tab from anywhere on the page
+    // including from within another tab. Also note that internal page
+    // links either inside or out of the tabs need to include data-toggle="tab"
+    // Ex: <a href="#my_tab" data-toggle="tab">Click me</a>
+    $('a[data-toggle="tab"]').click(function (e) {
+        var href = $(this).attr("href");
+        history.pushState(null, null, href);
+        e.preventDefault();
+        $('a[href="' + $(this).attr('href') + '"]').tab('show');
+    });
+
+    // ------------------------------------------------
+    // End Deep Linking for Bootstrap tabs
+    // ------------------------------------------------
+
+
+
+    // Image preview
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#imagePreview').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function formatBytes(bytes) {
+        if(bytes < 1024) return bytes + " Bytes";
+        else if(bytes < 1048576) return(bytes / 1024).toFixed(3) + " KB";
+        else if(bytes < 1073741824) return(bytes / 1048576).toFixed(3) + " MB";
+        else return(bytes / 1073741824).toFixed(3) + " GB";
+    };
+
+     // File size validation
+    $('#uploadFile').bind('change', function() {
+        $('#upload-file-status').removeClass('text-success').removeClass('text-danger');
+        $('.goodfile').remove();
+        $('.badfile').remove();
+        $('.badfile').remove();
+        $('.previewSize').hide();
+
+        var max_size = $('#uploadFile').data('maxsize');
+        var actual_size = this.files[0].size;
+
+        if (actual_size > max_size) {
+            $('#upload-file-status').addClass('text-danger').removeClass('help-block').prepend('<i class="badfile fa fa-times"></i> ').append('<span class="previewSize">This file is ' + formatBytes(actual_size) + '.</span>');
+        } else {
+            $('#upload-file-status').addClass('text-success').removeClass('help-block').prepend('<i class="goodfile fa fa-check"></i> ');
+            readURL(this);
+            $('#imagePreview').fadeIn();
+        }
+        $('#upload-file-info').html(this.files[0].name);
+
+    });
+
+
+
+
+
+
+
+
 
 
 });

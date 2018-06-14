@@ -29,97 +29,40 @@
                 <div class="tab-pane fade in active" id="assets">
                     <div class="row">
                         <div class="col-md-12">
-
-                                @if ($assets->count() > 0)
-
                                 <div class="table-responsive">
                                     <table
-                                            name="requested-assets"
-                                            data-toolbar="#toolbar"
-                                            class="table table-striped snipe-table"
-                                            id="table"
-                                            data-advanced-search="true"
-                                            data-id-table="advancedTable"
-                                            data-cookie-id-table="requestableAssets">
+                                        data-click-to-select="true"
+                                        data-cookie-id-table="requestableAssetsListingTable"
+                                        data-pagination="true"
+                                        data-id-table="requestableAssetsListingTable"
+                                        data-search="true"
+                                        data-side-pagination="server"
+                                        data-show-columns="true"
+                                        data-show-export="false"
+                                        data-show-footer="false"
+                                        data-show-refresh="true"
+                                        data-sort-order="asc"
+                                        data-sort-name="name"
+                                        data-toolbar="#toolbar"
+                                        id="assetsListingTable"
+                                        class="table table-striped snipe-table"
+                                        data-url="{{ route('api.assets.requestable', ['requestable' => true]) }}">
+
                                         <thead>
-                                            <tr role="row">
-                                                <th class="col-md-1" data-sortable="true">{{ trans('general.image') }}</th>
-                                                <th class="col-md-2" data-sortable="true">{{ trans('admin/hardware/table.asset_model') }}</th>
-                                                <th class="col-md-2" data-sortable="true">{{ trans('admin/models/table.modelnumber') }}</th>
-                                                @if ($snipeSettings->display_asset_name)
-                                                <th class="col-md-2" data-sortable="true">{{ trans('admin/hardware/form.name') }}</th>
-                                                @endif
-                                                <th class="col-md-3" data-sortable="true">{{ trans('admin/hardware/table.serial') }}</th>
-                                                <th class="col-md-2" data-sortable="true">{{ trans('admin/hardware/table.location') }}</th>
-                                                <th class="col-md-2" data-sortable="true">{{ trans('admin/hardware/table.status') }}</th>
-                                                <th class="col-md-2" data-sortable="true">{{ trans('admin/hardware/form.expected_checkin') }}</th>
-                                                <th class="col-md-1 actions" data-sortable="false">{{ trans('table.actions') }}</th>
+                                            <tr>
+                                                <th class="col-md-1" data-field="image" data-formatter="imageFormatter" data-sortable="true">{{ trans('general.image') }}</th>
+                                                <th class="col-md-2" data-field="model" data-sortable="true">{{ trans('admin/hardware/table.asset_model') }}</th>
+                                                <th class="col-md-2" data-field="model_number" data-sortable="true">{{ trans('admin/models/table.modelnumber') }}</th>
+                                                <th class="col-md-2" data-field="name" data-sortable="true">{{ trans('admin/hardware/form.name') }}</th>
+                                                <th class="col-md-3" data-field="serial" data-sortable="true">{{ trans('admin/hardware/table.serial') }}</th>
+                                                <th class="col-md-2" data-field="location" data-sortable="true">{{ trans('admin/hardware/table.location') }}</th>
+                                                <th class="col-md-2" data-field="status" data-sortable="true">{{ trans('admin/hardware/table.status') }}</th>
+                                                <th class="col-md-2" data-field="expected_checkin" data-formatter="dateDisplayFormatter" data-sortable="true">{{ trans('admin/hardware/form.expected_checkin') }}</th>
+                                                <th class="col-md-1" data-formatter="assetRequestActionsFormatter" data-field="actions" data-sortable="false">{{ trans('table.actions') }}</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            @foreach ($assets as $asset)
-
-                                            <tr>
-
-                                                    <td>
-                                                        @if ($asset->getImageUrl())
-                                                            <a href="{{ $asset->getImageUrl() }}" data-toggle="lightbox" data-type="image">
-                                                                <img src="{{ $asset->getImageUrl() }}" style="max-height: {{ $snipeSettings->thumbnail_max_h }}px; width: auto;" class="img-responsive">
-                                                            </a>
-                                                        @endif
-
-                                                    </td>
-                                                    <td>{{ $asset->model->name }}
-
-                                                    </td>
-                                                    <td>
-                                                        {{ $asset->model->model_number }}
-                                                    </td>
-
-                                                    @if ($snipeSettings->display_asset_name)
-                                                    <td>{{ $asset->name }}</td>
-                                                    @endif
-
-                                                    <td>{{ $asset->serial }}</td>
-
-                                                    <td>
-                                                        @if ($asset->location)
-                                                        {{ $asset->location->name }}
-                                                        @endif
-                                                    </td>
-                                                    @if ($asset->assigned_to != '' && $asset->assigned_to > 0)
-                                                        <td>Checked out</td>
-                                                    @else
-                                                        <td>{{ trans('admin/hardware/general.requestable') }}</td>
-                                                    @endif
-
-                                                    <td>{{ $asset->expected_checkin }}</td>
-                                                    <td>
-                                                        <form action="{{route('account/request-item', ['itemType' => 'asset', 'itemId' => $asset->id])}}" method="POST" accept-charset="utf-8">
-                                                        {{ csrf_field() }}
-                                                        @if ($asset->isRequestedBy(Auth::user()))
-                                                            {{Form::submit(trans('button.cancel'), ['class' => 'btn btn-danger btn-sm'])}}
-                                                        @else
-                                                            {{Form::submit(trans('button.request'), ['class' => 'btn btn-primary btn-sm'])}}
-                                                        @endif
-                                                        </form>
-                                                    </td>
-
-                                            </tr>
-                                            @endforeach
-                                        </tbody>
                                     </table>
                                 </div>
-
-                                @else
-
-                                    <div class="alert alert-info alert-block">
-                                        <i class="fa fa-info-circle"></i>
-                                        {{ trans('general.no_results') }}
-                                    </div>
-
-                                @endif
-
                     </div>
                 </div>
             </div>
@@ -143,19 +86,17 @@
                                         <th class="col-md-1" data-sortable="true">{{ trans('general.image') }}</th>
                                         <th class="col-md-6" data-sortable="true">{{ trans('admin/hardware/table.asset_model') }}</th>
                                         <th class="col-md-3" data-sortable="true">{{ trans('admin/accessories/general.remaining') }}</th>
-                                        <th class="col-md-2" data-sortable="true">{{ trans('general.quantity') }}</th>
-                                        <th class="col-md-1 actions" data-sortable="false">{{ trans('table.actions') }}</th>
+
+                                        <th class="col-md-2 actions" data-sortable="false">{{ trans('table.actions') }}</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
                                     @foreach($models as $requestableModel)
                                         <tr>
-                                            <form  action="{{route('account/request-item', ['itemType' => 'asset_model', 'itemId' => $requestableModel->id])}}"
-                                                    method="POST"
-                                                    accept-charset="utf-8">
-                                                {{ csrf_field() }}
+
                                                 <td>
+
                                                     @if ($requestableModel->image)
                                                         <a href="{{ url('/') }}/uploads/models/{{ $requestableModel->image }}" data-toggle="lightbox" data-type="image">
                                                             <img src="{{ url('/') }}/uploads/models/{{ $requestableModel->image }}" style="max-height: {{ $snipeSettings->thumbnail_max_h }}px; width: auto;" class="img-responsive">
@@ -167,16 +108,20 @@
 
                                                 <td>{{$requestableModel->name}}</td>
                                                 <td>{{$requestableModel->assets->where('requestable', '1')->count()}}</td>
-                                                <td><input type="text" name="request-quantity" value=""></td>
+
                                                 <td>
+                                                    <form  action="{{route('account/request-item', ['itemType' => 'asset_model', 'itemId' => $requestableModel->id])}}" method="POST" accept-charset="utf-8">
+                                                        {{ csrf_field() }}
+                                                    <input type="text" style="width: 70px; margin-right: 10px;" class="form-control pull-left" name="request-quantity" value="" placeholder="{{ trans('general.qty') }}">
                                                     @if ($requestableModel->isRequestedBy(Auth::user()))
-                                                        {{Form::submit(trans('button.cancel'), ['class' => 'btn btn-danger btn-sm'])}}
+                                                        {{ Form::submit(trans('button.cancel'), ['class' => 'btn btn-danger btn-sm'])}}
                                                     @else
-                                                        {{Form::submit(trans('button.request'), ['class' => 'btn btn-primary btn-sm'])}}
+                                                        {{ Form::submit(trans('button.request'), ['class' => 'btn btn-primary btn-sm'])}}
                                                     @endif
+                                                    </form>
                                                 </td>
-                                            </form>
                                         </tr>
+
                                     @endforeach
                                 </tbody>
                             </table>

@@ -33,4 +33,10 @@ return array(
         'success' 		=> 'Моделите са осъвременени.'
     ),
 
+    'bulkdelete' => array(
+        'error'   		    => 'Няма избрани модели, така че нищо не бе изтрито.',
+        'success' 		    => ':success_count модела бяха изтрити!',
+        'success_partial' 	=> ':success_count модела бяха изтрити, но :fail_count не бяха, тъй като към тях има асоциирани активи.'
+    ),
+
 );

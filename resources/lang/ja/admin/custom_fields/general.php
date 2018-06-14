@@ -21,7 +21,7 @@ return array(
     'field_element_short'     => 'エレメント',
     'field_format'            => 'フォーマット',
     'field_custom_format'     => 'カスタム形式：',
-    'field_custom_format_help'     => 'This field allows you to use a regex expression for validation. It should start with "regex:" - for example, to validate that a custom field value contains a valid IMEI (15 numeric digits), you would use <code>regex:/^[0-9]{15}$/</code>.',
+    'field_custom_format_help'     => 'このフィールドでは、検証のために正規表現を使用できます。たとえば、カスタムフィールド値に有効なIMEI（15桁）が含まれていることを検証するには、<code>regex：/ ^ [0-9]{15} $ / </code>を使用します。',
     'required'   		          => '必須',
     'req'   		              => '必須',
     'used_by_models'   		    => '型番で使用',
@@ -29,4 +29,5 @@ return array(
     'create_fieldset'         => '新しいフィールドセット',
     'create_field'            => '新しいユーザー設定フィールド',
     'value_encrypted'      	        => 'このフィールドの値は、データベースで暗号化されます。管理者ユーザーのみが復号化された値を表示することができます。',
+    'show_in_email'     => 'Include the value of this field in checkout emails sent to the user? Encrypted fields cannot be included in emails.',
 );

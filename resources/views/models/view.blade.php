@@ -42,27 +42,45 @@
         </div><!-- /.box-header -->
       @endif
       <div class="box-body">
-        <table
-        name="modelassets"
-        id="table"
-        class="snipe-table"
-        data-url="{{ route('api.assets.index',['model_id'=> $model->id]) }}"
-        data-cookie="true"
-        data-click-to-select="true"
-        data-cookie-id-table="modeldetailsViewTable">
-          <thead>
-              <tr>
-                  <th data-sortable="true" data-field="id" data-searchable="false" data-visible="false">{{ trans('general.id') }}</th>
-                  <th data-sortable="false" data-field="company" data-searchable="false" data-visible="false" data-formatter="companiesLinkObjFormatter">{{ trans('admin/companies/table.title') }}</th>
-                  <th data-sortable="true" data-field="name"  data-searchable="true" data-formatter="hardwareLinkFormatter">{{ trans('general.name') }}</th>
-                  <th data-sortable="true" data-field="asset_tag" data-formatter="hardwareLinkFormatter">{{ trans('general.asset_tag') }}</th>
-                  <th data-sortable="true" data-field="serial" data-formatter="hardwareLinkFormatter">{{ trans('admin/hardware/table.serial') }}</th>
-                  <th data-sortable="false" data-field="assigned_to" data-formatter="polymorphicItemFormatter">{{ trans('general.user') }}</th>
-                  <th data-sortable="false" data-field="inout" data-formatter="hardwareInOutFormatter">{{ trans('admin/hardware/table.change') }}</th>
-                  <th data-switchable="false" data-searchable="false" data-sortable="false" data-field="actions" data-formatter="hardwareActionsFormatter">{{ trans('table.actions') }}</th>
-              </tr>
-          </thead>
-        </table>
+          <div class="row">
+              <div class="col-md-12">
+                  {{ Form::open([
+                     'method' => 'POST',
+                     'route' => ['hardware/bulkedit'],
+                     'class' => 'form-inline',
+                      'id' => 'bulkForm']) }}
+                  <div id="toolbar">
+                      <select name="bulk_actions" class="form-control select2">
+                          <option value="edit">Edit</option>
+                          <option value="delete">Delete</option>
+                          <option value="labels">Generate Labels</option>
+                      </select>
+                      <button class="btn btn-primary" id="bulkEdit" disabled>Go</button>
+                  </div>
+
+                  <table
+                  data-columns="{{ \App\Presenters\AssetPresenter::dataTableLayout() }}"
+                  data-cookie-id-table="assetListingTable"
+                  data-pagination="true"
+                  data-id-table="assetListingTable"
+                  data-search="true"
+                  data-side-pagination="server"
+                  data-show-columns="true"
+                  data-toolbar="#toolbar"
+                  data-show-export="true"
+                  data-show-refresh="true"
+                  data-sort-order="asc"
+                  id="assetListingTable"
+                  data-url="{{ route('api.assets.index',['model_id'=> $model->id]) }}"
+                  class="table table-striped snipe-table"
+                  data-export-options='{
+                "fileName": "export-models-{{ $model->name }}-assets-{{ date('Y-m-d') }}",
+                "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
+                }'>
+                </table>
+                  {{ Form::close() }}
+              </div>
+          </div>
       </div> <!-- /.box-body-->
     </div> <!-- /.box-default-->
   </div> <!-- /.col-md-9-->
@@ -109,7 +127,9 @@
 
                   @if ($model->manufacturer->support_phone)
                       <li>
-                          <i class="fa fa-phone"></i> {{ $model->manufacturer->support_phone }}
+                          <i class="fa fa-phone"></i>
+                          <a href="tel:{{ $model->manufacturer->support_phone }}">{{ $model->manufacturer->support_phone }}</a>
+
                       </li>
                   @endif
 
@@ -145,6 +165,29 @@
               </li>
               @endif
 
+              @if ($model->notes)
+                  <li>
+                      {{ trans('general.notes') }}:
+                      {{ $model->notes }}
+                  </li>
+              @endif
+
+              @if ($model->min_amt)
+                  <li>
+                      {{ trans('general.min_amt') }}:
+                      {{ $model->min_amt }}
+                  </li>
+              @endif
+
+              @if ($model->normal_amt)
+                  <li>
+                      {{ trans('general.normal_amt') }}:
+                      {{ $model->normal_amt }}
+                  </li>
+              @endif
+
+
+
 
 
               @if  ($model->deleted_at!='')
@@ -166,5 +209,5 @@
 @stop
 
 @section('moar_scripts')
-@include ('partials.bootstrap-table', ['exportFile' => 'model' . $model->name . '-export', 'search' => true])
+@include ('partials.bootstrap-table')
 @stop

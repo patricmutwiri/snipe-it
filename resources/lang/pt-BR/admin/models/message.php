@@ -33,4 +33,10 @@ return array(
         'success' 		=> 'Modelos atualizados.'
     ),
 
+    'bulkdelete' => array(
+        'error'   		    => 'Nenhum modelo foi selecionado, então nada foi deletado.',
+        'success' 		    => '::succes_count model (s) deletados!',
+        'success_partial' 	=> ':success_count model(s) foram deletados,no entando :fail_count não pode ser excluído porque eles ainda possuem ativos associados a eles.'
+    ),
+
 );

@@ -44,9 +44,7 @@ class CustomFieldsetsController extends Controller
     {
         $this->authorize('index', CustomFieldset::class);
         $fieldsets = CustomFieldset::withCount(['fields', 'models'])->get();
-
-        $total = count($fieldsets);
-        return (new CustomFieldsetsTransformer)->transformCustomFieldsets($fieldsets, $total);
+        return (new CustomFieldsetsTransformer)->transformCustomFieldsets($fieldsets, $fieldsets->count());
 
     }
 
@@ -126,7 +124,7 @@ class CustomFieldsetsController extends Controller
     {
         $this->authorize('delete', CustomFieldset::class);
         $fieldset = CustomFieldset::findOrFail($id);
-        
+
         $modelsCount = $fieldset->models->count();
         $fieldsCount = $fieldset->fields->count();
 
@@ -141,7 +139,41 @@ class CustomFieldsetsController extends Controller
         return response()->json(Helper::formatStandardApiResponse('error', null, 'Unspecified error'));
 
 
-        
+
     }
 
+    /**
+     * Return JSON containing a list of fields belonging to a fieldset.
+     *
+     * @author [V. Cordes] [<volker@fdatek.de>]
+     * @since [v4.1.10]
+     * @param $fieldsetId
+     * @return string JSON
+     */
+    public function fields($id)
+    {
+        $this->authorize('view', CustomFieldset::class);
+        $set = CustomFieldset::findOrFail($id);
+        $fields = $set->fields;
+        return (new CustomFieldsTransformer)->transformCustomFields($fields, $fields->count());
+    }
+
+    /**
+     * Return JSON containing a list of fields belonging to a fieldset with the
+     * default values for a given model
+     *
+     * @param $modelId
+     * @param $fieldsetId
+     * @return string JSON
+     */
+    public function fieldsWithDefaultValues($fieldsetId, $modelId)
+    {
+        $this->authorize('view', CustomFieldset::class);
+
+        $set = CustomFieldset::findOrFail($fieldsetId);
+
+        $fields = $set->fields;
+
+        return (new CustomFieldsTransformer)->transformCustomFieldsWithDefaultValues($fields, $modelId, $fields->count());
+    }
 }

@@ -7,8 +7,10 @@
 @stop
 
 @section('header_right')
-<a href="{{ route('statuslabels.create') }}" class="btn btn-primary pull-right">
+    @can('create', \App\Models\Statuslabel::class)
+        <a href="{{ route('statuslabels.create') }}" class="btn btn-primary pull-right">
 {{ trans('general.create') }}</a>
+    @endcan
 @stop
 {{-- Page content --}}
 @section('content')
@@ -19,23 +21,35 @@
       <div class="box-body">
         <div class="table-responsive">
 
-          <table
-          name="statuslabels"
-          id="table"
-          class="snipe-table"
-          data-url="{{ route('api.statuslabels.index') }}"
-          data-cookie="true"
-          data-click-to-select="true"
-          data-cookie-id-table="statuslabelsTable-{{ config('version.hash_version') }}">
+            <table
+                    data-cookie-id-table="statuslabelsTable"
+                    data-pagination="true"
+                    data-id-table="statuslabelsTable"
+                    data-search="true"
+                    data-show-footer="false"
+                    data-side-pagination="server"
+                    data-show-columns="true"
+                    data-show-export="true"
+                    data-show-refresh="true"
+                    data-sort-order="asc"
+                    data-sort-name="name"
+                    id="statuslabelsTable"
+                    class="table table-striped snipe-table"
+                    data-url="{{ route('api.statuslabels.index') }}"
+                    data-export-options='{
+                "fileName": "export-statuslabels-{{ date('Y-m-d') }}",
+                "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
+                }'>
             <thead>
               <tr>
                 <th data-sortable="true" data-field="id" data-visible="false">{{ trans('general.id') }}</th>
                 <th data-sortable="true" data-field="name" data-formatter="statuslabelsAssetLinkFormatter">{{ trans('admin/statuslabels/table.name') }}</th>
                 <th data-sortable="false" data-field="type" data-formatter="statusLabelTypeFormatter">{{ trans('admin/statuslabels/table.status_type') }}</th>
                   <th data-sortable="true" data-field="assets_count">{{ trans('general.assets') }}</th>
-                <th data-sortable="false" data-field="color" data-formatter="colorSqFormatter">{{ trans('admin/statuslabels/table.color') }}</th>
+                <th data-sortable="true" data-field="color" data-formatter="colorSqFormatter">{{ trans('admin/statuslabels/table.color') }}</th>
                 <th class="text-center" data-sortable="true" data-field="show_in_nav" data-formatter="trueFalseFormatter">{{ trans('admin/statuslabels/table.show_in_nav') }}</th>
-                <th data-switchable="false" data-formatter="statuslabelsActionsFormatter" data-searchable="false" data-sortable="false" data-field="actions">{{ trans('table.actions') }}</th>
+                  <th class="text-center" data-sortable="true" data-field="default_label" data-formatter="trueFalseFormatter">{{ trans('admin/statuslabels/table.default_label') }}</th>
+                <th data-formatter="statuslabelsActionsFormatter" data-searchable="false" data-sortable="false" data-field="actions">{{ trans('table.actions') }}</th>
               </tr>
             </thead>
           </table>
@@ -77,7 +91,7 @@
 @stop
 
 @section('moar_scripts')
-@include ('partials.bootstrap-table', ['exportFile' => 'statuslabels-export', 'search' => true])
+@include ('partials.bootstrap-table')
 
   <script nonce="{{ csrf_token() }}">
       function colorSqFormatter(value, row) {

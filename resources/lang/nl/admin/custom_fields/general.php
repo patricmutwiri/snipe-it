@@ -20,7 +20,7 @@ return array(
     'field_element_short'     => 'Element',
     'field_format'            => 'Stijl',
     'field_custom_format'     => 'Aangepaste stijl',
-    'field_custom_format_help'     => 'This field allows you to use a regex expression for validation. It should start with "regex:" - for example, to validate that a custom field value contains a valid IMEI (15 numeric digits), you would use <code>regex:/^[0-9]{15}$/</code>.',
+    'field_custom_format_help'     => 'Dit veld laat u toe om een regex expressie te gebruiken om te valideren. Het moet beginnen met "regex:" - bijvoorbeeld, om een waarde in een speciaal veld te valideren dat een geldig IMEI nummer (15 cijfers) bevat, gebruik je <code>regex:/^[0-9]{15}$/</code>.',
     'required'   		          => 'Verplicht',
     'req'   		              => 'Ndz.',
     'used_by_models'   		    => 'Gebruikt door modellen',
@@ -28,4 +28,5 @@ return array(
     'create_fieldset'         => 'Nieuwe veldset',
     'create_field'            => 'Nieuw aangepast veld',
     'value_encrypted'      	        => 'De waarde van dit veld is versleuteld in de database. Alleen beheerders zullen de onversleutelde waarde kunnen weergeven.',
+    'show_in_email'     => 'Include the value of this field in checkout emails sent to the user? Encrypted fields cannot be included in emails.',
 );

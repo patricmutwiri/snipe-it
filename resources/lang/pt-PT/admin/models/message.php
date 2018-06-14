@@ -33,4 +33,10 @@ return array(
         'success' 		=> 'Modelos atualizados.'
     ),
 
+    'bulkdelete' => array(
+        'error'   		    => 'Nenhum modelo selecionado, por isso nenhum modelo foi eliminado.',
+        'success' 		    => ':sucess_count modelo(s) eliminados!',
+        'success_partial' 	=> ':sucess_count modelo(s) eliminados, no entanto :fail_count não foram eliminados, porque ainda têm artigos associados.'
+    ),
+
 );

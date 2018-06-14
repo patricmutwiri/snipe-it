@@ -11,7 +11,7 @@
 @section('inputFields')
 
 @include ('partials.forms.edit.name', ['translated_name' => trans('admin/components/table.title')])
-@include ('partials.forms.edit.category-select', ['translated_name' => trans('general.category'), 'fieldname' => 'category_id'])
+@include ('partials.forms.edit.category-select', ['translated_name' => trans('general.category'), 'fieldname' => 'category_id','category_type' => 'component'])
 @include ('partials.forms.edit.quantity')
 @include ('partials.forms.edit.minimum_quantity')
 @include ('partials.forms.edit.serial')
@@ -33,12 +33,6 @@
     </div>
 @endif
 
-<div class="form-group {{ $errors->has('image') ? 'has-error' : '' }}">
-    <label class="col-md-3 control-label" for="image">{{ trans('general.image_upload') }}</label>
-    <div class="col-md-5">
-        {{ Form::file('image') }}
-        {!! $errors->first('image', '<span class="alert-msg">:message</span>') !!}
-    </div>
-</div>
+@include ('partials.forms.edit.image-upload')
 
 @stop

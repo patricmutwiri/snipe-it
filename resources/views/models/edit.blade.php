@@ -10,11 +10,13 @@
 @section('inputFields')
 
 @include ('partials.forms.edit.name', ['translated_name' => trans('admin/models/table.name')])
-@include ('partials.forms.edit.manufacturer-select', ['translated_name' => trans('general.manufacturer'), 'fieldname' => 'manufacturer_id'])
-@include ('partials.forms.edit.category-select', ['translated_name' => trans('admin/categories/general.category_name'), 'fieldname' => 'category_id'])
+@include ('partials.forms.edit.manufacturer-select', ['translated_name' => trans('general.manufacturer'), 'fieldname' => 'manufacturer_id', 'required' => 'true'])
+@include ('partials.forms.edit.category-select', ['translated_name' => trans('admin/categories/general.category_name'), 'fieldname' => 'category_id', 'required' => 'true', 'category_type' => 'asset'])
 @include ('partials.forms.edit.model_number')
 @include ('partials.forms.edit.depreciation')
 
+@include ('partials.forms.edit.minimum_quantity')
+@include ('partials.forms.edit.normal_quantity')
 <!-- EOL -->
 
 <div class="form-group {{ $errors->has('eol') ? ' has-error' : '' }}">
@@ -33,12 +35,25 @@
 </div>
 
 <!-- Custom Fieldset -->
-<div class="form-group {{ $errors->has('custom_fieldset') ? ' has-error' : '' }}">
-    <label for="custom_fieldset" class="col-md-3 control-label">{{ trans('admin/models/general.fieldset') }}</label>
-    <div class="col-md-7">
-        {{ Form::select('custom_fieldset', \App\Helpers\Helper::customFieldsetList(),Input::old('custom_fieldset', $item->fieldset_id), array('class'=>'select2', 'style'=>'width:350px')) }}
-        {!! $errors->first('custom_fieldset', '<span class="alert-msg"><br><i class="fa fa-times"></i> :message</span>') !!}
+<div id="app">
+    <div class="form-group {{ $errors->has('custom_fieldset') ? ' has-error' : '' }}">
+        <label for="custom_fieldset" class="col-md-3 control-label">{{ trans('admin/models/general.fieldset') }}</label>
+        <div class="col-md-7">
+            {{ Form::select('custom_fieldset', \App\Helpers\Helper::customFieldsetList(),Input::old('custom_fieldset', $item->fieldset_id), array('class'=>'select2 js-fieldset-field', 'style'=>'width:350px')) }}
+            {!! $errors->first('custom_fieldset', '<span class="alert-msg"><br><i class="fa fa-times"></i> :message</span>') !!}
+            <label class="m-l-xs">
+                {{ Form::checkbox('add_default_values', 1, Input::old('add_default_values'), ['class' => 'js-default-values-toggler']) }}
+                {{ trans('admin/models/general.add_default_values') }}
+            </label>
+        </div>
     </div>
+
+    <fieldset-default-values
+        model-id="{{ $item->id ?: '' }}"
+        fieldset-id="{{ !empty($item->fieldset) ? $item->fieldset->id : Input::old('custom_fieldset') }}"
+        previous-input="{{ json_encode(Input::old('default_values')) }}"
+    >
+    </fieldset-default-values>
 </div>
 
 @include ('partials.forms.edit.notes')
@@ -56,12 +71,14 @@
 </div>
 @endif
 
-<div class="form-group {{ $errors->has('image') ? 'has-error' : '' }}">
-    <label class="col-md-3 control-label" for="image">{{ trans('general.image_upload') }}</label>
-    <div class="col-md-5">
-        {{ Form::file('image') }}
-        {!! $errors->first('image', '<span class="alert-msg"><br>:message</span>') !!}
-    </div>
-</div>
+@include ('partials.forms.edit.image-upload')
 
 @stop
+
+@section('moar_scripts')
+<script nonce="{{ csrf_token() }}">
+    new Vue({
+        el: '#app'
+    });
+</script>
+@endsection
