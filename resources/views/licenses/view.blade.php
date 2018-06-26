@@ -29,89 +29,45 @@
     <!-- Custom Tabs -->
     <div class="nav-tabs-custom">
       <ul class="nav nav-tabs">
-        <li class="active"><a href="#tab_1" data-toggle="tab">Details</a></li>
-        <li><a href="#tab_2" data-toggle="tab">{{ trans('general.file_uploads') }}</a></li>
-        <li><a href="#tab_3" data-toggle="tab">{{ trans('admin/licenses/general.checkout_history') }}</a></li>
+        <li class="active"><a href="#details" data-toggle="tab">Details</a></li>
+        <li><a href="#uploads" data-toggle="tab">{{ trans('general.file_uploads') }}</a></li>
+        <li><a href="#history" data-toggle="tab">{{ trans('admin/licenses/general.checkout_history') }}</a></li>
         <li class="pull-right"><a href="#" data-toggle="modal" data-target="#uploadFileModal"><i class="fa fa-paperclip"></i> {{ trans('button.upload') }}</a></li>
       </ul>
 
       <div class="tab-content">
-        <div class="tab-pane active" id="tab_1">
+        <div class="tab-pane active" id="details">
           <div class="row">
-            <div class="col-md-7">
-              <table class="table table-striped">
-                  <thead>
-                    <tr>
-                      <th class="col-md-2">{{ trans('admin/licenses/general.seat') }}</th>
-                      <th class="col-md-2">{{ trans('admin/licenses/general.user') }}</th>
-                      <th class="col-md-4">{{ trans('admin/licenses/form.asset') }}</th>
-                      <th class="col-md-2"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <?php $count=1; ?>
-                    @if ($license->licenseseats)
-                      @foreach ($license->licenseseats as $licensedto)
-                      <tr>
-                        <td>Seat {{ $count }} </td>
-                        <td>
-                          @if (($licensedto->user) && ($licensedto->deleted_at == NULL))
-                            @can('users.view')
-                              <a href="{{ route('users.show', $licensedto->assigned_to) }}">
-                                {{ $licensedto->user->present()->fullName() }}
-                              </a>
-                            @else
-                              {{ $licensedto->user->present()->fullName() }}
-                            @endcan
-                          @elseif (($licensedto->user) && ($licensedto->deleted_at != NULL))
-                            <del>{{ $licensedto->user->present()->fullName() }}</del>
-                          @elseif ($licensedto->asset)
-                            @if ($licensedto->asset->assigned_to != 0)
-                              @can('users.view')
-                                {!!  $licensedto->asset->assignedTo->present()->nameUrl()  !!}
-                              @else
-                                {{ $licensedto->asset->assignedTo->present()->name() }}
-                              @endcan
-                            @endif
-                          @endif
-                        </td>
-                        <td>
-                          @if ($licensedto->asset)
-                            @can('view', $licensedto->asset)
-                              <a href="{{ route('hardware.show', $licensedto->asset_id) }}">
-                                {{ $licensedto->asset->name }} {{ $licensedto->asset->asset_tag }}
-                              </a>
-                            @else
-                              {{ $licensedto->asset->name }} {{ $licensedto->asset->asset_tag }}
-                            @endcan
-                          @endif
-                        </td>
-                        <td>
-                          @can('checkout', $licensedto)
-                            @if (($licensedto->assigned_to) || ($licensedto->asset_id))
-                              @if ($license->reassignable)
-                                <a href="{{ route('licenses.checkin', $licensedto->id) }}" class="btn btn-sm bg-purple">
-                                  {{ trans('general.checkin') }}
-                                </a>
-                              @else
-                                <span>Assigned</span>
-                              @endif
-                            @else
-                              <a href="{{ route('licenses.checkout', $license->id) }}" class="btn btn-sm bg-maroon">
-                                {{ trans('general.checkout') }}
-                              </a>
-                            @endif
-                          @endcan
-                        </td>
-                      </tr>
-                        <?php $count++; ?>
-                      @endforeach
-                    @endif
-                  </tbody>
+            <div class="col-md-8">
+
+              <div class="table-responsive">
+
+                <table
+                        data-columns="{{ \App\Presenters\LicensePresenter::dataTableLayoutSeats() }}"
+                        data-cookie-id-table="seatsTable"
+                        data-id-table="seatsTable"
+                        id="seatsTable"
+                        data-pagination="true"
+                        data-search="true"
+                        data-side-pagination="server"
+                        data-show-columns="true"
+                        data-show-export="true"
+                        data-show-refresh="true"
+                        data-sort-order="asc"
+                        data-sort-name="name"
+                        class="table table-striped snipe-table"
+                        data-url="{{ route('api.license.seats',['license_id' => $license->id]) }}"
+                        data-export-options='{
+                        "fileName": "export-seats-{{ str_slug($license->name) }}-{{ date('Y-m-d') }}",
+                        "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
+                        }'>
                 </table>
+
+              </div>
+
             </div>
 
-            <div class="col-md-5">
+            <div class="col-md-4">
               <div class="table">
                 <table class="table">
                   <tbody>
@@ -124,7 +80,7 @@
 
                     @if ($license->manufacturer)
                       <tr>
-                        <td>{{ trans('admin/hardware/form.manufacturer') }}</td>
+                        <td>{{ trans('admin/hardware/form.manufacturer') }}:</td>
                         <td><p style="line-height: 23px;">
                           @can('view', \App\Models\Manufacturer::class)
                             <a href="{{ route('manufacturers.show', $license->manufacturer->id) }}">
@@ -156,27 +112,41 @@
                       </tr>
                     @endif
 
-                    @can('viewKeys', $license)
+
                       @if (!is_null($license->serial))
                       <tr>
-                        <td>{{ trans('admin/licenses/form.license_key') }}</td>
+                        <td>{{ trans('admin/licenses/form.license_key') }}: </td>
                         <td style="word-wrap: break-word;overflow-wrap: break-word;word-break: break-word;">
-                          {!! nl2br(e($license->serial)) !!}
+                          @can('viewKeys', $license)
+                            {!! nl2br(e($license->serial)) !!}
+                          @else
+                           ------------
+                          @endcan
+
                         </td>
                       </tr>
                       @endif
-                    @endcan
 
-                    @if (!is_null($license->license_name))
+                    @if ($license->category)
+                      <tr>
+                        <td>{{ trans('general.category') }}: </td>
+                        <td style="word-wrap: break-word;overflow-wrap: break-word;word-break: break-word;">
+                          <a href="{{ route('categories.show', $license->category->id) }}">{{ $license->category->name }}</a>
+                        </td>
+                      </tr>
+                    @endif
+
+
+                    @if ($license->license_name!='')
                     <tr>
-                      <td>{{ trans('admin/licenses/form.to_name') }}</td>
+                      <td>{{ trans('admin/licenses/form.to_name') }}: </td>
                       <td>{{ $license->license_name }}</td>
                     </tr>
                     @endif
 
-                    @if (!is_null($license->license_email))
+                    @if ($license->license_email!='')
                     <tr>
-                      <td>{{ trans('admin/licenses/form.to_email') }}</td>
+                      <td>{{ trans('admin/licenses/form.to_email') }}:</td>
                       <td>{{ $license->license_email }}</td>
                     </tr>
                     @endif
@@ -298,32 +268,68 @@
           </div> <!--/.row-->
         </div> <!-- /.tab-pane -->
 
-        <div class="tab-pane" id="tab_2">
-          <table class="table table-striped">
+        <div class="tab-pane" id="uploads">
+          <div class="table-responsive">
+            <div id="upload-toolbar">
+              <a href="#" data-toggle="modal" data-target="#uploadFileModal" class="btn btn-default"><i class="fa fa-paperclip"></i> {{ trans('button.upload') }}</a>
+            </div>
+
+            <table
+                data-cookie-id-table="licenseUploadsTable"
+                data-id-table="licenseUploadsTable"
+                id="licenseUploadsTable"
+                data-search="true"
+                data-pagination="true"
+                data-side-pagination="client"
+                data-show-columns="true"
+                data-show-export="true"
+                data-show-footer="true"
+                data-toolbar="#upload-toolbar"
+                data-show-refresh="true"
+                data-sort-order="asc"
+                data-sort-name="name"
+                class="table table-striped snipe-table"
+                data-export-options='{
+                    "fileName": "export-license-uploads-{{ str_slug($license->name) }}-{{ date('Y-m-d') }}",
+                    "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","delete","download","icon"]
+                    }'>
             <thead>
               <tr>
-                <th class="col-md-5">{{ trans('general.notes') }}</th>
-                <th class="col-md-5"><span class="line"></span>{{ trans('general.file_name') }}</th>
-                <th class="col-md-2"></th>
-                <th class="col-md-2"></th>
+                <th data-visible="true"></th>
+                <th class="col-md-4" data-field="file_name" data-visible="true" data-sortable="true" data-switchable="true">{{ trans('general.file_name') }}</th>
+                <th class="col-md-4" data-field="notes" data-visible="true" data-sortable="true" data-switchable="true">{{ trans('general.notes') }}</th>
+                <th class="col-md-2" data-field="created_at" data-visible="true"  data-sortable="true" data-switchable="true">{{ trans('general.created_at') }}</th>
+                <th class="col-md-2" data-searchable="true" data-visible="true">{{ trans('general.image') }}</th>
+                <th class="col-md-2" data-field="download" data-visible="true"  data-sortable="false" data-switchable="true">Download</th>
+                <th class="col-md-2" data-field="delete" data-visible="true"  data-sortable="false" data-switchable="true">Delete</th>
               </tr>
             </thead>
             <tbody>
-            @if (count($license->uploads) > 0)
+            @if ($license->uploads->count() > 0)
               @foreach ($license->uploads as $file)
               <tr>
+                <td><i class="{{ \App\Helpers\Helper::filetype_icon($file->filename) }} icon-med"></i></td>
                 <td>
-                @if ($file->note)
-                  {{ $file->note }}
-                @endif
+                  {{ $file->filename }}
+
                 </td>
-                <td>{{ $file->filename }}</td>
+                <td>
+                  @if ($file->note)
+                    {{ $file->note }}
+                  @endif
+                </td>
+                <td>{{ $file->created_at }}</td>
                 <td>
                 @if ($file->filename)
-                  <a href="{{ route('show/licensefile', [$license->id, $file->id]) }}" class="btn btn-default">
-                    Download
-                  </a>
+                    @if ( \App\Helpers\Helper::checkUploadIsImage($file->get_src('licenses')))
+                      <a href="{{ route('show.licensefile', ['licenseId' => $license->id, 'fileId' => $file->id, 'download' => 'false']) }}" data-toggle="lightbox" data-type="image"><img src="{{ route('show.licensefile', ['licenseId' => $license->id, 'fileId' => $file->id]) }}" class="img-thumbnail" style="max-width: 50px;"></a>
+                    @endif
                 @endif
+                </td>
+                <td>
+                  @if ($file->filename)
+                    <a href="{{ route('show.licensefile', [$license->id, $file->id, 'download' => 'true']) }}" class="btn btn-default"><i class="fa fa-download"></i></a>
+                  @endif
                 </td>
                 <td>
                   <a class="btn delete-asset btn-danger btn-sm" href="{{ route('delete/licensefile', [$license->id, $file->id]) }}" data-content="Are you sure you wish to delete this file?" data-title="Delete {{ $file->filename }}?"><i class="fa fa-trash icon-white"></i></a>
@@ -332,35 +338,50 @@
               @endforeach
             @else
               <tr>
-              <td colspan="4">{{ trans('general.no_results') }}</td>
+              <td colspan="6">{{ trans('general.no_results') }}</td>
               </tr>
             @endif
             </tbody>
           </table>
+          </div>
         </div> <!-- /.tab-pane -->
 
-        <div class="tab-pane" id="tab_3">
+        <div class="tab-pane" id="history">
           <div class="row">
             <div class="col-md-12">
+              <div class="table-responsive">
               <table
                       class="table table-striped snipe-table"
-                      name="assetHistory"
-                      id="table"
+                      data-cookie-id-table="dsffsdflicenseHistoryTable"
+                      data-id-table="dsffsdflicenseHistoryTable"
+                      id="dsffsdflicenseHistoryTable"
+                      data-pagination="true"
+                      data-show-columns="true"
+                      data-side-pagination="server"
+                      data-show-refresh="true"
+                      data-show-export="true"
                       data-sort-order="desc"
-                      data-height="400"
+                      data-export-options='{
+                       "fileName": "export-{{ str_slug($license->name) }}-history-{{ date('Y-m-d') }}",
+                       "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
+                     }'
                       data-url="{{ route('api.activity.index', ['item_id' => $license->id, 'item_type' => 'license']) }}">
+
                 <thead>
                 <tr>
-                  <th data-field="icon" style="width: 40px;" class="hidden-xs" data-formatter="iconFormatter"></th>
-                  <th class="col-sm-2" data-field="created_at" data-formatter="dateDisplayFormatter">{{ trans('general.date') }}</th>
-                  <th class="col-sm-2" data-field="admin" data-formatter="usersLinkObjFormatter">{{ trans('general.admin') }}</th>
-                  <th class="col-sm-2" data-field="action_type">{{ trans('general.action') }}</th>
-                  <th class="col-sm-2" data-field="item" data-formatter="polymorphicItemFormatter">{{ trans('general.item') }}</th>
-                  <th class="col-sm-2" data-field="target" data-formatter="polymorphicItemFormatter">{{ trans('general.target') }}</th>
-                  <th class="col-sm-2" data-field="note">{{ trans('general.notes') }}</th>
+                  <th class="col-sm-2" data-visible="true" data-sortable="true" data-field="created_at" data-formatter="dateDisplayFormatter">{{ trans('general.date') }}</th>
+                  <th class="col-sm-2"data-visible="true" data-sortable="true" data-field="admin" data-formatter="usersLinkObjFormatter">{{ trans('general.admin') }}</th>
+                  <th class="col-sm-2" data-sortable="true"  data-visible="true" data-field="action_type">{{ trans('general.action') }}</th>
+                  <th class="col-sm-2" data-sortable="true"  data-visible="true" data-field="item" data-formatter="polymorphicItemFormatter">{{ trans('general.item') }}</th>
+                  <th class="col-sm-2" data-visible="true" data-field="target" data-formatter="polymorphicItemFormatter">{{ trans('general.target') }}</th>
+                  <th class="col-sm-2" data-sortable="true" data-visible="true" data-field="note">{{ trans('general.notes') }}</th>
+                  @if  ($snipeSettings->require_accept_signature=='1')
+                    <th class="col-md-3" data-field="signature_file" data-visible="false"  data-formatter="imageFormatter">{{ trans('general.signature') }}</th>
+                  @endif
                 </tr>
                 </thead>
               </table>
+              </div>
             </div> <!-- /.col-md-12-->
           </div> <!-- /.row-->
         </div> <!-- /.tab-pane -->
@@ -382,8 +403,9 @@
       'method' => 'POST',
       'route' => ['upload/license', $license->id],
       'files' => true, 'class' => 'form-horizontal' ]) }}
+      <input type="hidden" name="_token" value="{{ csrf_token() }}" />
         <div class="modal-body">
-          <p>{{ trans('admin/licenses/general.filetype_info') }}</p>
+          <p>{{ trans('general.upload_filetypes_help', ['size' => \App\Helpers\Helper::file_upload_max_size_readable()]) }}</p>
           <div class="form-group col-md-12">
             <div class="input-group col-md-12">
               <input class="col-md-12 form-control" type="text" name="notes" id="notes" placeholder="Notes">
@@ -408,8 +430,6 @@
 
 
 @section('moar_scripts')
-  @include ('partials.bootstrap-table', ['simple_view' => true])
-
-
+  @include ('partials.bootstrap-table')
 @stop
 

@@ -20,7 +20,7 @@ return array(
     'field_element_short'     => 'elementti',
     'field_format'            => 'Muoto',
     'field_custom_format'     => 'Mukautettu muoto',
-    'field_custom_format_help'     => 'This field allows you to use a regex expression for validation. It should start with "regex:" - for example, to validate that a custom field value contains a valid IMEI (15 numeric digits), you would use <code>regex:/^[0-9]{15}$/</code>.',
+    'field_custom_format_help'     => 'Tämän kentän avulla voit käyttää regex-lauseketta validointiin. Sen pitäisi alkaa "regex:" - esimerkiksi vahvistaaksesi, että mukautetun kentän arvo sisältää voimassa olevan IMEI: n (15 numeerista numeroa), käyttäisit <code>regex: /^[0-9]{15}$/</code>.',
     'required'   		          => 'Edellytetään',
     'req'   		              => 'Req.',
     'used_by_models'   		    => 'Käytetään mallien mukaan',
@@ -28,4 +28,5 @@ return array(
     'create_fieldset'         => 'Uusi Fieldset',
     'create_field'            => 'Uusi mukautettu kenttä',
     'value_encrypted'      	        => 'Kentän arvo salataan tietokannassa. Vain järjestelmänvalvojat voivat tarkastella purettua arvoa',
+    'show_in_email'     => 'Include the value of this field in checkout emails sent to the user? Encrypted fields cannot be included in emails.',
 );

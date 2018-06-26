@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: parallelgrapefruit
- * Date: 12/23/16
- * Time: 11:51 AM
- */
-
 namespace App\Presenters;
 
 use App\Helpers\Helper;
@@ -95,6 +88,11 @@ class AccessoryPresenter extends Presenter
                 "searchable" => false,
                 "sortable" => true,
                 "title" => trans('general.min_amt'),
+            ], [
+                "field" => "normal_qty",
+                "searchable" => false,
+                "sortable" => true,
+                "title" => trans('general.normal_amt'),
             ], [
                 "field" => "remaining_qty",
                 "searchable" => false,

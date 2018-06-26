@@ -31,30 +31,33 @@
 
     </script>
 
+
+      @if (($snipeSettings) && ($snipeSettings->skin!=''))
+          <link rel="stylesheet" href="{{ url('css/skins/skin-'.$snipeSettings->skin) }}.css">
+      @endif
+
     <style nonce="{{ csrf_token() }}">
-        @if ($snipeSettings)
-            @if ($snipeSettings->header_color)
-            .main-header .navbar, .main-header .logo {
-            background-color: {{ $snipeSettings->header_color }};
-            background: -webkit-linear-gradient(top,  {{ $snipeSettings->header_color }} 0%,{{ $snipeSettings->header_color }} 100%);
-            background: linear-gradient(to bottom, {{ $snipeSettings->header_color }} 0%,{{ $snipeSettings->header_color }} 100%);
-            border-color: {{ $snipeSettings->header_color }};
-            }
-            .skin-blue .sidebar-menu > li:hover > a, .skin-blue .sidebar-menu > li.active > a {
-              border-left-color: {{ $snipeSettings->header_color }};
-            }
+        @if (($snipeSettings) && ($snipeSettings->header_color!=''))
+        .main-header .navbar, .main-header .logo {
+        background-color: {{ $snipeSettings->header_color }};
+        background: -webkit-linear-gradient(top,  {{ $snipeSettings->header_color }} 0%,{{ $snipeSettings->header_color }} 100%);
+        background: linear-gradient(to bottom, {{ $snipeSettings->header_color }} 0%,{{ $snipeSettings->header_color }} 100%);
+        border-color: {{ $snipeSettings->header_color }};
+        }
+        .skin-blue .sidebar-menu > li:hover > a, .skin-blue .sidebar-menu > li.active > a {
+          border-left-color: {{ $snipeSettings->header_color }};
+        }
 
-            .btn-primary {
-              background-color: {{ $snipeSettings->header_color }};
-              border-color: {{ $snipeSettings->header_color }};
-            }
+        .btn-primary {
+          background-color: {{ $snipeSettings->header_color }};
+          border-color: {{ $snipeSettings->header_color }};
+        }
+        @endif
 
-            @endif
-
-        @if ($snipeSettings->custom_css)
+        @if (($snipeSettings) && ($snipeSettings->custom_css!=''))
             {!! $snipeSettings->show_custom_css() !!}
         @endif
-     @endif
+
     @media (max-width: 400px) {
       .navbar-left {
        margin: 2px;
@@ -218,14 +221,6 @@
                            </a>
                        </li>
                        @endcan
-                       @can('create', \App\Models\User::class)
-                       <li {!! (Request::is('users/create') ? 'class="active"' : '') !!}>
-                           <a href="{{ route('users.create') }}">
-                           <i class="fa fa-user fa-fw"></i>
-                           {{ trans('general.user') }}
-                           </a>
-                       </li>
-                       @endcan
                        @can('create', \App\Models\Component::class)
                        <li {!! (Request::is('components/create') ? 'class="active"' : '') !!}>
                            <a href="{{ route('components.create') }}">
@@ -234,6 +229,14 @@
                            </a>
                        </li>
                        @endcan
+                         @can('create', \App\Models\User::class)
+                             <li {!! (Request::is('users/create') ? 'class="active"' : '') !!}>
+                                 <a href="{{ route('users.create') }}">
+                                     <i class="fa fa-user fa-fw"></i>
+                                     {{ trans('general.user') }}
+                                 </a>
+                             </li>
+                         @endcan
                    </ul>
                 </li>
                @endcan
@@ -304,6 +307,16 @@
                              <i class="fa fa-check fa-fw"></i>
                              {{ trans('general.viewassets') }}
                        </a></li>
+
+                     <li {!! (Request::is('account/requested') ? ' class="active"' : '') !!}>
+                         <a href="{{ route('account.requested') }}">
+                             <i class="fa fa-check fa-disk"></i>
+                             Requested Assets
+                         </a></li>
+
+
+
+
                      <li>
                           <a href="{{ route('profile') }}">
                              <i class="fa fa-user fa-fw"></i>
@@ -478,16 +491,22 @@
                   <span>{{ trans('general.accessories') }}</span>
                 </a>
               </li>
+              <li{!! (Request::is('marketing*') ? ' class="active"' : '') !!}>
+                <a href="{{ route('marketing.index') }}">
+                  <i class="fa fa-share-alt"></i>
+                  <span>{{ trans('general.marketing') }}</span>
+                </a>
+              </li>
               @endcan
-              @can('index', \App\Models\Consumable::class)
-            <li{!! (Request::is('consunmables*') ? ' class="active"' : '') !!}>
+              @can('view', \App\Models\Consumable::class)
+            <li{!! (Request::is('consumables*') ? ' class="active"' : '') !!}>
                 <a href="{{ url('consumables') }}">
                   <i class="fa fa-tint"></i>
                   <span>{{ trans('general.consumables') }}</span>
                 </a>
             </li>
              @endcan
-             @can('view', \App\Models\Components::class)
+             @can('view', \App\Models\Component::class)
             <li{!! (Request::is('components*') ? ' class="active"' : '') !!}>
                 <a href="{{ route('components.index') }}">
                   <i class="fa fa-hdd-o"></i>
@@ -521,8 +540,8 @@
                     </a>
 
                     <ul class="treeview-menu">
-                        @can('view', \App\Models\Customfield::class)
-                            <li {!! (Request::is('custom_fields*') ? ' class="active"' : '') !!}>
+                        @can('view', \App\Models\CustomField::class)
+                            <li {!! (Request::is('fields*') ? ' class="active"' : '') !!}>
                                 <a href="{{ route('fields.index') }}">
                                     {{ trans('admin/custom_fields/general.custom_fields') }}
                                 </a>
@@ -609,7 +628,7 @@
 
             @can('reports.view')
             <li class="treeview{{ (Request::is('reports*') ? ' active' : '') }}">
-                <a href="{{ url('reports') }}"  class="dropdown-toggle">
+                <a href="#"  class="dropdown-toggle">
                     <i class="fa fa-bar-chart"></i>
                     <span>{{ trans('general.reports') }}</span>
                     <i class="fa fa-angle-left pull-right"></i>
@@ -650,6 +669,17 @@
                             {{ trans('general.accessory_report') }}
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ url('reports/accessories') }}" {{ (Request::is('reports/accessories') ? ' class="active"' : '') }}>
+                            {{ trans('general.reorder_stock_levels_report') }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url('hardware') }}" {{ (Request::is('hardware') ? ' class="active"' : '') }}>
+                            {{ trans('general.all_asset_report') }}
+                        </a>
+                    </li>
+
                     <li>
                         <a href="{{ url('reports/custom') }}" {{ (Request::is('reports/custom') ? ' class="active"' : '') }}>
                             {{ trans('general.custom_report') }}
@@ -726,13 +756,35 @@
       </div><!-- /.content-wrapper -->
 
       <footer class="main-footer hidden-print">
+
         <div class="pull-right hidden-xs">
-          <b>Version</b> {{ config('version.app_version') }} - build {{ config('version.build_version') }} ({{ config('version.branch') }})
-          <a target="_blank" class="btn btn-default btn-xs" href="https://snipe-it.readme.io/docs/overview" rel="noopener">User's Manual</a>
-          <a target="_blank" class="btn btn-default btn-xs" href="https://snipeitapp.com/support/" rel="noopener">Report a Bug</a>
+          @if ($snipeSettings->version_footer!='off')
+              @if (($snipeSettings->version_footer=='on') || (($snipeSettings->version_footer=='admin') && (Auth::user()->isSuperUser()=='1')))
+                <b>Version</b> {{ config('version.app_version') }} - build {{ config('version.build_version') }} ({{ config('version.branch') }})
+              @endif
+          @endif
+
+          @if ($snipeSettings->support_footer!='off')
+              @if (($snipeSettings->support_footer=='on') || (($snipeSettings->support_footer=='admin') && (Auth::user()->isSuperUser()=='1')))
+                <a target="_blank" class="btn btn-default btn-xs" href="https://snipe-it.readme.io/docs/overview" rel="noopener">User's Manual</a>
+                <a target="_blank" class="btn btn-default btn-xs" href="https://snipeitapp.com/support/" rel="noopener">Report a Bug</a>
+                 @endif
+          @endif
+
+        @if ($snipeSettings->privacy_policy_link!='')
+            <a target="_blank" class="btn btn-default btn-xs" rel="noopener" href="{{  $snipeSettings->privacy_policy_link }}" target="_new">{{ trans('admin/settings/general.privacy_policy') }}</a>
+        @endif
+
+
         </div>
-        <a target="_blank" href="https://snipeitapp.com" rel="noopener">Snipe-IT</a> is an open source
-          project, made with <i class="fa fa-heart" style="color: #a94442; font-size: 10px"></i> by <a href="https://twitter.com/snipeitapp" rel="noopener">@snipeitapp</a> under the <a href="https://www.gnu.org/licenses/agpl-3.0.en.html" rel="noopener">AGPL3 license</a>.
+          @if ($snipeSettings->footer_text!='')
+              <div class="pull-right">
+                  {!!  Parsedown::instance()->text(e($snipeSettings->footer_text))  !!}
+              </div>
+          @endif
+
+
+        <a target="_blank" href="https://snipeitapp.com" rel="noopener">Snipe-IT</a> is open source software, made with <i class="fa fa-heart" style="color: #a94442; font-size: 10px"></i> by <a href="https://twitter.com/snipeitapp" rel="noopener">@snipeitapp</a>.
       </footer>
 
 
@@ -810,6 +862,8 @@
          $("#tagSearch").focus();
     </script>
     @endif
+
+
 
   </body>
 </html>

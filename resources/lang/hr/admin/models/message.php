@@ -33,4 +33,10 @@ return array(
         'success' 		=> 'Modeli su ažurirani.'
     ),
 
+    'bulkdelete' => array(
+        'error'   		    => 'Nijedan model nije odabran, tako da ništa nije izbrisano.',
+        'success' 		    => ':success_count model(a) izbrisan(o)!',
+        'success_partial' 	=> ':success_count model(a) je izbrisano, no :fail_count nije bilo moguće izbrisati jer još uvijek imaju imovinu povezanu s njima.'
+    ),
+
 );

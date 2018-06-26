@@ -13,7 +13,7 @@ tr {
                     <label for="import-type">Import Type:</label>
                 </div>
                 <div class="col-md-4 col-xs-12">
-                    <select2 :options="options.importTypes" v-model="options.importType">
+                    <select2 :options="options.importTypes" v-model="options.importType" required>
                         <option disabled value="0"></option>
                     </select2>
                 </div>
@@ -60,7 +60,14 @@ tr {
         <td>
             <button type="button" class="btn btn-sm btn-default" @click="processDetail = false">Cancel</button>
             <button type="submit" class="btn btn-sm btn-primary" @click="postSave">Import</button>
-            <div class="alert alert-success col-md-5 col-md-offset-1" style="text-align:left" v-if="statusText">{{ this.statusText }}</div>
+            <div 
+                class="alert col-md-5 col-md-offset-1"
+                :class="alertClass"
+                style="text-align:left"
+                v-if="statusText"
+            >
+                {{ this.statusText }}
+            </div>
         </td>
     </tr>
 </template>
@@ -73,6 +80,7 @@ tr {
                 activeFile: this.file,
                 processDetail: false,
                 statusText: null,
+                statusType: null,
                 options: {
                     importType: this.file.import_type,
                     update: false,
@@ -92,9 +100,7 @@ tr {
                         {id: 'company', text: 'Company' },
                         {id: 'checkout_to', text: 'Checked out to' },
                         {id: 'email', text: 'Email' },
-                        {id: 'first_name', text: 'First Name' },
                         {id: 'item_name', text: 'Item Name' },
-                        {id: 'last_name', text: 'Last Name' },
                         {id: 'location', text: 'Location' },
                         {id: 'maintained', text: 'Maintained' },
                         {id: 'manufacturer', text: 'Manufacturer' },
@@ -113,7 +119,7 @@ tr {
                         {id: 'asset_model', text: 'Model Name' },
                         {id: 'image', text: 'Image Filename' },
                         {id: 'model_number', text: 'Model Number' },
-                        {id: 'name', text: 'Full Name' },
+                        {id: 'full_name', text: 'Full Name' },
                         {id: 'status', text: 'Status' },
                         {id: 'warranty_months', text: 'Warranty Months' },
                     ],
@@ -127,8 +133,11 @@ tr {
                     ],
                     users: [
                         {id: 'employee_num', text: 'Employee Number' },
+                        {id: 'first_name', text: 'First Name' },
                         {id: 'jobtitle', text: 'Job Title' },
+                        {id: 'last_name', text: 'Last Name' },
                         {id: 'phone_number', text: 'Phone Number' },
+
                     ],
                     customFields: this.customFields,
                 },
@@ -142,19 +151,53 @@ tr {
         },
         computed: {
             columns() {
+                // function to sort objects by their display text.
+                function sorter(a,b) {
+                    if (a.text < b.text)
+                        return -1;
+                    if (a.text > b.text)
+                        return 1;
+                    return 0;
+                }
                 switch(this.options.importType) {
                     case 'asset':
-                        return this.columnOptions.general.concat(this.columnOptions.assets).concat(this.columnOptions.customFields);
+                        return this.columnOptions.general
+                                .concat(this.columnOptions.assets)
+                                .concat(this.columnOptions.customFields)
+                                .sort(sorter);
                     case 'license':
-                        return this.columnOptions.general.concat(this.columnOptions.licenses);
+                        return this.columnOptions.general.concat(this.columnOptions.licenses).sort(sorter);
                     case 'user':
-                        return this.columnOptions.general.concat(this.columnOptions.users);
+                        return this.columnOptions.general.concat(this.columnOptions.users).sort(sorter);
                 }
                 return this.columnOptions.general;
+            },
+            alertClass() {
+                if(this.statusType=='success') {
+                    return 'alert-success';
+                }
+                if(this.statusType=='error') {
+                    return 'alert-danger';
+                }
+                return 'alert-info';
+            },
+        },
+        watch: {
+            columns() {
+                console.log("CHANGED");
+                this.populateSelect2ActiveItems();
             }
         },
         methods: {
             postSave() {
+                console.log('saving');
+                console.log(this.options.importType);
+                if(!this.options.importType) {
+                    this.statusType='error';
+                    this.statusText= "An import type is required... ";
+                    return;
+                }
+                this.statusType='pending';
                 this.statusText = "Processing...";
                 this.$http.post(route('api.imports.importFile', this.file.id), {
                     'import-update': this.options.update,
@@ -162,12 +205,14 @@ tr {
                     'column-mappings': this.columnMappings
                 }).then( ({body}) => {
                     // Success
+                    this.statusType="success";
                     this.statusText = "Success... Redirecting.";
                     window.location.href = body.messages.redirect_url;
                 }, ({body}) => {
                     // Failure
                     if(body.status == 'import-errors') {
                         window.eventHub.$emit('importErrors', body.messages);
+                        this.statusType='error';
                         this.statusText = "Error";
                     } else {
                         this.$emit('alert', {
@@ -188,7 +233,9 @@ tr {
                     // Then, for any values that have a likely match, we make that active.
                     for(var j=0; j < this.columns.length; j++) {
                         let column = this.columns[j];
-                        let index = this.file.header_row.indexOf(column.text)
+                        let lower = this.file.header_row.map((value) => value.toLowerCase());
+                        console.dir(lower);
+                        let index = lower.indexOf(column.text.toLowerCase())
                         if(index != -1) {
                             this.$set(this.columnMappings, this.file.header_row[index], column.id)
                         }

@@ -33,4 +33,10 @@ return array(
         'success' 		=> 'Modellek frissítve.'
     ),
 
+    'bulkdelete' => array(
+        'error'   		    => 'Nem voltak eszközök kiválasztva, így semmi sem lett törölve.',
+        'success' 		    => ':success_count eszköz(ök) törölve!',
+        'success_partial' 	=> ': success_count modell(ek) törlésre kerültek, azonban ennyit nem sikerült törölni: a fail_count , mert még hozzárendelt eszközökkel rendelkeznek.'
+    ),
+
 );

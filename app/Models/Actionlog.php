@@ -133,8 +133,11 @@ class Actionlog extends SnipeModel
        **/
     public function get_src($type = 'assets', $fieldname = 'filename')
     {
-        $file = config('app.private_uploads') . '/' . $type . '/' . $this->{$fieldname};
-        return $file;
+        if ($this->filename!='') {
+            $file = config('app.private_uploads') . '/' . $type . '/' . $this->{$fieldname};
+            return $file;
+        }
+        return false;
     }
 
 
@@ -218,7 +221,8 @@ class Actionlog extends SnipeModel
                         $query->where('companies.name', 'LIKE', '%'.$search.'%');
                     });
                 })->orWhere('action_type', 'LIKE', '%'.$search.'%')
-                    ->orWhere('note', 'LIKE', '%'.$search.'%');
+                    ->orWhere('note', 'LIKE', '%'.$search.'%')
+                    ->orWhere('log_meta', 'LIKE', '%'.$search.'%');
             }
 
         });

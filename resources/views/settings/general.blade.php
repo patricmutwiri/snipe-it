@@ -36,16 +36,15 @@
                         <i class="fa fa-wrench"></i> {{ trans('admin/settings/general.general_settings') }}
                     </h4>
                 </div>
-               <div class="box-body">
 
+               <div class="box-body">
 
                    <div class="col-md-12">
 
                     <!-- Full Multiple Companies Support -->
                     <div class="form-group {{ $errors->has('full_multiple_companies_support') ? 'error' : '' }}">
                         <div class="col-md-3">
-                            {{ Form::label('full_multiple_companies_support',
-                                           trans('admin/settings/general.full_multiple_companies_support_text')) }}
+                            {{ Form::label('full_multiple_companies_support', trans('admin/settings/general.full_multiple_companies_support_text')) }}
                         </div>
                         <div class="col-md-9">
                             {{ Form::checkbox('full_multiple_companies_support', '1', Input::old('full_multiple_companies_support', $setting->full_multiple_companies_support),array('class' => 'minimal')) }}
@@ -56,6 +55,7 @@
                             </p>
                         </div>
                     </div>
+
                     <!-- /.form-group -->
 
                     <!-- Require signature for acceptance -->
@@ -122,6 +122,22 @@
                         </div>
                     </div>
 
+                       <!-- Load images in emails -->
+                       <div class="form-group {{ $errors->has('show_images_in_email') ? 'error' : '' }}">
+                           <div class="col-md-3">
+                               {{ Form::label('show_images_in_email', trans('admin/settings/general.show_images_in_email')) }}
+                           </div>
+                           <div class="col-md-9">
+                               {{ Form::checkbox('show_images_in_email', '1', Input::old('show_images_in_email', $setting->show_images_in_email),array('class' => 'minimal')) }}
+                               {{ trans('general.yes') }}
+                               {!! $errors->first('show_images_in_email', '<span class="alert-msg">:message</span>') !!}
+                               <p class="help-block">
+                                   {{ trans('admin/settings/general.show_images_in_email_help') }}
+                               </p>
+                           </div>
+                       </div>
+
+
                     <!-- Per Page -->
                     <div class="form-group {{ $errors->has('per_page') ? 'error' : '' }}">
                         <div class="col-md-3">
@@ -160,7 +176,7 @@
 
 
                     <!-- login text -->
-                    <div class="form-group {{ $errors->has('custom_css') ? 'error' : '' }}">
+                    <div class="form-group {{ $errors->has('login_note') ? 'error' : '' }}">
                         <div class="col-md-3">
                             {{ Form::label('login_note', trans('admin/settings/general.login_note')) }}
                         </div>
@@ -199,6 +215,79 @@
 
                        </div>
 
+                       <!-- dashboard text -->
+                       <div class="form-group {{ $errors->has('dashboard_message') ? 'error' : '' }}">
+                           <div class="col-md-3">
+                               {{ Form::label('dashboard_message', trans('admin/settings/general.dashboard_message')) }}
+                           </div>
+                           <div class="col-md-9">
+                               @if (config('app.lock_passwords'))
+
+                                   <textarea class="form-control disabled" name="login_note" placeholder="If you do not have a login or have found a device belonging to this company, please call technical support at 888-555-1212. Thank you." rows="2" readonly>{{ Input::old('dashboard_message', $setting->login_note) }}</textarea>
+                                   {!! $errors->first('dashboard_message', '<span class="alert-msg">:message</span>') !!}
+                                   <p class="help-block">{{ trans('general.lock_passwords') }}</p>
+                               @else
+                                   <textarea class="form-control" name="dashboard_message" rows="2">{{ Input::old('login_note', $setting->dashboard_message) }}</textarea>
+                                   {!! $errors->first('dashboard_message', '<span class="alert-msg">:message</span>') !!}
+                               @endif
+                               <p class="help-block">
+                                   {{ trans('admin/settings/general.dashboard_message_help') }}
+                                   {!!  trans('general.github_markdown') !!}</p>
+                           </div>
+                       </div>
+
+
+
+
+                       <!-- Archived in List -->
+                       <div class="form-group {{ $errors->has('show_archived_in_list') ? 'error' : '' }}">
+                           <div class="col-md-3">
+                               {{ Form::label('show_archived_in_list',
+                                              trans('admin/settings/general.show_archived_in_list')) }}
+                           </div>
+                           <div class="col-md-9">
+                               {{ Form::checkbox('show_archived_in_list', '1', Input::old('show_archived_in_list', $setting->show_archived_in_list),array('class' => 'minimal')) }}
+                               {{ trans('admin/settings/general.show_archived_in_list_text') }}
+                               {!! $errors->first('show_archived_in_list', '<span class="alert-msg">:message</span>') !!}
+
+                           </div>
+                       </div>
+
+                       <!-- Model List prefs -->
+                       <div class="form-group {{ $errors->has('show_in_model_list') ? 'error' : '' }}">
+                           <div class="col-md-3">
+                               {{ Form::label('show_in_model_list',
+                                              trans('admin/settings/general.show_in_model_list')) }}
+                           </div>
+                           <div class="col-md-9">
+                               {{ Form::checkbox('show_in_model_list[]', 'image', Input::old('show_in_model_list', $snipeSettings->modellistCheckedValue('image')),array('class' => 'minimal')) }} {{ trans('general.image') }} <br>
+                               {{ Form::checkbox('show_in_model_list[]', 'category', Input::old('show_in_model_list', $snipeSettings->modellistCheckedValue('category')),array('class' => 'minimal')) }} {{ trans('general.category') }} <br>
+                               {{ Form::checkbox('show_in_model_list[]', 'manufacturer', Input::old('show_in_model_list', $snipeSettings->modellistCheckedValue('manufacturer')),array('class' => 'minimal')) }}  {{ trans('general.manufacturer') }} <br>
+                               {{ Form::checkbox('show_in_model_list[]', 'model_number', Input::old('show_in_model_list', $snipeSettings->modellistCheckedValue('model_number')),array('class' => 'minimal')) }} {{ trans('general.model_no') }}<br>
+                           </div>
+                       </div>
+                       <!-- /.form-group -->
+
+                       <!-- Privacy Policy Footer-->
+                       <div class="form-group {{ $errors->has('privacy_policy_link') ? 'error' : '' }}">
+                           <div class="col-md-3">
+                               {{ Form::label('privacy_policy_link', trans('admin/settings/general.privacy_policy_link')) }}
+                           </div>
+                           <div class="col-md-9">
+                               @if (config('app.lock_passwords'))
+                                   {{ Form::text('privacy_policy_link', Input::old('privacy_policy_link', $setting->privacy_policy_link), array('class' => 'form-control disabled', 'disabled' => 'disabled')) }}
+                               @else
+                                   {{ Form::text('privacy_policy_link', Input::old('privacy_policy_link', $setting->privacy_policy_link), array('class' => 'form-control')) }}
+
+                               @endif
+
+
+                               <span class="help-block">{{ trans('admin/settings/general.privacy_policy_link_help')  }}</span>
+                               {!! $errors->first('privacy_policy_link', '<span class="alert-msg">:message</span>') !!}
+                           </div>
+                       </div>
+                   </div>
+
             </div> <!--/.box-body-->
             <div class="box-footer">
                 <div class="text-left col-md-6">
@@ -210,6 +299,7 @@
 
             </div>
             </div>
+
         </div> <!-- /box -->
     </div> <!-- /.col-md-8-->
     </div> <!-- /.row-->

@@ -40,21 +40,40 @@
           <!-- User -->
             @include ('partials.forms.edit.user-select', ['translated_name' => trans('general.select_user'), 'fieldname' => 'assigned_to', 'required'=> 'true'])
 
-          @if ($consumable->category->require_acceptance=='1')
-          <div class="form-group">
-            <div class="col-md-9 col-md-offset-3">
-              <p class="hint-block">{{ trans('admin/categories/general.required_acceptance') }}</p>
-            </div>
-          </div>
-          @endif
 
-          @if ($consumable->getEula())
-          <div class="form-group">
-            <div class="col-md-9 col-md-offset-3">
-              <p class="hint-block">{{ trans('admin/categories/general.required_eula') }}</p>
+            @if ($consumable->requireAcceptance() || $consumable->getEula() || ($snipeSettings->slack_endpoint!=''))
+              <div class="form-group notification-callout">
+                <div class="col-md-8 col-md-offset-3">
+                  <div class="callout callout-info">
+
+                    @if ($consumable->category->require_acceptance=='1')
+                      <i class="fa fa-envelope"></i>
+                      {{ trans('admin/categories/general.required_acceptance') }}
+                      <br>
+                    @endif
+
+                    @if ($consumable->getEula())
+                      <i class="fa fa-envelope"></i>
+                      {{ trans('admin/categories/general.required_eula') }}
+                        <br>
+                    @endif
+
+                    @if ($snipeSettings->slack_endpoint!='')
+                        <i class="fa fa-slack"></i>
+                        A slack message will be sent
+                    @endif
+                  </div>
+                </div>
+              </div>
+            @endif
+          <!-- Note -->
+          <div class="form-group {{ $errors->has('note') ? 'error' : '' }}">
+            <label for="note" class="col-md-3 control-label">{{ trans('admin/hardware/form.notes') }}</label>
+            <div class="col-md-7">
+              <textarea class="col-md-6 form-control" id="note" name="note">{{ Input::old('note', $consumable->note) }}</textarea>
+              {!! $errors->first('note', '<span class="alert-msg"><i class="fa fa-times"></i> :message</span>') !!}
             </div>
           </div>
-          @endif
         </div> <!-- .box-body -->
         <div class="box-footer">
           <a class="btn btn-link" href="{{ URL::previous() }}">{{ trans('button.cancel') }}</a>

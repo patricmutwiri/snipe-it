@@ -829,6 +829,151 @@
         "test",
         "code"
       ]
+    },
+    {
+      "login": "Gelob",
+      "name": "Ryan",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/422752?v=4",
+      "profile": "https://github.com/Gelob",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "vcordes79",
+      "name": "vcordes79",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/10672546?v=4",
+      "profile": "https://github.com/vcordes79",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "fordster78",
+      "name": "fordster78",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/27958330?v=4",
+      "profile": "https://github.com/fordster78",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "CronKz",
+      "name": "CronKz",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/34064225?v=4",
+      "profile": "https://github.com/CronKz",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "tdb",
+      "name": "Tim Bishop",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/585486?v=4",
+      "profile": "https://github.com/tdb",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "seanmcilvenna",
+      "name": "Sean McIlvenna",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/5384694?v=4",
+      "profile": "https://www.seanmcilvenna.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "cepacs",
+      "name": "cepacs",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/36515590?v=4",
+      "profile": "https://github.com/cepacs",
+      "contributions": [
+        "bug",
+        "doc"
+      ]
+    },
+    {
+      "login": "lea-mink",
+      "name": "lea-mink",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/37537300?v=4",
+      "profile": "https://github.com/lea-mink",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "hannahtinkler",
+      "name": "Hannah Tinkler",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/7140719?v=4",
+      "profile": "https://github.com/hannahtinkler",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "patricmutwiri",
+      "name": "Patrick Mutwiri",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/7590159?v=4",
+      "profile": "https://github.com/patricmutwiri",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "doekman",
+      "name": "Doeke Zanstra",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1086388?v=4",
+      "profile": "https://github.com/doekman",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "SjamonDaal",
+      "name": "Djamon Staal",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/4325936?v=4",
+      "profile": "https://www.sdhd.nl/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "EarlRamirez",
+      "name": "Earl Ramirez",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/12306859?v=4",
+      "profile": "https://github.com/EarlRamirez",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "RichardRay",
+      "name": "Richard Ray Thomas",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/8671456?v=4",
+      "profile": "https://github.com/RichardRay",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "thelamer",
+      "name": "Ryan Kuba",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1852688?v=4",
+      "profile": "https://www.taisun.io/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ParadoxGuitarist",
+      "name": "Brian Monroe",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/6751928?v=4",
+      "profile": "https://github.com/ParadoxGuitarist",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }

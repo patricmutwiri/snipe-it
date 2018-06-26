@@ -26,7 +26,7 @@
     </div>
   </div>
 
-    @include ('partials.forms.edit.model-select', ['translated_name' => trans('admin/hardware/form.model'), 'fieldname' => 'model_id'])
+    @include ('partials.forms.edit.model-select', ['translated_name' => trans('admin/hardware/form.model'), 'fieldname' => 'model_id', 'required' => 'true'])
 
 
   <div id='custom_fields_content'>
@@ -92,22 +92,22 @@
   </div>
   @endif
 
-  <div class="form-group {{ $errors->has('image') ? 'has-error' : '' }}">
-    <label class="col-md-3 control-label" for="image">{{ trans('general.image_upload') }}</label>
-    <div class="col-md-5">
-      <input type="file" id="file-upload" accept="image/*" name="image">
-      {!! $errors->first('image', '<span class="alert-msg">:message</span>') !!}
-    </div>
-  </div>
+@include ('partials.forms.edit.image-upload')
 
 @stop
 
 @section('moar_scripts')
 <script nonce="{{ csrf_token() }}">
 
-
+    var transformed_oldvals={};
 
     function fetchCustomFields() {
+        //save custom field choices
+        var oldvals = $('#custom_fields_content').find('input,select').serializeArray();
+        for(var i in oldvals) {
+            transformed_oldvals[oldvals[i].name]=oldvals[i].value;
+        }
+
         var modelid = $('#model_select_id').val();
         if (modelid == '') {
             $('#custom_fields_content').html("");
@@ -123,8 +123,15 @@
                 _token: "{{ csrf_token() }}",
                 dataType: 'html',
                 success: function (data) {
-                    data: data,
                     $('#custom_fields_content').html(data);
+                    $('#custom_fields_content select').select2(); //enable select2 on any custom fields that are select-boxes
+                    //now re-populate the custom fields based on the previously saved values
+                    $('#custom_fields_content').find('input,select').each(function (index,elem) {
+                        if(transformed_oldvals[elem.name]) {
+                            $(elem).val(transformed_oldvals[elem.name]).trigger('change'); //the trigger is for select2-based objects, if we have any
+                        }
+                        
+                    });
                 }
             });
         }
@@ -177,7 +184,7 @@
             user_add($(".status_id").val());
         });
 
-        $("form").submit(function (event) {
+        $("#create-form").submit(function (event) {
             event.preventDefault();
             return sendForm();
         });
@@ -186,7 +193,7 @@
         //First check to see if there is a file before doing anything else
 
         var imageData = "";
-        var $fileInput = $('#file-upload');
+        var $fileInput = $('#uploadFile');
         $fileInput.on('change', function (e) {
             if ($fileInput != '') {
                 if (window.File && window.FileReader && window.FormData) {

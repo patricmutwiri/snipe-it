@@ -16,8 +16,24 @@ use Illuminate\Http\Request;
 
 Route::group(['prefix' => 'v1','namespace' => 'Api'], function () {
 
-    /*--- Accessories API ---*/
+    Route::group(['prefix' => 'account'], function () {
+        Route::get('requestable/hardware',
+            [
+                'as' => 'api.assets.requestable',
+                'uses' => 'AssetsController@requestable'
+            ]
+        );
 
+        Route::get('requests',
+            [
+                'as' => 'api.assets.requested',
+                'uses' => 'ProfileController@requestedAssets'
+            ]
+        );
+
+    });
+
+    /*--- Accessories API ---*/
     Route::resource('accessories', 'AccessoriesController',
         ['names' =>
             [
@@ -200,6 +216,18 @@ Route::group(['prefix' => 'v1','namespace' => 'Api'], function () {
 
     /*--- Fields API ---*/
 
+    Route::resource('fields', 'CustomFieldsController', [
+        'names' => [
+            'index' => 'api.customfields.index',
+            'show' => 'api.customfields.show',
+            'store' => 'api.customfields.store',
+            'update' => 'api.customfields.update',
+            'destroy' => 'api.customfields.destroy'
+        ],
+        'except' => [ 'create', 'edit' ],
+        'parameters' => [ 'field' => 'field_id' ]
+    ]);
+
     Route::group(['prefix' => 'fields'], function () {
         Route::post('fieldsets/{id}/order',
             [
@@ -207,17 +235,37 @@ Route::group(['prefix' => 'v1','namespace' => 'Api'], function () {
                 'uses' => 'CustomFieldsController@postReorder'
             ]
         );
-
-        Route::get('/',
+        Route::post('{field}/associate',
             [
-                'as' => 'api.customfields.index',
-                'uses' => 'CustomFieldsController@index'
+                'as' => 'api.customfields.associate',
+                'uses' => 'CustomFieldsController@associate'
+            ]
+        );
+        Route::post('{field}/disassociate',
+            [
+                'as' => 'api.customfields.disassociate',
+                'uses' => 'CustomFieldsController@disassociate'
             ]
         );
     }); // Fields group
 
 
     /*--- Fieldsets API ---*/
+
+    Route::group(['prefix' => 'fieldsets'], function () {
+        Route::get('{fieldset}/fields',
+            [
+                'as' => 'api.fieldsets.fields',
+                'uses' => 'CustomFieldsetsController@fields'
+            ]
+        );
+        Route::get('/{fieldset}/fields/{model}',
+            [
+                'as' => 'api.fieldsets.fields-with-default-value',
+                'uses' => 'CustomFieldsetsController@fieldsWithDefaultValues'
+            ]
+        );
+    });
 
     Route::resource('fieldsets', 'CustomFieldsetsController',
         [
@@ -233,7 +281,6 @@ Route::group(['prefix' => 'v1','namespace' => 'Api'], function () {
             'parameters' => ['fieldset' => 'fieldset_id']
         ]
     ); // Custom fieldset resource
-
 
 
     /*--- Groups API ---*/
@@ -257,6 +304,17 @@ Route::group(['prefix' => 'v1','namespace' => 'Api'], function () {
     /*--- Hardware API ---*/
 
     Route::group(['prefix' => 'hardware'], function () {
+
+        Route::get( 'bytag/{tag}',  [
+            'as' => 'assets.show.bytag',
+            'uses' => 'AssetsController@showByTag'
+        ]);
+
+        Route::get( 'byserial/{serial}',  [
+            'as' => 'assets.show.byserial',
+            'uses' => 'AssetsController@showBySerial'
+        ]);
+
 
         Route::get( 'selectlist',  [
             'as' => 'assets.selectlist',
@@ -351,6 +409,13 @@ Route::group(['prefix' => 'v1','namespace' => 'Api'], function () {
 
     /*--- Licenses API ---*/
 
+    Route::group(['prefix' => 'licenses'], function () {
+        Route::get('{licenseId}/seats', [
+            'as' => 'api.license.seats',
+            'uses' => 'LicensesController@seats'
+        ]);
+    }); // Licenses group
+
     Route::resource('licenses', 'LicensesController',
         [
             'names' =>
@@ -365,6 +430,7 @@ Route::group(['prefix' => 'v1','namespace' => 'Api'], function () {
             'parameters' => ['license' => 'license_id']
         ]
     ); // Licenses resource
+
 
 
     /*--- Locations API ---*/
@@ -492,6 +558,11 @@ Route::group(['prefix' => 'v1','namespace' => 'Api'], function () {
     Route::post('settings/ldaptestlogin', [
         'as' => 'api.settings.ldaptestlogin',
         'uses' => 'SettingsController@ldaptestlogin'
+    ]);
+
+    Route::post('settings/slacktest', [
+        'as' => 'api.settings.slacktest',
+        'uses' => 'SettingsController@slacktest'
     ]);
 
     Route::post(
@@ -665,6 +736,7 @@ Route::group(['prefix' => 'v1','namespace' => 'Api'], function () {
         'reports/activity',
         [ 'as' => 'api.activity.index', 'uses' => 'ReportsController@index' ]
     );
+
 
 
 });

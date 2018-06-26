@@ -113,7 +113,14 @@ class AssetPresenter extends Presenter
                 "title" => trans('admin/hardware/table.location'),
                 "visible" => true,
                 "formatter" => "deployedLocationFormatter"
-            ],  [
+            ], [
+                "field" => "rtd_location",
+                "searchable" => true,
+                "sortable" => true,
+                "title" => trans('admin/hardware/form.default_location'),
+                "visible" => false,
+                "formatter" => "deployedLocationFormatter"
+            ], [
                 "field" => "manufacturer",
                 "searchable" => true,
                 "sortable" => true,
@@ -148,6 +155,13 @@ class AssetPresenter extends Presenter
                 "title" => trans('general.order_number'),
                 'formatter' => "orderNumberObjFilterFormatter"
             ], [
+                "field" => "eol",
+                "searchable" => false,
+                "sortable" => false,
+                "visible" => false,
+                "title" => trans('general.eol'),
+                "formatter" => "dateDisplayFormatter"
+            ], [
                 "field" => "warranty_months",
                 "searchable" => true,
                 "sortable" => true,
@@ -158,7 +172,7 @@ class AssetPresenter extends Presenter
                 "searchable" => false,
                 "sortable" => false,
                 "visible" => false,
-                "title" => 'Warranty Expires',
+                "title" => trans('admin/hardware/form.warranty_expires'),
                 "formatter" => "dateDisplayFormatter"
             ],[
                 "field" => "notes",
@@ -166,6 +180,28 @@ class AssetPresenter extends Presenter
                 "sortable" => true,
                 "visible" => false,
                 "title" => trans('general.notes'),
+
+            ], [
+                "field" => "checkout_counter",
+                "searchable" => false,
+                "sortable" => true,
+                "visible" => false,
+                "title" => trans('general.checkouts_count')
+
+            ],[
+                "field" => "checkin_counter",
+                "searchable" => false,
+                "sortable" => true,
+                "visible" => false,
+                "title" => trans('general.checkins_count')
+
+            ], [
+                "field" => "requests_counter",
+                "searchable" => false,
+                "sortable" => true,
+                "visible" => false,
+                "title" => trans('general.user_requests_count')
+
             ], [
                 "field" => "created_at",
                 "searchable" => false,
@@ -193,6 +229,20 @@ class AssetPresenter extends Presenter
                 "sortable" => true,
                 "visible" => false,
                 "title" => trans('admin/hardware/form.expected_checkin'),
+                "formatter" => "dateDisplayFormatter"
+            ], [
+                "field" => "last_audit_date",
+                "searchable" => false,
+                "sortable" => true,
+                "visible" => false,
+                "title" => trans('general.last_audit'),
+                "formatter" => "dateDisplayFormatter"
+            ], [
+                "field" => "next_audit_date",
+                "searchable" => false,
+                "sortable" => true,
+                "visible" => false,
+                "title" => trans('general.next_audit_date'),
                 "formatter" => "dateDisplayFormatter"
             ],
         ];
@@ -225,11 +275,11 @@ class AssetPresenter extends Presenter
             "searchable" => false,
             "sortable" => false,
             "switchable" => true,
-            "title" => 'Checkin/Checkout',
+            "title" => trans('general.checkin').'/'.trans('general.checkout'),
             "visible" => true,
             "formatter" => "hardwareInOutFormatter",
         ];
-        
+
         $layout[] = [
             "field" => "actions",
             "searchable" => false,
@@ -242,7 +292,7 @@ class AssetPresenter extends Presenter
         return json_encode($layout);
     }
 
-    
+
 
     /**
      * Generate html link to this items name.
@@ -304,15 +354,14 @@ class AssetPresenter extends Presenter
      **/
     public function name()
     {
-        
+
         if (empty($this->model->name)) {
             if (isset($this->model->model)) {
                 return $this->model->model->name.' ('.$this->model->asset_tag.')';
             }
             return $this->model->asset_tag;
-        } else {
-            return $this->model->name . ' (' . $this->model->asset_tag . ')';
         }
+        return $this->model->name . ' (' . $this->model->asset_tag . ')';
 
     }
 
@@ -378,7 +427,7 @@ class AssetPresenter extends Presenter
     public function statusMeta()
     {
         if ($this->model->assigned) {
-            return strtolower(trans('general.deployed'));
+            return 'deployed';
         }
         return $this->model->assetstatus->getStatuslabelType();
     }
@@ -394,6 +443,47 @@ class AssetPresenter extends Presenter
             return trans('general.deployed');
         }
         return $this->model->assetstatus->name;
+    }
+
+    /**
+     * @return string
+     * This handles the status label "meta" status of "deployed" if
+     * it's assigned. Results look like:
+     *
+     * (if assigned and the status label is "Ready to Deploy"):
+     * (Deployed)
+     *
+     * (f assigned and status label is not "Ready to Deploy":)
+     * Deployed (Another Status Label)
+     *
+     * (if not deployed:)
+     * Another Status Label
+     */
+    public function fullStatusText() {
+        // Make sure the status is valid
+        if ($this->assetstatus) {
+
+            // If the status is assigned to someone or something...
+            if ($this->model->assigned) {
+
+                // If it's assigned and not set to the default "ready to deploy" status
+                if ($this->assetstatus->name != trans('general.ready_to_deploy')) {
+                    return trans('general.deployed'). ' (' . $this->model->assetstatus->name.')';
+                }
+
+                // If it's assigned to the default "ready to deploy" status, just
+                // say it's deployed - otherwise it's confusing to have a status that is
+                // both "ready to deploy" and deployed at the same time.
+                return trans('general.deployed');
+            }
+
+            // Return just the status name
+            return $this->model->assetstatus->name;
+        }
+
+        // This status doesn't seem valid - either data has been manually edited or
+        // the status label was deleted.
+        return 'Invalid status';
     }
 
     /**
@@ -421,4 +511,3 @@ class AssetPresenter extends Presenter
         return '<i class="fa fa-barcode"></i>';
     }
 }
-

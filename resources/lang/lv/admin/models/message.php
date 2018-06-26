@@ -33,4 +33,10 @@ return array(
         'success' 		=> 'Modeļi ir atjaunināti.'
     ),
 
+    'bulkdelete' => array(
+        'error'   		    => 'Nav atlasītu modeļu, tāpēc nekas netika izdzēsts.',
+        'success' 		    => '{1} :success_count modelis dzēsts!|[2,*] :success_count modeļi dzēsti!',
+        'success_partial' 	=> ':success_count modeļi dzēsti, tomēr :fail_count nevarēja tik dzēsti, jo tiem ir piesaistītas aparatūras.'
+    ),
+
 );

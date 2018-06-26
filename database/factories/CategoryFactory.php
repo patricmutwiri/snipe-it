@@ -12,11 +12,11 @@
 
 $factory->define(App\Models\Category::class, function (Faker\Generator $faker) {
     return [
-        'user_id' => 1,
+        'checkin_email' => $faker->boolean(),
         'eula_text' => $faker->paragraph(),
         'require_acceptance' => false,
         'use_default_eula' => $faker->boolean(),
-        'checkin_email' => $faker->boolean()
+        'user_id' => 1,
      ];
 });
 
@@ -114,3 +114,18 @@ $factory->state(App\Models\Category::class, 'consumable-ink-category', function 
     ];
 });
 
+
+$factory->state(App\Models\Category::class, 'license-graphics-category', function ($faker) {
+    return [
+        'name' => 'Graphics Software',
+        'category_type' => 'license',
+    ];
+});
+
+
+$factory->state(App\Models\Category::class, 'license-office-category', function ($faker) {
+    return [
+        'name' => 'Office Software',
+        'category_type' => 'license',
+    ];
+});

@@ -40,6 +40,7 @@ class AssetModelsController extends Controller
     */
     public function index()
     {
+        $this->authorize('index', AssetModel::class);
         return view('models/index');
     }
 
@@ -52,6 +53,7 @@ class AssetModelsController extends Controller
     */
     public function create()
     {
+        $this->authorize('create', AssetModel::class);
         $category_type = 'asset';
         return view('models/edit')->with('category_type',$category_type)
         ->with('depreciation_list', Helper::depreciationList())
@@ -69,11 +71,14 @@ class AssetModelsController extends Controller
     public function store(ImageUploadRequest $request)
     {
 
+        $this->authorize('create', AssetModel::class);
         // Create a new asset model
         $model = new AssetModel;
 
         // Save the model data
         $model->eol = $request->input('eol');
+        $model->min_amt = $request->input('min_amt');
+        $model->normal_amt = $request->input('normal_amt');
         $model->depreciation_id = $request->input('depreciation_id');
         $model->name                = $request->input('name');
         $model->model_number        = $request->input('model_number');
@@ -107,6 +112,10 @@ class AssetModelsController extends Controller
 
             // Was it created?
         if ($model->save()) {
+            if ($this->shouldAddDefaultValues($request->input())) {
+                $this->assignCustomFieldsDefaultValues($model, $request->input('default_values'));
+            }
+
             // Redirect to the new model  page
             return redirect()->route("models.index")->with('success', trans('admin/models/message.create.success'));
         }
@@ -124,11 +133,15 @@ class AssetModelsController extends Controller
      */
     public function apiStore(Request $request)
     {
-      //COPYPASTA!!!! FIXME
+        //COPYPASTA!!!! FIXME
+        $this->authorize('create', AssetModel::class);
         $model = new AssetModel;
 
         $settings=Input::all();
         $settings['eol']= null;
+        $settings['min_amt']= null;
+        $settings['normal_amt']= null;
+
 
         $model->name=$request->input('name');
         $model->manufacturer_id = $request->input('manufacturer_id');
@@ -137,6 +150,9 @@ class AssetModelsController extends Controller
         $model->user_id = Auth::id();
         $model->notes            = $request->input('notes');
         $model->eol= null;
+        $model->min_amt= null;
+        $model->normal_amt= null;
+
 
         if ($request->input('fieldset_id')=='') {
             $model->fieldset_id = null;
@@ -162,6 +178,7 @@ class AssetModelsController extends Controller
     */
     public function edit($modelId = null)
     {
+        $this->authorize('update', AssetModel::class);
         if ($item = AssetModel::find($modelId)) {
             $category_type = 'asset';
             $view = View::make('models/edit', compact('item','category_type'));
@@ -185,6 +202,7 @@ class AssetModelsController extends Controller
     */
     public function update(ImageUploadRequest $request, $modelId = null)
     {
+        $this->authorize('update', AssetModel::class);
         // Check if the model exists
         if (is_null($model = AssetModel::find($modelId))) {
             // Redirect to the models management page
@@ -193,6 +211,8 @@ class AssetModelsController extends Controller
 
         $model->depreciation_id     = $request->input('depreciation_id');
         $model->eol                 = $request->input('eol');
+        $model->min_amt                 = $request->input('min_amt');
+        $model->normal_amt                 = $request->input('normal_amt');
         $model->name                = $request->input('name');
         $model->model_number        = $request->input('model_number');
         $model->manufacturer_id     = $request->input('manufacturer_id');
@@ -200,10 +220,16 @@ class AssetModelsController extends Controller
         $model->notes               = $request->input('notes');
         $model->requestable         = $request->input('requestable', '0');
 
+        $this->removeCustomFieldsDefaultValues($model);
+
         if ($request->input('custom_fieldset')=='') {
             $model->fieldset_id = null;
         } else {
             $model->fieldset_id = $request->input('custom_fieldset');
+
+            if ($this->shouldAddDefaultValues($request->input())) {
+                $this->assignCustomFieldsDefaultValues($model, $request->input('default_values'));
+            }
         }
 
         $old_image = $model->image;
@@ -255,6 +281,7 @@ class AssetModelsController extends Controller
     */
     public function destroy($modelId)
     {
+        $this->authorize('delete', AssetModel::class);
         // Check if the model exists
         if (is_null($model = AssetModel::find($modelId))) {
             return redirect()->route('models.index')->with('error', trans('admin/models/message.not_found'));
@@ -291,7 +318,7 @@ class AssetModelsController extends Controller
     */
     public function getRestore($modelId = null)
     {
-
+        $this->authorize('create', AssetModel::class);
         // Get user information
         $model = AssetModel::withTrashed()->find($modelId);
 
@@ -322,6 +349,7 @@ class AssetModelsController extends Controller
     */
     public function show($modelId = null)
     {
+        $this->authorize('view', AssetModel::class);
         $model = AssetModel::withTrashed()->find($modelId);
 
         if (isset($model->id)) {
@@ -393,20 +421,39 @@ class AssetModelsController extends Controller
         
         $models_raw_array = Input::get('ids');
 
-        if (is_array($models_raw_array)) {
-            $models = AssetModel::whereIn('id', $models_raw_array)->get();
-            $nochange = ['NC' => 'No Change'];
-            $fieldset_list = $nochange + Helper::customFieldsetList();
-            $depreciation_list = $nochange + Helper::depreciationList();
-            $category_list = $nochange + Helper::categoryList('asset');
-            $manufacturer_list = $nochange + Helper::manufacturerList();
+        // Make sure some IDs have been selected
+        if ((is_array($models_raw_array)) && (count($models_raw_array) > 0)) {
 
-        
-             return view('models/bulk-edit', compact('models'))
-                ->with('manufacturer_list', $manufacturer_list)
-                ->with('category_list', $category_list)
-                ->with('fieldset_list', $fieldset_list)
-                ->with('depreciation_list', $depreciation_list);
+
+            $models = AssetModel::whereIn('id', $models_raw_array)->withCount('assets')->orderBy('assets_count', 'ASC')->get();
+
+            // If deleting....
+            if ($request->input('bulk_actions')=='delete') {
+                $valid_count = 0;
+                foreach ($models as $model) {
+                    if ($model->assets_count == 0) {
+                        $valid_count++;
+                    }
+                }
+                return view('models/bulk-delete', compact('models'))->with('valid_count', $valid_count);
+
+            // Otherwise display the bulk edit screen
+            } else {
+
+                $nochange = ['NC' => 'No Change'];
+                $fieldset_list = $nochange + Helper::customFieldsetList();
+                $depreciation_list = $nochange + Helper::depreciationList();
+                $category_list = $nochange + Helper::categoryList('asset');
+                $manufacturer_list = $nochange + Helper::manufacturerList();
+
+
+                return view('models/bulk-edit', compact('models'))
+                    ->with('manufacturer_list', $manufacturer_list)
+                    ->with('category_list', $category_list)
+                    ->with('fieldset_list', $fieldset_list)
+                    ->with('depreciation_list', $depreciation_list);
+            }
+
         }
 
         return redirect()->route('models.index')
@@ -428,6 +475,7 @@ class AssetModelsController extends Controller
 
         $models_raw_array = Input::get('ids');
         $update_array = array();
+
 
         if (($request->has('manufacturer_id') && ($request->input('manufacturer_id')!='NC'))) {
             $update_array['manufacturer_id'] = $request->input('manufacturer_id');
@@ -455,4 +503,91 @@ class AssetModelsController extends Controller
 
     }
 
+    /**
+     * Validate and delete the given Asset Models. An Asset Model
+     * cannot be deleted if there are associated assets.
+     *
+     * @author [A. Gianotto] [<snipe@snipe.net>]
+     * @since [v1.0]
+     * @param int $modelId
+     * @return Redirect
+     */
+    public function postBulkDelete(Request $request)
+    {
+        $models_raw_array = Input::get('ids');
+
+        if ((is_array($models_raw_array)) && (count($models_raw_array) > 0)) {
+
+            $models = AssetModel::whereIn('id', $models_raw_array)->withCount('assets')->get();
+
+            $del_error_count = 0;
+            $del_count = 0;
+
+            foreach ($models as $model) {
+                \Log::debug($model->id);
+
+                if ($model->assets_count > 0) {
+                    $del_error_count++;
+                } else {
+                    $model->delete();
+                    $del_count++;
+                }
+            }
+
+            \Log::debug($del_count);
+            \Log::debug($del_error_count);
+
+            if ($del_error_count == 0) {
+                return redirect()->route('models.index')
+                    ->with('success', trans('admin/models/message.bulkdelete.success',['success_count'=> $del_count] ));
+            }
+
+            return redirect()->route('models.index')
+                ->with('warning', trans('admin/models/message.bulkdelete.success_partial', ['fail_count'=>$del_error_count, 'success_count'=> $del_count]));
+        }
+
+        return redirect()->route('models.index')
+            ->with('error', trans('admin/models/message.bulkdelete.error'));
+
+    }
+
+    /**
+     * Returns true if a fieldset is set, 'add default values' is ticked and if
+     * any default values were entered into the form.
+     *
+     * @param  array  $input
+     * @return boolean
+     */
+    private function shouldAddDefaultValues(array $input)
+    {
+        return !empty($input['add_default_values'])
+            && !empty($input['default_values'])
+            && !empty($input['custom_fieldset']);
+    }
+
+    /**
+     * Adds default values to a model (as long as they are truthy)
+     *
+     * @param  AssetModel $model
+     * @param  array      $defaultValues
+     * @return void
+     */
+    private function assignCustomFieldsDefaultValues(AssetModel $model, array $defaultValues)
+    {
+        foreach ($defaultValues as $customFieldId => $defaultValue) {
+            if ($defaultValue) {
+                $model->defaultValues()->attach($customFieldId, ['default_value' => $defaultValue]);
+            }
+        }
+    }
+
+    /**
+     * Removes all default values
+     *
+     * @return void
+     */
+    private function removeCustomFieldsDefaultValues(AssetModel $model)
+    {
+        $model->defaultValues()->detach();
+    }
 }

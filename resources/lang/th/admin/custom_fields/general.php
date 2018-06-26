@@ -20,7 +20,7 @@ return array(
     'field_element_short'     => 'ธาตุ',
     'field_format'            => 'รูป',
     'field_custom_format'     => 'รูปแบบที่กำหนดเอง',
-    'field_custom_format_help'     => 'This field allows you to use a regex expression for validation. It should start with "regex:" - for example, to validate that a custom field value contains a valid IMEI (15 numeric digits), you would use <code>regex:/^[0-9]{15}$/</code>.',
+    'field_custom_format_help'     => 'ฟิลด์นี้อนุญาตให้คุณใช้นิพจน์ทั่วไปสำหรับการตรวจสอบความถูกต้อง ควรเริ่มต้นด้วย "regex:" - ตัวอย่างเช่นเพื่อตรวจสอบว่าค่าฟิลด์ที่กำหนดเองมี IMEI ที่ถูกต้อง (ตัวเลขตัวเลข 15 ตัว) คุณจะใช้ <code>regex: / ^ [0-9]{15} $ / </code>',
     'required'   		          => 'จำเป็นต้องใช้',
     'req'   		              => 'req',
     'used_by_models'   		    => 'ใช้ตามโมเดล',
@@ -28,4 +28,5 @@ return array(
     'create_fieldset'         => 'Fieldset ใหม่',
     'create_field'            => 'ฟิลด์ที่กำหนดเองใหม่',
     'value_encrypted'      	        => 'ค่าของฟิลด์นี้ถูกเข้ารหัสในฐานข้อมูล เฉพาะผู้ดูแลระบบเท่านั้นที่สามารถดูค่าที่ถอดรหัสได้',
+    'show_in_email'     => 'Include the value of this field in checkout emails sent to the user? Encrypted fields cannot be included in emails.',
 );

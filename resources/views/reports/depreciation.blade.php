@@ -13,14 +13,28 @@
   <div class="col-md-12">
     <div class="box box-default">
       <div class="box-body">
+
+
+          @if (($depreciations) && ($depreciations->count() > 0))
         <div class="table-responsive">
-          <table
-          class="table table-striped table-bordered table-compact"
-          name="depreciationReport"
-          id="table"
-          data-cookie="true"
-          data-click-to-select="true"
-          data-cookie-id-table="depreciationReportTable">
+
+            <table
+                    data-cookie-id-table="depreciationReport"
+                    data-pagination="true"
+                    data-id-table="depreciationReport"
+                    data-search="true"
+                    data-side-pagination="client"
+                    data-show-columns="true"
+                    data-show-export="true"
+                    data-show-refresh="true"
+                    data-sort-order="asc"
+                    id="depreciationReport"
+                    class="table table-striped snipe-table"
+                    data-export-options='{
+                        "fileName": "depreciation-report-{{ date('Y-m-d') }}",
+                        "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
+                        }'>
+
             <thead>
               <tr role="row">
                 <th class="col-sm-1" data-visible="false">{{ trans('admin/companies/table.title') }}</th>
@@ -74,13 +88,14 @@
                   @endif
                 </td>
                 <td>
-                  @if ($asset->assignedTo)
-                    @if ($asset->assignedTo->deleted_at!='')
-                    <del>{{ $asset->assignedTo->present()->name() }}</del>
+                    @if (($asset->checkedOutToUser()) && ($asset->assigned))
+                       {{ $asset->assigned->getFullNameAttribute() }}
                     @else
-                      {!!  $asset->assignedTo->present()->nameUrl()  !!}
+
+                        @if ($asset->assigned)
+                            {{ $asset->assigned->name }}
+                        @endif
                     @endif
-                  @endif
                 </td>
                 <td>
                   @if ($asset->location)
@@ -98,7 +113,7 @@
 
                 @if ($asset->purchase_cost > 0)
                   <td class="align-right">
-                    @if ($asset->location )
+                    @if ($asset->location && $asset->location->currency)
                     {{ $asset->location->currency }}
                     @else
                     {{ $snipeSettings->default_currency }}
@@ -106,7 +121,7 @@
                     {{ \App\Helpers\Helper::formatCurrencyOutput($asset->purchase_cost) }}
                   </td>
                   <td class="align-right">
-                    @if ($asset->location )
+                    @if ($asset->location && $asset->location->currency)
                     {{ $asset->location->currency }}
                     @else
                     {{ $snipeSettings->default_currency }}
@@ -115,7 +130,7 @@
                     {{ \App\Helpers\Helper::formatCurrencyOutput($asset->getDepreciatedValue()) }}
                   </td>
                   <td class="align-right">
-                    @if ($asset->location)
+                    @if ($asset->location && $asset->location->currency)
                     {{ $asset->location->currency }}
                     @else
                     {{ $snipeSettings->default_currency }}
@@ -133,6 +148,16 @@
             </tbody>
           </table>
         </div> <!-- /.table-responsive-->
+              @else
+              <div class="col-md-12">
+                  <div class="alert alert-warning fade in">
+                      <i class="fa fa-warning faa-pulse animated"></i>
+                      <strong>Warning: </strong>
+                      You do not currently have any depreciations set up.
+                      Please set up at least one depreciation to view the depreciation report.
+                  </div>
+              </div>
+          @endif
       </div> <!-- /.box-body-->
     </div> <!--/box.box-default-->
   </div> <!-- /.col-md-12-->
@@ -141,44 +166,5 @@
 @stop
 
 @section('moar_scripts')
-<script src="{{ asset('js/bootstrap-table.js') }}"></script>
-<script src="{{ asset('js/extensions/cookie/bootstrap-table-cookie.js') }}"></script>
-<script src="{{ asset('js/extensions/mobile/bootstrap-table-mobile.js') }}"></script>
-<script src="{{ asset('js/extensions/export/bootstrap-table-export.js') }}"></script>
-<script src="{{ asset('js/extensions/export/tableExport.js') }}"></script>
-<script src="{{ asset('js/extensions/export/jquery.base64.js') }}"></script>
-<script type="text/javascript">
-    $('#table').bootstrapTable({
-        classes: 'table table-responsive table-striped table-bordered',
-        undefinedText: '',
-        iconsPrefix: 'fa',
-        showRefresh: true,
-        search: true,
-        pageSize: {{ $snipeSettings->per_page }},
-        pagination: true,
-        sidePagination: 'client',
-        sortable: true,
-        cookie: true,
-        mobileResponsive: true,
-        showExport: true,
-        showColumns: true,
-        exportDataType: 'all',
-        exportTypes: ['csv', 'txt','json', 'xml'],
-        maintainSelected: true,
-        paginationFirstText: "{{ trans('general.first') }}",
-        paginationLastText: "{{ trans('general.last') }}",
-        paginationPreText: "{{ trans('general.previous') }}",
-        paginationNextText: "{{ trans('general.next') }}",
-        pageList: ['10','25','50','100','150','200'],
-        icons: {
-            paginationSwitchDown: 'fa-caret-square-o-down',
-            paginationSwitchUp: 'fa-caret-square-o-up',
-            columns: 'fa-columns',
-            refresh: 'fa-refresh'
-        },
-
-    });
-</script>
+    @include ('partials.bootstrap-table')
 @stop
-
-

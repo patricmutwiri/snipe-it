@@ -34,6 +34,7 @@ use View;
 use Illuminate\Http\Request;
 use Gate;
 use Artisan;
+use App\Notifications\WelcomeNotification;
 
 /**
  * This controller handles all actions related to Users for
@@ -146,13 +147,16 @@ class UsersController extends Controller
                 $data['email'] = e($request->input('email'));
                 $data['username'] = e($request->input('username'));
                 $data['first_name'] = e($request->input('first_name'));
+                $data['last_name'] = e($request->input('last_name'));
                 $data['password'] = e($request->input('password'));
 
-                Mail::send('emails.send-login', $data, function ($m) use ($user) {
+                $user->notify(new WelcomeNotification($data));
+
+/*                Mail::send('emails.send-login', $data, function ($m) use ($user) {
                     $m->to($user->email, $user->first_name . ' ' . $user->last_name);
                     $m->replyTo(config('mail.reply_to.address'), config('mail.reply_to.name'));
                     $m->subject(trans('mail.welcome', ['name' => $user->first_name]));
-                });
+                });*/
             }
             return redirect::route('users.index')->with('success', trans('admin/users/message.success.create'));
         }
@@ -192,15 +196,18 @@ class UsersController extends Controller
                 // Send the credentials through email
                 $data = array();
                 $data['email'] = $request->input('email');
+                $data['username'] = $request->input('username');
                 $data['first_name'] = $request->input('first_name');
-                $data['last_name'] = $request->input('last_name');
+                $data['last_name'] = e($request->input('last_name'));
                 $data['password'] = $request->input('password');
 
-                Mail::send('emails.send-login', $data, function ($m) use ($user) {
+                $user->notify(new WelcomeNotification($data));
+
+                /*Mail::send('emails.send-login', $data, function ($m) use ($user) {
                     $m->to($user->email, $user->first_name . ' ' . $user->last_name);
                     $m->replyTo(config('mail.reply_to.address'), config('mail.reply_to.name'));
                     $m->subject(trans('mail.welcome', ['name' => $user->first_name]));
-                });
+                });*/
             }
 
             return JsonResponse::create($user);
@@ -385,9 +392,9 @@ class UsersController extends Controller
                 return redirect()->route('users.index')->with('error', 'This user still has ' . $user->assets()->count() . ' assets associated with them.');
             }
 
-            if (count($user->assets) > 0) {
+            if ($user->assets->count() > 0) {
                 // Redirect to the user management page
-                return redirect()->route('users.index')->with('error', 'This user still has ' . count($user->assets) . ' assets associated with them.');
+                return redirect()->route('users.index')->with('error', 'This user still has ' . count($user->assets->count()) . ' assets associated with them.');
             }
 
             if ($user->licenses()->count() > 0) {
@@ -431,23 +438,19 @@ class UsersController extends Controller
     public function postBulkEdit(Request $request)
     {
         $this->authorize('update', User::class);
-        if ((!Input::has('ids')) || (count(Input::has('ids')) == 0)) {
-            return redirect()->back()->with('error', 'No users selected');
-        } else {
 
+        if (($request->has('ids')) && (count($request->input('ids')) > 0)) {
             $statuslabel_list = Helper::statusLabelList();
             $user_raw_array = array_keys(Input::get('ids'));
-            $licenses = DB::table('license_seats')->whereIn('assigned_to', $user_raw_array)->get();
-
             $users = User::whereIn('id', $user_raw_array)->with('groups', 'assets', 'licenses', 'accessories')->get();
-            if ($request->input('bulk_actions')=='edit') {
-
+            if ($request->input('bulk_actions') == 'edit') {
                 return view('users/bulk-edit', compact('users'))
                     ->with('groups', Group::pluck('name', 'id'));
             }
-
             return view('users/confirm-bulk-delete', compact('users', 'statuslabel_list'));
         }
+
+        return redirect()->back()->with('error', 'No users selected');
     }
 
 
@@ -461,15 +464,13 @@ class UsersController extends Controller
     public function postBulkEditSave(Request $request)
     {
         $this->authorize('update', User::class);
-        if ((!Input::has('ids')) || (count(Input::has('ids')) == 0)) {
-            return redirect()->back()->with('error', 'No users selected');
-        } else {
 
-            $user_raw_array = Input::get('ids');
+        if (($request->has('ids')) && (count($request->input('ids')) > 0)) {
+
+            $user_raw_array = $request->input('ids');
             $update_array = array();
             $manager_conflict = false;
-
-            $users = User::whereIn('id', $user_raw_array)->where('id','!=',Auth::user()->id)->get();
+            $users = User::whereIn('id', $user_raw_array)->where('id', '!=', Auth::user()->id)->get();
 
             if ($request->has('location_id')) {
                 $update_array['location_id'] = $request->input('location_id');
@@ -480,6 +481,10 @@ class UsersController extends Controller
             if ($request->has('company_id')) {
                 $update_array['company_id'] = $request->input('company_id');
             }
+            if ($request->has('locale')) {
+                $update_array['locale'] = $request->input('locale');
+            }
+
 
             if ($request->has('manager_id')) {
 
@@ -487,7 +492,6 @@ class UsersController extends Controller
                 // edited.
                 if (!array_key_exists($request->input('manager_id'), $user_raw_array)) {
                     $update_array['manager_id'] = $request->input('manager_id');
-
                 } else {
                     $manager_conflict = true;
                 }
@@ -497,8 +501,9 @@ class UsersController extends Controller
                 $update_array['activated'] = $request->input('activated');
             }
 
+            // Save the updated info
             if (count($update_array) > 0) {
-                User::whereIn('id', $user_raw_array)->where('id','!=',Auth::user()->id)->update($update_array);
+                User::whereIn('id', $user_raw_array)->where('id', '!=', Auth::user()->id)->update($update_array);
             }
 
             // Only sync groups if groups were selected
@@ -508,13 +513,17 @@ class UsersController extends Controller
                 }
             }
 
-        }
-        if ($manager_conflict) {
+            if ($manager_conflict) {
+                return redirect()->route('users.index')
+                    ->with('warning', trans('admin/users/message.bulk_manager_warn'));
+            }
+
             return redirect()->route('users.index')
-                ->with('warning', trans('admin/users/message.bulk_manager_warn'));
+                ->with('success', trans('admin/users/message.success.update_bulk'));
         }
-        return redirect()->route('users.index')
-            ->with('success', trans('admin/users/message.success.update_bulk'));
+
+        return redirect()->back()->with('error', 'No users selected');
+
 
 
     }
@@ -526,13 +535,13 @@ class UsersController extends Controller
     * @since [v1.0]
     * @return \Illuminate\Http\RedirectResponse
      */
-    public function postBulkSave()
+    public function postBulkSave(Request $request)
     {
         $this->authorize('update', User::class);
 
-        if ((!Input::has('ids')) || (count(Input::has('ids')) == 0)) {
+        if ((!$request->has('ids')) || (count($request->input('ids')) == 0)) {
             return redirect()->back()->with('error', 'No users selected');
-        } elseif ((!Input::has('status_id')) || (count(Input::has('status_id')) == 0)) {
+        } elseif ((!$request->has('status_id')) || ($request->input('status_id')=='')) {
             return redirect()->route('users.index')->with('error', 'No status selected');
         } else {
 
@@ -847,16 +856,21 @@ class UsersController extends Controller
                             // Send the credentials through email
                             if ($row[3] != '') {
                                 $data = array();
+                                $data['email'] = trim(e($row[4]));
                                 $data['username'] = trim(e($row[2]));
                                 $data['first_name'] = trim(e($row[0]));
+                                $data['last_name'] = trim(e($row[1]));
                                 $data['password'] = $pass;
 
                                 if ($newuser['email']) {
-                                    Mail::send('emails.send-login', $data, function ($m) use ($newuser) {
+                                    $user = User::where('username', $row[2])->first();
+                                    $user->notify(new WelcomeNotification($data));
+                                    
+                                    /*Mail::send('emails.send-login', $data, function ($m) use ($newuser) {
                                         $m->to($newuser['email'], $newuser['first_name'] . ' ' . $newuser['last_name']);
                                         $m->replyTo(config('mail.reply_to.address'), config('mail.reply_to.name'));
                                         $m->subject(trans('mail.welcome', ['name' => $newuser['first_name']]));
-                                    });
+                                    });*/
                                 }
                             }
                         }
@@ -1063,7 +1077,7 @@ class UsersController extends Controller
             // Open output stream
             $handle = fopen('php://output', 'w');
 
-            User::with('assets', 'accessories', 'consumables', 'licenses', 'manager', 'groups', 'userloc', 'company','throttle')->orderBy('created_at', 'DESC')->chunk(500, function($users) use($handle) {
+            User::with('assets', 'accessories', 'consumables', 'department', 'licenses', 'manager', 'groups', 'userloc', 'company','throttle')->orderBy('created_at', 'DESC')->chunk(500, function($users) use($handle) {
                 $headers=[
                     // strtolower to prevent Excel from trying to open it as a SYLK file
                     strtolower(trans('general.id')),
@@ -1075,6 +1089,7 @@ class UsersController extends Controller
                     trans('admin/users/table.email'),
                     trans('admin/users/table.manager'),
                     trans('admin/users/table.location'),
+                    trans('general.department'),
                     trans('general.assets'),
                     trans('general.licenses'),
                     trans('general.accessories'),
@@ -1105,6 +1120,7 @@ class UsersController extends Controller
                         $user->email,
                         ($user->manager) ? $user->manager->present()->fullName() : '',
                         ($user->userloc) ? $user->userloc->name : '',
+                        ($user->department) ? $user->department->name : '',
                         $user->assets->count(),
                         $user->licenses->count(),
                         $user->accessories->count(),
@@ -1131,20 +1147,23 @@ class UsersController extends Controller
 
     }
 
-    public function postTwoFactorReset(Request $request)
+    /**
+     * LDAP form processing.
+     *
+     * @author Aladin Alaily
+     * @since [v1.8]
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function printInventory($id)
     {
-        if (Gate::denies('users.edit')) {
-            return response()->json(['message' => trans('general.insufficient_permissions')], 500);
-        }
 
-        try {
-            $user = User::find($request->get('id'));
-            $user->two_factor_secret = null;
-            $user->two_factor_enrolled = 0;
-            $user->save();
-            return response()->json(['message' => trans('admin/settings/general.two_factor_reset_success')], 200);
-        } catch (\Exception $e) {
-            return response()->json(['message' => trans('admin/settings/general.two_factor_reset_error')], 500);
-        }
+        $show_user = User::where('id',$id)->withTrashed()->first();
+        $assets = Asset::where('assigned_to', $id)->where('assigned_type', User::class)->with('model', 'model.category')->get();
+        $licenses = $show_user->licenses()->get();
+        $accessories = $show_user->accessories()->get();
+        $consumables = $show_user->consumables()->get();
+        return view('users/print')->with('assets', $assets)->with('licenses',$licenses)->with('accessories', $accessories)->with('consumables', $consumables)->with('show_user', $show_user);
+
     }
+
 }

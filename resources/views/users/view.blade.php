@@ -15,7 +15,7 @@
       <ul class="nav nav-tabs hidden-print">
 
         <li class="active">
-          <a href="#info_tab" data-toggle="tab">
+          <a href="#details" data-toggle="tab">
             <span class="hidden-lg hidden-md">
             <i class="fa fa-info-circle"></i>
             </span>
@@ -101,7 +101,7 @@
       </ul>
 
       <div class="tab-content">
-        <div class="tab-pane active" id="info_tab">
+        <div class="tab-pane active" id="details">
           <div class="row">
             @if ($user->deleted_at!='')
               <div class="col-md-12">
@@ -114,7 +114,7 @@
                 </div>
               </div>
             @endif
-            <div class="col-md-1">
+            <div class="col-md-2 text-center">
               @if ($user->avatar)
                 <img src="/uploads/avatars/{{ $user->avatar }}" class="avatar img-thumbnail hidden-print">
               @else
@@ -136,20 +136,31 @@
                     <td>{{ trans('admin/users/table.name') }}</td>
                     <td>{{ $user->present()->fullName() }}</td>
                   </tr>
+                  <tr>
+                    <td>{{ trans('admin/users/table.username') }}</td>
+                    <td>{{ $user->username }}</td>
+                  </tr>
 
-                  @if ($user->last_login)
                     <tr>
-                      <td>{{ trans('general.last_login') }}</td>
-                      <td>{{ \App\Helpers\Helper::getFormattedDateObject($user->last_login, 'datetime', false) }}</td>
-                    </tr>
-                  @endif
+                      <td>{{ trans('general.groups') }}</td>
+                      <td>
+                        @if ($user->groups->count() > 0)
+                            @foreach ($user->groups as $group)
 
-                    @if (!is_null($user->department))
-                      <tr>
-                        <td>{{ trans('general.department') }}</td>
-                        <td><a href="{{ route('departments.show', $user->department) }}">{{ $user->department->name }}</a></td>
-                      </tr>
-                    @endif
+                              @can('superadmin')
+                                  <a href="{{ route('groups.show', $group->id) }}" class="label label-default">{{ $group->name }}</a>
+                            @else
+                              {{ $group->name }}
+                            @endcan
+
+                            @endforeach
+                        @else
+                          --
+                        @endif
+
+                      </td>
+                    </tr>
+
 
                   @if ($user->jobtitle)
                   <tr>
@@ -185,7 +196,7 @@
                   @if ($user->phone)
                   <tr>
                     <td>{{ trans('admin/users/table.phone') }}</td>
-                    <td>{{ $user->phone }}</td>
+                    <td><a href="tel:{{ $user->phone }}">{{ $user->phone }}</a></td>
                   </tr>
                   @endif
 
@@ -197,6 +208,19 @@
 
                   </tr>
                   @endif
+                    @if ($user->last_login)
+                      <tr>
+                        <td>{{ trans('general.last_login') }}</td>
+                        <td>{{ \App\Helpers\Helper::getFormattedDateObject($user->last_login, 'datetime', false) }}</td>
+                      </tr>
+                    @endif
+
+                    @if (!is_null($user->department))
+                      <tr>
+                        <td>{{ trans('general.department') }}</td>
+                        <td><a href="{{ route('departments.show', $user->department) }}">{{ $user->department->name }}</a></td>
+                      </tr>
+                    @endif
                   @if ($user->created_at)
                   <tr>
                     <td>{{ trans('general.created_at') }}</td>
@@ -216,6 +240,10 @@
                 <div class="col-md-12" style="padding-top: 5px;">
                   <a href="{{ route('clone/user', $user->id) }}" style="width: 100%;" class="btn btn-sm btn-default hidden-print">{{ trans('admin/users/general.clone') }}</a>
                 </div>
+                <div class="col-md-12" style="padding-top: 5px;">
+                  <a href="{{ route('users.print', $user->id) }}" style="width: 100%;" class="btn btn-sm btn-default hidden-print">{{ trans('admin/users/general.print_assigned') }}</a>
+                </div>
+
                 @can('delete', $user)
                   @if ($user->deleted_at=='')
                     <div class="col-md-12" style="padding-top: 5px;">
@@ -442,15 +470,28 @@
           <div class="table-responsive">
 
             <table
-                    class="table table-striped snipe-table"
-                    name="userActivityReport"
-                    id="table4
+                    data-click-to-select="true"
+                    data-cookie-id-table="usersHistoryTable"
+                    data-pagination="true"
+                    data-id-table="usersHistoryTable"
+                    data-search="true"
+                    data-side-pagination="server"
+                    data-show-columns="true"
+                    data-show-export="true"
+                    data-show-refresh="true"
                     data-sort-order="desc"
-                    data-url="{{ route('api.activity.index', ['target_id' => $user->id, 'target_type' => 'user']) }}">
+                    data-toolbar="#toolbar"
+                    id="usersHistoryTable"
+                    class="table table-striped snipe-table"
+                    data-url="{{ route('api.activity.index', ['target_id' => $user->id, 'target_type' => 'user']) }}"
+                    data-export-options='{
+                "fileName": "export-{{ str_slug($user->present()->fullName ) }}-history-{{ date('Y-m-d') }}",
+                "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
+                }'>
               <thead>
               <tr>
                 <th data-field="icon" style="width: 40px;" class="hidden-xs" data-formatter="iconFormatter"></th>
-                <th class="col-sm-3" data-field="created_at" data-formatter="dateDisplayFormatter">{{ trans('general.date') }}</th>
+                <th class="col-sm-3" data-field="created_at" data-formatter="dateDisplayFormatter" data-sortable="true">{{ trans('general.date') }}</th>
                 <th class="col-sm-2" data-field="admin" data-formatter="usersLinkObjFormatter">{{ trans('general.admin') }}</th>
                 <th class="col-sm-2" data-field="action_type">{{ trans('general.action') }}</th>
                 <th class="col-sm-3" data-field="item" data-formatter="polymorphicItemFormatter">{{ trans('general.item') }}</th>

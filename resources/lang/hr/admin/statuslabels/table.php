@@ -5,6 +5,8 @@ return array(
     'archived'      	=> 'Arhivirano',
     'create'      	=> 'Stvaranje oznake statusa',
     'color'      	=> 'Boja grafikona',
+    'default_label' => 'Zadana oznaka',
+    'default_label_help' => 'Ovo se koristi za osiguravanje da se najčešće korištene oznake statusa pojavljuju pri vrhu okvira za odabir prilikom stvaranja/uređivanja imovine.',
     'deployable'      	=> 'razmjestiti',
     'info'      	=> 'Oznake statusa upotrebljavaju se za opisivanje različitih država koje vaša imovina može biti. Oni mogu biti izvan za popravak, izgubljen / ukraden, itd. Možete stvoriti nove oznake statusa za raspoložive, čekajuće i arhivirane imovine.',
     'name'      	=> 'Naziv statusa',
