@@ -7,11 +7,13 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 [![Packagist Version](https://img.shields.io/packagist/v/league/flysystem.svg?style=flat-square)](https://packagist.org/packages/league/flysystem)
 [![Total Downloads](https://img.shields.io/packagist/dt/league/flysystem.svg?style=flat-square)](https://packagist.org/packages/league/flysystem)
+[![Build status](https://img.shields.io/appveyor/ci/frankdejonge/flysystem/master.svg?style=flat-square&logo=appveyor)](https://ci.appveyor.com/project/frankdejonge/flysystem/branch/master)
 
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/9820f1af-2fd0-4ab6-b42a-03e0c821e0af/big.png)](https://insight.sensiolabs.com/projects/9820f1af-2fd0-4ab6-b42a-03e0c821e0af)
-[![Build status](https://ci.appveyor.com/api/projects/status/ooddqdtprpnjyagy/branch/master?svg=true)](https://ci.appveyor.com/project/frankdejonge/flysystem/branch/master)
 
 Flysystem is a filesystem abstraction which allows you to easily swap out a local filesystem for a remote one.
+
+[![Become a Patron](https://flysystem.thephpleague.com/logo/become_a_patron_button.png)](https://www.patreon.com/bePatron?u=8623643)
 
 ## Goals
 
@@ -26,29 +28,8 @@ Flysystem is a filesystem abstraction which allows you to easily swap out a loca
 
 ## Installation
 
-Through Composer, obviously:
-
 ```
 composer require league/flysystem
-```
-
-You can also use Flysystem without using Composer by registering an autoloader function:
-
-```php
-spl_autoload_register(function($class) {
-    $prefix = 'League\\Flysystem\\';
-
-    if (substr($class, 0, 17) !== $prefix) {
-        return;
-    }
-
-    $class = substr($class, strlen($prefix));
-    $location = __DIR__ . 'path/to/flysystem/src/' . str_replace('\\', '/', $class) . '.php';
-
-    if (is_file($location)) {
-        require_once($location);
-    }
-});
 ```
 
 ## Documentation
@@ -93,6 +74,9 @@ Want to get started quickly? Check out some of these integrations:
 * AliYun OSS Storage: https://github.com/xxtime/flysystem-aliyun-oss
 * Amazon Cloud Drive - https://github.com/nikkiii/flysystem-acd
 * Backblaze: https://github.com/mhetreramesh/flysystem-backblaze
+* ClamAV Scanner Adapter: https://github.com/mgriego/flysystem-clamav
+* Citrix ShareFile: https://github.com/kapersoft/flysystem-sharefile
+* Cloudinary: https://github.com/enl/flysystem-cloudinary
 * Dropbox (with PHP 5.6 support): https://github.com/srmklive/flysystem-dropbox-v2
 * Dropbox: https://github.com/spatie/flysystem-dropbox
 * Fallback: https://github.com/Litipk/flysystem-fallback-adapter
@@ -115,8 +99,7 @@ Want to get started quickly? Check out some of these integrations:
 
 ## Security
 
-If you discover any security related issues, please email frenky@frenky.net instead of using the issue tracker.
-
+If you discover any security related issues, please email info@frankdejonge.nl instead of using the issue tracker.
 
 ## Enjoy
 

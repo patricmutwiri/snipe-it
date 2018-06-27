@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.3.6
+
+- Replace a leftover invocation to exec() with shell_exec()
+- Eliminate error duplication on PHP 7+ / Symfony environments by expanding ignore to all Throwables
+[293](https://github.com/rollbar/rollbar-php/issues/293)
+
+## 1.3.5
+
+- Fix sending $context argument from the log() method with exception logs.
+
+## 1.3.4
+
+- Increase the minimum version constraint for the monolog/monolog package to support composer --prefer-minimum
+- Decrease the minimum version constraint for psr/log package to match the monolog/monolog package in --prefer-minimum
+- Add support for dynamic custom data
+
 ## 1.3.3
 
 - Remove fluent/logger from the required section of composer.json

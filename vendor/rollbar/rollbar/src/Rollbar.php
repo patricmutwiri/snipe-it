@@ -8,6 +8,7 @@ class Rollbar
      * @var RollbarLogger
      */
     private static $logger = null;
+    private static $previousExceptionHandler = null;
     private static $fatalErrors = array(E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR);
 
     public static function init(
@@ -64,13 +65,18 @@ class Rollbar
 
     public static function setupExceptionHandling()
     {
-        set_exception_handler('Rollbar\Rollbar::exceptionHandler');
+        self::$previousExceptionHandler = set_exception_handler('Rollbar\Rollbar::exceptionHandler');
     }
     
     public static function exceptionHandler($exception)
     {
         self::log(Level::ERROR, $exception, array(), true);
-        restore_exception_handler();
+        if (self::$previousExceptionHandler) {
+            restore_exception_handler();
+            call_user_func(self::$previousExceptionHandler, $exception);
+            return;
+        }
+
         throw $exception;
     }
 
@@ -148,6 +154,7 @@ class Rollbar
 
     public static function fatalHandler()
     {
+        
         if (is_null(self::$logger)) {
             return;
         }
@@ -170,7 +177,7 @@ class Rollbar
             in_array($last_error['type'], self::$fatalErrors, true) &&
             // don't log uncaught exceptions as they were handled by exceptionHandler()
             !(isset($last_error['message']) &&
-              strpos($last_error['message'], 'Uncaught exception') === 0);
+              strpos($last_error['message'], 'Uncaught') === 0);
     }
 
     private static function generateErrorWrapper($errno, $errstr, $errfile, $errline)
@@ -208,6 +215,21 @@ class Rollbar
             return;
         }
         self::$logger->flushAndWait();
+    }
+    
+    public static function addCustom($key, $value)
+    {
+        self::$logger->addCustom($key, $value);
+    }
+    
+    public static function removeCustom($key)
+    {
+        self::$logger->removeCustom($key);
+    }
+    
+    public static function getCustom()
+    {
+        self::$logger->getCustom();
     }
     
     // @codingStandardsIgnoreStart

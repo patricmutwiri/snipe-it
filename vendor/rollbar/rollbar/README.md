@@ -269,6 +269,8 @@ try {
 }
 ```
 
+*Note:* Currently `PsrHandler` incorrectly reports exception objects logged with `log` method as strings instead of objects. This will cause your `log`-reported errors to be interpretted in Rollbar as message strings. The preferred way to use Rollbar with Monolog is through `RollbarHandler` class, however, at the moment, it's outdated. Pull request [Sync RollbarHandler with the latest changes rollbar/rollbar package](https://github.com/Seldaek/monolog/pull/1042) with a fix is awaiting merging into Monolog package. This issue has been originally brought up in [Log->error($e) has different info than throw the exception and let error_reporting handle it](https://github.com/rollbar/rollbar-php/issues/275).
+
 ## Configuration
 
 ### Asynchronous Reporting
@@ -327,7 +329,7 @@ Default: `/var/www`
 <dt>allow_exec
 </dt>
 <dd>If the branch option is not set, we will attempt to call out to git to discover the branch name
-via the php `exec` function call. If you do not want to allow `exec` to be called, and therefore
+via the php `shell_exec` function call. If you do not want to allow `shell_exec` to be called, and therefore
 possibly to not gather this context if you do not otherwise provide it via the separate
 configuration option, then set this option to false.
 
@@ -639,6 +641,10 @@ $config['person_fn'] = 'get_current_user';
 ```
 
 ## Related projects
+
+A range of examples of using Rollbar PHP is available here: [Rollbar PHP Examples](https://github.com/rollbar/rollbar-php-examples).
+
+A Wordpress Plugin is available through Wordpress Admin Panel or through Wordpress Plugin directory: [Rollbar Wordpress](https://wordpress.org/plugins/rollbar/)
 
 A Laravel-specific package is available for integrating with Laravel: [Rollbar Laravel](https://github.com/rollbar/rollbar-php-laravel)
 
