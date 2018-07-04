@@ -125,6 +125,12 @@ class AssetsController extends Controller
         return $view;
     }
 
+    /*
+        * Returns a view that creates a form to create assets in bulk
+        * from a scanner
+    */
+    
+    
     /**
     * Validate and process new asset form data.
     *
