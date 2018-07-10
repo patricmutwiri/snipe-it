@@ -7,13 +7,13 @@
     <table style="border: 1px solid black; padding: 5px;" width="100%" cellspacing="0" cellpadding="3">
         <tr>
             <td><strong>#</strong></td>
-            <td><strong>Serial/Asset Tag</strong></td>
+            <td><strong>Serial/Asset Tag Message</strong></td>
         </tr>
 
         @foreach($assets as $key => $asset)
             <tr>
-                <td>{{ ++$key }}</td>
-                <td>{{ $asset->serial }}</td>
+                <td><?php echo $key+1; ?></td>
+                <td>{{ $asset }}</td>
             </tr>
 
         @endforeach

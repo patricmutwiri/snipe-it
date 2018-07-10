@@ -187,8 +187,10 @@ class AssetsController extends Controller
         $notsaved                       = array();
         $assetError = '';
         //dd($request);
-        $lasttag = end($assettags);
+        $assettags  = array_filter($assettags, 'strlen');
+        $lasttag    = end($assettags);
         foreach ($assettags as $key => $assettag) {
+            $assettag = str_replace(' ', '', $assettag);
             //save now
             $getAsset = DB::table('assets')->where('asset_tag', $assettag)->exists();
             if(!$getAsset) { //doesn't exist already
@@ -215,7 +217,7 @@ class AssetsController extends Controller
                     $saved[]    = ' Asset : '. $assettag.' created successfully, ID: '.$saveasset;
                     error_log('LOG Asset SAVED '.$assettag.'  '.  ' ID: '.$saveasset);
                 } else {
-                    $notsaved[] = $key. ' Asset : '. $assettag.' not created, ID: '.$saveasset;
+                    $notsaved[] = ' Asset : '. $assettag.' not created, ID: '.$saveasset;
                     $assetError .= 'Serial: '.$assettag.', Error: '. ' ID: '.$saveasset. '<br/>';
                     error_log('LOG Asset NOT Saved '.$assettag.'  '. json_encode($asset). ' || '. ' ID: '.$saveasset);
                 }
@@ -225,14 +227,14 @@ class AssetsController extends Controller
         //send mail
         if(empty($notsaved)) {
             $assets = $saved;
-            Mail::send('emails.bulkupload', $assets, function($message) {
+            Mail::send('emails.bulkupload', ['assets' => $assets], function($message) {
              $message->to('notifications.engineering@poainternet.net', 'Notifications')->cc('patrick.mutwiri@poainternet.net','Patrick Mutwiri')->subject('Bulk Upload');
             });
-            \Session::flash('success', 'Assets Created Successfully '.implode('\n', $saved));
+            \Session::flash('success', 'Assets Created Successfully ');
             return response()->json(['redirect_url' => route('hardware.index'), 'notsaved' => json_encode($notsaved), 'saved' => json_encode($saved)]);
         } else {
             $assets = $notsaved;
-            Mail::send('emails.err-bulkupload', $assets, function($message) {
+            Mail::send('emails.err-bulkupload', ['assets' => $assets], function($message) {
              $message->to('notifications.engineering@poainternet.net', 'Notifications')->cc('patrick.mutwiri@poainternet.net','Patrick Mutwiri')->subject('Bulk Upload Err');
             });
             \Input::flash();

@@ -362,10 +362,15 @@
                 data: formData,
                 dataType: 'json',
                   success: function (data) {
+                      $('button[type=mutwiri]').text('Please Wait...');
+                      $('button[type=mutwiri] i.fa.icon-white').removeClass('fa-check').addClass('fa-spinner');
                       console.dir(data);
                       // AssetController flashes success to session, redirect to hardware page.
                       if (data.redirect_url) {
                           setTimeout(function() {
+                              $('button[type=mutwiri]').text('Assets Uploaded');
+                              $('button[type=mutwiri]').text('Save');
+                              $('button[type=mutwiri] i.fa.icon-white').removeClass('fa-spinner').addClass('fa-check');
                               window.location.href = data.redirect_url;
                               return true;
                             }, 5000);
@@ -376,7 +381,7 @@
                   },
                   error: function (data) {
                       // AssetRequest Validator will flash all errors to session, this just refreshes to see them.
-                      //window.location.reload(true);
+                      window.location.reload(true);
                       console.log(JSON.stringify(data));
                       console.log('error submitting');
                   }
