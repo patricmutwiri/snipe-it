@@ -126,11 +126,121 @@ class AssetsController extends Controller
     }
 
     /*
-        * Returns a view that creates a form to create assets in bulk
-        * from a scanner
+    * Returns a view that creates a form to create assets in bulk
+    * from a scanner
+    * @author [Patrick Mutwiri] [<patwiri@gmail.com>]
+    * @since [v1.0]
+    * @param Request $request
+    * @return View
+    * @internal param int $model_id
     */
-    
-    
+    public function bulkCreate(Request $request)
+    {
+        $this->authorize('create', Asset::class);
+        $view = View('hardware.bulkedit')
+            ->with('supplier_list', Helper::suppliersList())
+            ->with('model_list', Helper::modelList())
+            ->with('statuslabel_list', Helper::statusLabelList())
+            ->with('item', new Asset)
+            ->with('manufacturer', Helper::manufacturerList()) //handled in modal now?
+            ->with('category', Helper::categoryList('asset')) //handled in modal now?
+            ->with('statuslabel_types', Helper::statusTypeList());
+
+        if ($request->has('model_id')) {
+            $selected_model = AssetModel::find($request->input('model_id'));
+            $view->with('selected_model', $selected_model);
+        }
+        return $view;
+    }    
+
+
+    /**
+    * Validate and process new assets form data.
+    *
+    * @author [Patrick Mutwiri] [<patwiri@gmail.com>]
+    * @since [v1.0]
+    * @return Redirect
+    */
+    public function bulkStore(Request $request)
+    {
+        $assettags = $request->asset_tag;
+        $this->authorize(Asset::class);
+        $asset = new Asset();
+        $asset->model()->associate(AssetModel::find($request->input('model_id')));
+        $asset_status_id               = request('status_id', 0);
+        $asset_requestable             = request('requestable', 0);
+        $asset_company_id              = Company::getIdForCurrentUser($request->input('company_id'));
+        $asset_model_id                = $request->input('model_id');
+        $asset_user_id                 = Auth::id();
+        $asset_archived                = '0';
+        $asset_physical                = '1';
+        $asset_depreciate              = '0';
+        $asset_notes                   = 'Bulk Create Form';
+        $asset_last_checkout           = request('last_checkout', null);
+        $asset_next_audit_date         = request('next_audit_date', null);
+        $asset_assigned_to             = request('assigned_to', null);
+        if ($asset_assigned_to=='') {
+            $asset_location_id         = $request->input('rtd_location_id', null);
+        }
+        $assettags                      = array_unique($assettags);
+        $saved                          = array();
+        $notsaved                       = array();
+        $assetError = '';
+        //dd($request);
+        $lasttag = end($assettags);
+        foreach ($assettags as $key => $assettag) {
+            //save now
+            $getAsset = DB::table('assets')->where('asset_tag', $assettag)->exists();
+            if(!$getAsset) { //doesn't exist already
+                $saveasset = DB::table('assets')->insertGetId([
+                    'serial'       => $assettag,
+                    'asset_tag'    => $assettag,
+                    'status_id'    => $asset_status_id,
+                    'requestable'  => $asset_requestable,
+                    'company_id'   => $asset_company_id,
+                    'model_id' => $asset_model_id,
+                    'user_id'  => $asset_user_id,
+                    'archived' => $asset_archived,
+                    'physical' => $asset_physical,
+                    'depreciate'    => $asset_depreciate,
+                    'notes'         => $asset_notes,
+                    'last_checkout'    => $asset_last_checkout,
+                    'next_audit_date'  => $asset_next_audit_date,
+                    'assigned_to'  => $asset_assigned_to,
+                    'location_id'  => $asset_location_id,
+                    'created_at'   => date('Y-m-d H:i:s', time())
+                ]);
+                error_log('LOG Asset INSERT Method '. ' ID: '.$saveasset);
+                if(!empty($saveasset)) {
+                    $saved[]    = ' Asset : '. $assettag.' created successfully, ID: '.$saveasset;
+                    error_log('LOG Asset SAVED '.$assettag.'  '.  ' ID: '.$saveasset);
+                } else {
+                    $notsaved[] = $key. ' Asset : '. $assettag.' not created, ID: '.$saveasset;
+                    $assetError .= 'Serial: '.$assettag.', Error: '. ' ID: '.$saveasset. '<br/>';
+                    error_log('LOG Asset NOT Saved '.$assettag.'  '. json_encode($asset). ' || '. ' ID: '.$saveasset);
+                }
+            }
+        }
+        sleep(10);
+        //send mail
+        if(empty($notsaved)) {
+            $assets = $saved;
+            Mail::send('emails.bulkupload', $assets, function($message) {
+             $message->to('notifications.engineering@poainternet.net', 'Notifications')->cc('patrick.mutwiri@poainternet.net','Patrick Mutwiri')->subject('Bulk Upload');
+            });
+            \Session::flash('success', 'Assets Created Successfully '.implode('\n', $saved));
+            return response()->json(['redirect_url' => route('hardware.index'), 'notsaved' => json_encode($notsaved), 'saved' => json_encode($saved)]);
+        } else {
+            $assets = $notsaved;
+            Mail::send('emails.err-bulkupload', $assets, function($message) {
+             $message->to('notifications.engineering@poainternet.net', 'Notifications')->cc('patrick.mutwiri@poainternet.net','Patrick Mutwiri')->subject('Bulk Upload Err');
+            });
+            \Input::flash();
+            \Session::flash('errors', $assetError);
+            return response()->json(['saved' => $saved, 'notsaved' => $notsaved, 'errors' => $assetError], 500);
+        }
+    }
+
     /**
     * Validate and process new asset form data.
     *
@@ -223,7 +333,7 @@ class AssetsController extends Controller
             }
         }
 
-            // Was the asset created?
+        // Was the asset created?
         if ($asset->save()) {
 
 

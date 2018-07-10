@@ -10,6 +10,9 @@
 @section('header_right')
   @can('superuser')
   <div class="btn-group pull-right">
+      <a href="{{ route('hardware/bulkcreate', ['model_id' => $model->id]) }}">
+        <button class="btn btn-default"><i class="fa fa-list"></i>&nbsp;Bulk Upload</button>
+      </a>
      <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{ trans('button.actions') }}
           <span class="caret"></span>
       </button>
@@ -18,6 +21,7 @@
             <li><a href="{{ route('models.edit', $model->id) }}">{{ trans('admin/models/table.edit') }}</a></li>
             <li><a href="{{ route('clone/model', $model->id) }}">{{ trans('admin/models/table.clone') }}</a></li>
             <li><a href="{{ route('hardware.create', ['model_id' => $model->id]) }}">{{ trans('admin/hardware/form.create') }}</a></li>
+            <li><a href="{{ route('hardware/bulkcreate', ['model_id' => $model->id]) }}">Bulk Upload</a></li>
           @else
             <li><a href="{{ route('restore/model', $model->id) }}">{{ trans('admin/models/general.restore') }}</a></li>
           @endif
