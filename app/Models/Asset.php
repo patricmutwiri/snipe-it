@@ -196,11 +196,8 @@ class Asset extends Depreciable
                 * get model order levels here
                 * send mail alert if levels are below Normal and minimum
                 * if minimum, Danger
-            */
-            $model = '';
-            $normal_amt = '';
-            $min_amt = '';
-            
+                * send mail
+            */            
             $this->logCheckout($note, $target);
             $this->increment('checkout_counter', 1);
             return true;

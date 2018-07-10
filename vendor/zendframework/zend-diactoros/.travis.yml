@@ -9,7 +9,7 @@ cache:
 env:
   global:
     - COMPOSER_ARGS="--no-interaction"
-    - COVERAGE_DEPS="satooshi/php-coveralls"
+    - COVERAGE_DEPS="php-coveralls/php-coveralls"
     - LEGACY_DEPS="phpunit/phpunit"
 
 matrix:
@@ -52,8 +52,6 @@ matrix:
     - php: 7.2
       env:
         - DEPS=latest
-  allow_failures:
-    - php: 7.2
 
 before_install:
   - if [[ $TEST_COVERAGE != 'true' && "$(php --version | grep xdebug -ci)" -ge 1 ]]; then phpenv config-rm xdebug.ini || return 0 ; fi

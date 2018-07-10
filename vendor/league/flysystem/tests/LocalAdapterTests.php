@@ -3,6 +3,7 @@
 namespace League\Flysystem\Adapter;
 
 use League\Flysystem\Config;
+use PHPUnit\Framework\TestCase;
 
 function fopen($result, $mode)
 {
@@ -47,8 +48,10 @@ function mkdir($pathname, $mode = 0777, $recursive = false, $context = null)
 }
 
 
-class LocalAdapterTests extends \PHPUnit_Framework_TestCase
+class LocalAdapterTests extends TestCase
 {
+    use \PHPUnitHacks;
+
     /**
      * @var Local
      */
@@ -230,7 +233,7 @@ class LocalAdapterTests extends \PHPUnit_Framework_TestCase
         try {
             $root = __DIR__ . '/files/not-writable';
             mkdir($root, 0000, true);
-            $this->setExpectedException('LogicException');
+            $this->expectException('LogicException');
             new Local($root);
         } catch (\Exception $e) {
             rmdir($root);
@@ -434,7 +437,7 @@ class LocalAdapterTests extends \PHPUnit_Framework_TestCase
 
     public function testUnreadableFilesCauseAnError()
     {
-        $this->setExpectedException('League\Flysystem\UnreadableFileException');
+        $this->expectException('League\Flysystem\UnreadableFileException');
 
         $adapter = new Local(__DIR__ . '/files/', LOCK_EX, Local::SKIP_LINKS);
         $reflection = new \ReflectionClass($adapter);
