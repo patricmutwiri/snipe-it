@@ -310,6 +310,8 @@
         });
 
         function sendForm() {
+            $('button[type=mutwiri] i.fa.icon-white').removeClass('fa-check').addClass('fa-spinner fa-spin');
+            $('button[type=mutwiri] i.fa.icon-white').removeClass('fa-spinner fa-spin').addClass('fa-check');
             var form = $("#create-form").get(0);
             var formData = $('#create-form').serializeArray();
             formData.push({name: 'image', value: imageData});
@@ -330,6 +332,8 @@
               //continue
               $('p#fields_required').remove();
               $('div#model_id').prepend('<p id="fields_required" style="" class="text-center text-danger"><i class="fa fa-times"></i> Fields Required. Please Check form</p>');
+              $('button[type=mutwiri] i.fa.icon-white').removeClass('fa-check').addClass('fa-spinner fa-spin');
+              $('button[type=mutwiri] i.fa.icon-white').removeClass('fa-spinner fa-spin').addClass('fa-check');
               return false;
             }
             $('p#fields_required').remove();
@@ -349,6 +353,7 @@
               values.push(this.value);
             });
             if(duplicates.length > 0) {
+              $('button[type=mutwiri] i.fa.icon-white').removeClass('fa-spinner fa-spin').addClass('fa-check');
               console.log('duplicates '+duplicates);
               return false; // stop this bs
             }
@@ -361,16 +366,16 @@
                 },
                 data: formData,
                 dataType: 'json',
+                  beforeSend: function(data) {
+                    $('button[type=mutwiri] i.fa.icon-white').removeClass('fa-check').addClass('fa-spinner fa-spin');
+                  },
                   success: function (data) {
-                      $('button[type=mutwiri]').text('Please Wait...');
-                      $('button[type=mutwiri] i.fa.icon-white').removeClass('fa-check').addClass('fa-spinner');
                       console.dir(data);
                       // AssetController flashes success to session, redirect to hardware page.
+                      $('button[type=mutwiri] i.fa.icon-white').removeClass('fa-check').addClass('fa-spinner fa-spin');
                       if (data.redirect_url) {
                           setTimeout(function() {
-                              $('button[type=mutwiri]').text('Assets Uploaded');
-                              $('button[type=mutwiri]').text('Save');
-                              $('button[type=mutwiri] i.fa.icon-white').removeClass('fa-spinner').addClass('fa-check');
+                              $('button[type=mutwiri] i.fa.icon-white').removeClass('fa-spinner fa-spin').addClass('fa-check');
                               window.location.href = data.redirect_url;
                               return true;
                             }, 5000);
