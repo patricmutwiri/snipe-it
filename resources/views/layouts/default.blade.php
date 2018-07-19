@@ -670,7 +670,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ url('reports/accessories') }}" {{ (Request::is('reports/accessories') ? ' class="active"' : '') }}>
+                        <a href="{{ url('reports/stocklevelreport') }}" {{ (Request::is('reports/stocklevelreport') ? ' class="active"' : '') }}>
                             {{ trans('general.reorder_stock_levels_report') }}
                         </a>
                     </li>

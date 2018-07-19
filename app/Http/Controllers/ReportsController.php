@@ -5,6 +5,7 @@ use App\Helpers\Helper;
 use App\Models\Accessory;
 use App\Models\Actionlog;
 use App\Models\Asset;
+use App\Models\AssetModel;
 use App\Models\AssetMaintenance;
 use App\Models\CustomField;
 use App\Models\Depreciation;
@@ -27,6 +28,21 @@ use Illuminate\Http\Request;
 class ReportsController extends Controller
 {
 
+    /**
+    * Returns a view that displays the accessories report.
+    *
+    * @author [Patrick Mutwiri] [<patrick.mutwiri@poainternet.net>]
+    * @since [v1.0]
+    * @return View
+    */
+    public function getStocklevelReport() {
+        $models = AssetModel::orderBy('created_at', 'DESC')->get();
+        foreach ($models as $key => $model) {
+            $assetsinmodel = Asset::where('model_id',$model->id)->count();
+            $models[$key]['qty'] = $assetsinmodel;
+        }
+        return view('reports/stocklevelreport', compact('models'));
+    }
     /**
     * Returns a view that displays the accessories report.
     *

@@ -329,6 +329,12 @@ Route::group(['middleware' => ['auth']], function () {
         'reports/export/accessories',
         [ 'as' => 'reports/export/accessories', 'uses' => 'ReportsController@exportAccessoryReport' ]
     );
+
+    Route::get('reports/stocklevelreport', [ 'as' => 'reports/stocklevelreport', 'uses' => 'ReportsController@getStocklevelReport' ]);
+    // Route::get(
+    //     'reports/export/accessories',
+    //     [ 'as' => 'reports/export/accessories', 'uses' => 'ReportsController@exportAccessoryReport' ]
+    // );
     Route::get('reports/custom', [ 'as' => 'reports/custom', 'uses' => 'ReportsController@getCustomReport' ]);
     Route::post('reports/custom', 'ReportsController@postCustom');
 

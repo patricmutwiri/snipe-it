@@ -8,11 +8,8 @@
 @stop
 
 @section('header_right')
-  @can('superuser')
   <div class="btn-group pull-right">
-      <a href="{{ route('hardware/bulkcreate', ['model_id' => $model->id]) }}">
-        <button class="btn btn-default"><i class="fa fa-list"></i>&nbsp;Bulk Upload</button>
-      </a>
+  @can('superuser')
      <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{ trans('button.actions') }}
           <span class="caret"></span>
       </button>
@@ -26,8 +23,13 @@
             <li><a href="{{ route('restore/model', $model->id) }}">{{ trans('admin/models/general.restore') }}</a></li>
           @endif
       </ul>
-  </div>
   @endcan
+  @can('admin')
+    <a href="{{ route('hardware/bulkcreate', ['model_id' => $model->id]) }}">
+      <button class="btn btn-default"><i class="fa fa-list"></i>&nbsp;Bulk Upload</button>
+    </a>
+  @endcan
+  </div>
 @stop
 
 {{-- Page content --}}
