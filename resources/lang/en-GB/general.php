@@ -192,6 +192,7 @@
     'site_name'				=> 'Site Name',
     'state'  				=> 'State',
     'status_labels'			=> 'Status Labels',
+    'check_purpose'         => 'Checkin/Checkout Reasons',
     'status'    			=> 'Status',
     'supplier'              => 'Supplier',
     'suppliers'  			=> 'Suppliers',

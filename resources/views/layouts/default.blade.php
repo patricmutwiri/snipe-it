@@ -556,6 +556,14 @@
                             </li>
                         @endcan
 
+                        @can('view', \App\Models\Statuslabel::class)
+                            <li {!! (Request::is('checkpurpose*') ? ' class="active"' : '') !!}>
+                                <a href="{{ route('checkpurpose.index') }}">
+                                    {{ trans('general.check_purpose') }}
+                                </a>
+                            </li>
+                        @endcan                        
+
                         @can('view', \App\Models\AssetModel::class)
                             <li>
                                 <a href="{{ route('models.index') }}" {{ (Request::is('/assetmodels') ? ' class="active"' : '') }}>

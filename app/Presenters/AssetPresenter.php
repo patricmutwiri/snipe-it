@@ -195,6 +195,13 @@ class AssetPresenter extends Presenter
                 "visible" => false,
                 "title" => trans('general.checkins_count')
 
+            ],[
+                "field"         => "checkpurpose",
+                "searchable"    => true,
+                "sortable"      => true,
+                "visible"       => true,
+                "title"         => trans('general.check_purpose')
+
             ], [
                 "field" => "requests_counter",
                 "searchable" => false,

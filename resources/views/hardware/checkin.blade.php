@@ -92,6 +92,10 @@
                   {!! $errors->first('note', '<span class="alert-msg"><i class="fa fa-times"></i> :message</span>') !!}
                 </div>
               </div>
+
+            <!-- checkin/out reason -->
+            @include ('partials.forms.edit.checkpurpose-select', ['translated_name' => trans('general.check_reason'), 'fieldname' => 'checkpurpose', 'unselect' => 'true', 'style' => 'display:none;', 'required'=>'true'])
+
             <div class="box-footer">
               <a class="btn btn-link" href="{{ URL::previous() }}"> {{ trans('button.cancel') }}</a>
               <button type="submit" class="btn btn-success pull-right"><i class="fa fa-check icon-white"></i> {{ trans('general.checkin') }}</button>

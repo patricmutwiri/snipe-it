@@ -19,6 +19,7 @@ return array(
     'status'   		=> 'Status',
     'title'      	=> 'Asset ',
     'image'		=> 'Device Image',
+    'checkpurpose'  => 'Checkin/out Reason',
     'days_without_acceptance' => 'Days Without Acceptance'
 
 );

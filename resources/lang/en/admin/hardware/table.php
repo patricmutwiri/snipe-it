@@ -18,7 +18,8 @@ return array(
     'serial'   		=> 'Serial',
     'status'   		=> 'Status',
     'title'      	=> 'Asset ',
-    'image'		=> 'Device Image',
+    'image'		    => 'Device Image',
+    'checkpurpose'  => 'Checkin/out Reason',
     'days_without_acceptance' => 'Days Without Acceptance'
 
 );

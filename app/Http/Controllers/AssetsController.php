@@ -231,15 +231,15 @@ class AssetsController extends Controller
         //send mail
         if(empty($notsaved)) {
             $assets = $saved;
-            Mail::send('emails.bulkupload', ['assets' => $assets], function($message) {
-             $message->to('notifications.engineering@poainternet.net', 'Notifications')->cc('patrick.mutwiri@poainternet.net','Patrick Mutwiri')->subject('Bulk Upload');
+            Mail::send('emails.bulkupload', ['assets' => $assets], function($message) use ($snipesettings) {
+             $message->to($snipesettings->alert_email, $snipesettings->site_name)->cc($snipesettings->admin_cc_email, $snipesettings->site_name)->subject('Bulk Upload');
             });
             \Session::flash('success', 'Assets Created Successfully ');
             return response()->json(['redirect_url' => route('hardware.index'), 'notsaved' => json_encode($notsaved), 'saved' => json_encode($saved)]);
         } else {
             $assets = $notsaved;
-            Mail::send('emails.err-bulkupload', ['assets' => $assets], function($message) {
-             $message->to('notifications.engineering@poainternet.net', 'Notifications')->cc('patrick.mutwiri@poainternet.net','Patrick Mutwiri')->subject('Bulk Upload Err');
+            Mail::send('emails.err-bulkupload', ['assets' => $assets], function($message) use ($snipesettings) {
+             $message->to($snipesettings->alert_email, $snipesettings->site_name)->cc($snipesettings->admin_cc_email, $snipesettings->site_name)->subject('Bulk Upload Err');
             });
             \Input::flash();
             \Session::flash('errors', $assetError);
@@ -623,9 +623,19 @@ class AssetsController extends Controller
         } else {
             $expected_checkin = '';
         }
-
+        if (Input::has('checkpurpose')) {
+            $checkout_reason = Input::get('checkpurpose');
+        } else {
+            $checkout_reason = '';
+        }
 
         if ($asset->checkOut($target, $admin, $checkout_at, $expected_checkin, e(Input::get('note')), Input::get('name'))) {
+            // set reason here
+            $thisAsset = Asset::find($assetId);
+            $thisAsset->checkpurpose = $checkout_reason;
+            if($thisAsset->save()) {
+                error_log('checkout reason added');
+            }
             return redirect()->route("hardware.index")->with('success', trans('admin/hardware/message.checkout.success'));
         }
 
@@ -701,7 +711,12 @@ class AssetsController extends Controller
         if (Input::has('location_id')) {
             $asset->location_id =  e(Input::get('location_id'));
         }
-
+        if (Input::has('checkpurpose')) {
+            $checkin_reason = Input::get('checkpurpose');
+        } else {
+            $checkin_reason = '';
+        }
+        $asset->checkpurpose = $checkin_reason; //update checkin reason
         // Was the asset updated?
         if ($asset->save()) {
             $logaction = $asset->logCheckin($target, e(request('note')));

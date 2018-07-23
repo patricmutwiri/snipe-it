@@ -503,6 +503,11 @@
               @if  ($snipeSettings->qr_code=='1')
                  <img src="{{ config('app.url') }}/hardware/{{ $asset->id }}/qr_code" class="img-thumbnail pull-right" style="height: 100px; width: 100px; margin-right: 10px;">
               @endif
+              
+              @if ($asset->checkpurpose && !($asset->assignedTo))
+                  <br/>
+                  <p>Checkin Reason: <strong><a title="View assets checked under this reason" href="/checkpurpose/{{$asset->checkpurpose}}"> {{ \App\Models\Checkpurpose::find($asset->checkpurpose)->name }}</a></strong></p>
+              @endif
 
               @if (($asset->assignedTo) && ($asset->deleted_at==''))
                 <h4>{{ trans('admin/hardware/form.checkedout_to') }}</h4>
@@ -512,6 +517,10 @@
                   @endif
                   {!! $asset->assignedTo->present()->glyph() . ' ' .$asset->assignedTo->present()->nameUrl() !!}
                 </p>
+                @if ($asset->checkpurpose)
+                  <br/>
+                  <p>Checkout Reason: <strong><a title="View assets checked under this reason" href="/checkpurpose/{{$asset->checkpurpose}}"> {{ \App\Models\Checkpurpose::find($asset->checkpurpose)->name }}</a></strong></p>
+                @endif
 
                   <ul class="list-unstyled" style="line-height: 25px;">
                   @if ((isset($asset->assignedTo->email)) && ($asset->assignedTo->email!=''))

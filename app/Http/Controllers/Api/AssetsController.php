@@ -80,6 +80,7 @@ class AssetsController extends Controller
             'checkout_counter',
             'checkin_counter',
             'requests_counter',
+            'checkpurpose',
         ];
 
         $filter = array();
@@ -115,6 +116,10 @@ class AssetsController extends Controller
 
         if ($request->has('category_id')) {
             $assets->InCategory($request->input('category_id'));
+        }
+
+        if ($request->has('checkpurpose')) {
+            $assets->where('assets.checkpurpose', '=', $request->input('checkpurpose'));
         }
 
         if ($request->has('location_id')) {
@@ -630,8 +635,8 @@ class AssetsController extends Controller
         $checkout_at = request('checkout_at', date("Y-m-d H:i:s"));
         $expected_checkin = request('expected_checkin', null);
         $note = request('note', null);
+        $checkout_reason = request('checkpurpose', null);
         $asset_name = request('name', null);
-        
         // Set the location ID to the RTD location id if there is one
         if ($asset->rtd_location_id!='') {
             $asset->location_id = $target->rtd_location_id;
@@ -642,6 +647,12 @@ class AssetsController extends Controller
         
 
         if ($asset->checkOut($target, Auth::user(), $checkout_at, $expected_checkin, $note, $asset_name, $asset->location_id)) {
+            // set reason here
+            $thisAsset = Asset::find($asset_id);
+            $thisAsset->checkpurpose = $checkout_reason;
+            if($thisAsset->save()) {
+                error_log('checkout reason added, via api');
+            }
             return response()->json(Helper::formatStandardApiResponse('success', ['asset'=> e($asset->asset_tag)], trans('admin/hardware/message.checkout.success')));
         }
 
@@ -684,7 +695,12 @@ class AssetsController extends Controller
         if (Input::has('status_id')) {
             $asset->status_id =  Input::get('status_id');
         }
-
+        if (Input::has('checkpurpose')) {
+            $checkin_reason = Input::get('checkpurpose');
+        } else {
+            $checkin_reason = '';
+        }
+        $asset->checkpurpose = $checkin_reason; //update checkin reason
         if ($asset->save()) {
             $asset->logCheckin($target, e(request('note')));
             return response()->json(Helper::formatStandardApiResponse('success', ['asset'=> e($asset->asset_tag)], trans('admin/hardware/message.checkin.success')));

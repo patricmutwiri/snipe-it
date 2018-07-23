@@ -57,6 +57,11 @@ Route::group(['middleware' => 'auth'], function () {
           'parameters' => ['statuslabel' => 'statuslabel_id']
       ]);
 
+     /*
+     * Checkin/out purposes
+      */
+    Route::resource('checkpurpose', 'CheckpurposeController'); 
+    Route::get('checkpurpose/{id}/delete', [ 'as' => 'checkpurpose/delete', 'uses' => 'CheckpurposeController@destroy']);
 
     /*
     * Status Labels
@@ -294,6 +299,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('reports/audit', [
         'as' => 'reports.audit',
         'uses' => 'ReportsController@audit'
+    ]);
+    Route::get('getcheckpurpose', [
+        'as' => 'getcheckpurpose.list',
+        'uses' => 'CheckpurposeController@indexApi'
     ]);
 
     Route::get(

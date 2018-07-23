@@ -320,7 +320,10 @@ Route::group(['prefix' => 'v1','namespace' => 'Api'], function () {
             'as' => 'assets.selectlist',
             'uses' => 'AssetsController@selectlist'
         ]);
-
+        Route::get('getcheckpurpose', [
+            'as' => 'getcheckpurpose.list',
+            'uses' => 'CheckpurposeController@indexApi'
+        ]);
 
         Route::post('audit', [
             'as' => 'api.asset.audit',
@@ -530,7 +533,23 @@ Route::group(['prefix' => 'v1','namespace' => 'Api'], function () {
         );
     }); // Models group
 
+/*
+* purpose prefix
+*/
+    Route::group(['prefix' => 'checkpurpose'], function () {
 
+        Route::get('selectlist',
+            [
+                'as' => 'api.checkpurpose.selectlist',
+                'uses'=> 'CheckpurposeController@indexApi'
+            ]
+        );
+        Route::get('getcheckpurpose', [
+            'as' => 'getcheckpurpose.list',
+            'uses' => 'CheckpurposeController@indexApi'
+        ]);
+    }); 
+// end
     Route::resource('models', 'AssetModelsController',
         [
             'names' =>

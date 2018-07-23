@@ -2,6 +2,7 @@
 namespace App\Http\Transformers;
 
 use App\Models\Asset;
+use App\Models\Checkpurpose;
 use Illuminate\Database\Eloquent\Collection;
 use App\Http\Transformers\UsersTransformer;
 use Gate;
@@ -64,23 +65,24 @@ class AssetsTransformer
                 'id' => (int) $asset->defaultLoc->id,
                 'name'=> e($asset->defaultLoc->name)
             ]  : null,
-            'image' => ($asset->getImageUrl()) ? $asset->getImageUrl() : null,
-            'assigned_to' => $this->transformAssignedTo($asset),
-            'warranty_months' =>  ($asset->warranty_months > 0) ? e($asset->warranty_months . ' ' . trans('admin/hardware/form.months')) : null,
-            'warranty_expires' => ($asset->warranty_months > 0) ?  Helper::getFormattedDateObject($asset->warranty_expires, 'date') : null,
+            'image'         => ($asset->getImageUrl()) ? $asset->getImageUrl() : null,
+            'assigned_to'   => $this->transformAssignedTo($asset),
+            'warranty_months'   =>  ($asset->warranty_months > 0) ? e($asset->warranty_months . ' ' . trans('admin/hardware/form.months')) : null,
+            'warranty_expires'  => ($asset->warranty_months > 0) ?  Helper::getFormattedDateObject($asset->warranty_expires, 'date') : null,
             'created_at' => Helper::getFormattedDateObject($asset->created_at, 'datetime'),
             'updated_at' => Helper::getFormattedDateObject($asset->updated_at, 'datetime'),
-            'last_audit_date' => Helper::getFormattedDateObject($asset->last_audit_date, 'datetime'),
-            'next_audit_date' => Helper::getFormattedDateObject($asset->next_audit_date, 'date'),
-            'deleted_at' => Helper::getFormattedDateObject($asset->deleted_at, 'datetime'),
-            'purchase_date' => Helper::getFormattedDateObject($asset->purchase_date, 'date'),
-            'last_checkout' => Helper::getFormattedDateObject($asset->last_checkout, 'datetime'),
-            'expected_checkin' => Helper::getFormattedDateObject($asset->expected_checkin, 'date'),
-            'purchase_cost' => Helper::formatCurrencyOutput($asset->purchase_cost),
-            'checkin_counter' => (int) $asset->checkin_counter,
-            'checkout_counter' => (int) $asset->checkout_counter,
-            'requests_counter' => (int) $asset->requests_counter,
+            'last_audit_date'   => Helper::getFormattedDateObject($asset->last_audit_date, 'datetime'),
+            'next_audit_date'   => Helper::getFormattedDateObject($asset->next_audit_date, 'date'),
+            'deleted_at'        => Helper::getFormattedDateObject($asset->deleted_at, 'datetime'),
+            'purchase_date'     => Helper::getFormattedDateObject($asset->purchase_date, 'date'),
+            'last_checkout'     => Helper::getFormattedDateObject($asset->last_checkout, 'datetime'),
+            'expected_checkin'  => Helper::getFormattedDateObject($asset->expected_checkin, 'date'),
+            'purchase_cost'     => Helper::formatCurrencyOutput($asset->purchase_cost),
+            'checkin_counter'   => (int) $asset->checkin_counter,
+            'checkout_counter'  => (int) $asset->checkout_counter,
+            'requests_counter'  => (int) $asset->requests_counter,
             'user_can_checkout' => (bool) $asset->availableForCheckout(),
+            'checkpurpose'      => ($asset->checkpurpose) ? e(Checkpurpose::find($asset->checkpurpose)->name) : null,
         ];
 
 

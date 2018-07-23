@@ -88,6 +88,9 @@
               </div>
             </div>
 
+            <!-- checkout reason -->
+            @include ('partials.forms.edit.checkpurpose-select', ['translated_name' => trans('general.check_reason'), 'fieldname' => 'checkpurpose', 'unselect' => 'true', 'style' => 'display:none;', 'required'=>'true'])
+
                 @if ($asset->requireAcceptance() || $asset->getEula() || ($snipeSettings->slack_endpoint!=''))
                     <div class="form-group notification-callout">
                         <div class="col-md-8 col-md-offset-3">

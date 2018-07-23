@@ -198,6 +198,7 @@
     'site_name'				=> 'Site Name',
     'state'  				=> 'State',
     'status_labels'			=> 'Status Labels',
+    'check_purpose'         => 'Checkin/Checkout Reason',
     'status'    			=> 'Status',
     'supplier'              => 'Supplier',
     'suppliers'  			=> 'Suppliers',
@@ -229,4 +230,5 @@
     'zip'  					=> 'Zip',
     'noimage'					=> 'No image uploaded or image not found.',
     'token_expired'             => 'Your form session has expired. Please try again.',
+    'check_reason'          => 'Checkin/out Reason',
     ];

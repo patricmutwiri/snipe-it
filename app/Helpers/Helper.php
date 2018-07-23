@@ -3,6 +3,7 @@ namespace App\Helpers;
 
 use DB;
 use App\Models\Statuslabel;
+use App\Models\Checkpurpose;
 use App\Models\Location;
 use App\Models\Department;
 use App\Models\AssetModel;
@@ -138,6 +139,23 @@ class Helper
         return floatval($floatString);
     }
 
+
+    /**
+     * Get the list of checkin/out purposes in an array to make a dropdown menu
+     *
+     * @author [patrick Mutwiri] [<patwiri@gmail.com>]
+     * @since [v2.5]
+     * @return Array
+     */
+    public static function purposeList()
+    {
+        $reasons = Checkpurpose::get();
+        $reason_array[''] = trans('general.check_purpose');
+        foreach ($reasons as $reason) {
+            $reason_array[$reason->id] = $reason->name;
+        }
+        return $reason_array;
+    }
 
     /**
      * Get the list of models in an array to make a dropdown menu
