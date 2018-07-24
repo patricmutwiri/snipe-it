@@ -232,14 +232,14 @@ class AssetsController extends Controller
         if(empty($notsaved)) {
             $assets = $saved;
             Mail::send('emails.bulkupload', ['assets' => $assets], function($message) use ($snipesettings) {
-             $message->to($snipesettings->alert_email, $snipesettings->site_name)->cc($snipesettings->admin_cc_email, $snipesettings->site_name)->subject('Bulk Upload');
+             $message->to(explode(',', $snipesettings->alert_email), $snipesettings->site_name)->cc($snipesettings->admin_cc_email, $snipesettings->site_name)->subject('Bulk Upload');
             });
             \Session::flash('success', 'Assets Created Successfully ');
             return response()->json(['redirect_url' => route('hardware.index'), 'notsaved' => json_encode($notsaved), 'saved' => json_encode($saved)]);
         } else {
             $assets = $notsaved;
             Mail::send('emails.err-bulkupload', ['assets' => $assets], function($message) use ($snipesettings) {
-             $message->to($snipesettings->alert_email, $snipesettings->site_name)->cc($snipesettings->admin_cc_email, $snipesettings->site_name)->subject('Bulk Upload Err');
+             $message->to(explode(',', $snipesettings->alert_email), $snipesettings->site_name)->cc($snipesettings->admin_cc_email, $snipesettings->site_name)->subject('Bulk Upload Err');
             });
             \Input::flash();
             \Session::flash('errors', $assetError);
