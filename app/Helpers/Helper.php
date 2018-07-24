@@ -529,8 +529,8 @@ class Helper
 
                 Mail::send('notifications.modelminreorder', ['title' => $title, 'snipeSettings' => $snipesettings], function ($message) use ($title, $subject, $snipeSettings, $level, $alert_email, $admin_cc_email, $snipesettings)
                 {
-                    $message->from($alert_email, $snipesettings->site_name);
-                    $message->to($alert_email);
+                   // $message->from($alert_email, $snipesettings->site_name);
+                    $message->to(explode(',', $alert_email), $snipesettings->site_name);
                     if(!empty($admin_cc_email)) { 
                         $message->cc($admin_cc_email, $snipesettings->site_name); 
                     }
@@ -548,8 +548,8 @@ class Helper
 
                 Mail::send('notifications.modelnormalreorder', ['title' => $title, 'snipeSettings' => $snipesettings], function ($message) use ($title, $subject, $snipeSettings, $level, $alert_email, $admin_cc_email, $snipesettings)
                 {
-                    $message->from($alert_email, $snipesettings->site_name);
-                    $message->to($alert_email);
+                    // $message->from($alert_email, $snipesettings->site_name);
+                    $message->to(explode(',', $alert_email), $snipesettings->site_name);
                     if(!empty($admin_cc_email)) { 
                         $message->cc($admin_cc_email, $snipesettings->site_name); 
                     }
