@@ -531,6 +531,7 @@ class Helper
                 {
                    // $message->from($alert_email, $snipesettings->site_name);
                     $message->to(explode(',', $alert_email), $snipesettings->site_name);
+                    $message->replyTo(config('mail.reply_to.address'), config('mail.reply_to.name'));
                     if(!empty($admin_cc_email)) { 
                         $message->cc($admin_cc_email, $snipesettings->site_name); 
                     }
@@ -550,6 +551,7 @@ class Helper
                 {
                     // $message->from($alert_email, $snipesettings->site_name);
                     $message->to(explode(',', $alert_email), $snipesettings->site_name);
+                    $message->replyTo(config('mail.reply_to.address'), config('mail.reply_to.name'));
                     if(!empty($admin_cc_email)) { 
                         $message->cc($admin_cc_email, $snipesettings->site_name); 
                     }
