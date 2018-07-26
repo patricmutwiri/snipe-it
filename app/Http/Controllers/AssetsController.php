@@ -89,8 +89,8 @@ class AssetsController extends Controller
     public function getAssetByTag()
     {
         $topsearch = (Input::get('topsearch')=="true");
-
-        if (!$asset = Asset::where('asset_tag', '=', Input::get('assetTag'))->first()) {
+        $searchTag = trim(Input::get('assetTag'));
+        if (!$asset = Asset::where('asset_tag', '=', $searchTag)->first()) {
             return redirect()->route('hardware.index')->with('error', trans('admin/hardware/message.does_not_exist'));
         }
         $this->authorize('view', $asset);
