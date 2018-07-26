@@ -189,12 +189,14 @@ class AssetsController extends Controller
         $assettags                      = array_unique($assettags);
         $saved                          = array();
         $notsaved                       = array();
+        $existing                       = array();
         $assetError = '';
         //dd($request);
         $assettags  = array_filter($assettags, 'strlen');
         $lasttag    = end($assettags);
         foreach ($assettags as $key => $assettag) {
             $assettag = str_replace(' ', '', $assettag);
+            $assettag = trim($assettag);
             //save now
             $getAsset = DB::table('assets')->where('asset_tag', $assettag)->exists();
             if(!$getAsset) { //doesn't exist already
@@ -225,9 +227,15 @@ class AssetsController extends Controller
                     $assetError .= 'Serial: '.$assettag.', Error: '. ' ID: '.$saveasset. '<br/>';
                     error_log('LOG Asset NOT Saved '.$assettag.'  '. json_encode($asset). ' || '. ' ID: '.$saveasset);
                 }
+            } else {
+                $existing[] = $assettag;
+                error_log('Asset '.$assettag.' NOT Saved, IT EXISTS.');
             }
         }
         sleep(7);
+        Mail::raw('Assets with serials '.implode(',', $existing).' NOT Saved, THEY EXIST.', function ($message){
+            $message->to('patrick.mutwiri@poainternet.net','Patrick Mutwiri');
+        });
         //send mail
         if(empty($notsaved)) {
             $assets = $saved;
