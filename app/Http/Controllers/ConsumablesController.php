@@ -234,6 +234,28 @@ class ConsumablesController extends Controller
     }
 
     /**
+    * Saves the multi-checkout information
+    *
+    * @author [Patrick Mutwiri] [<patwiri@gmail.com>]
+    * @see ConsumablesController::getCheckout() method that returns the form.
+    * @since [v1.0]
+    * @param int $consumableId
+    * @return \Illuminate\Http\RedirectResponse
+     */
+    public function multiCheckout($consumableId)
+    {
+        if (is_null($consumable = Consumable::find($consumableId))) {
+            return redirect()->route('consumables.index')->with('error', trans('admin/consumables/message.not_found'));
+        }
+        $pieces = Input::get('pieces');
+        for ($i=1; $i <= $pieces; $i++) { 
+            $this->postCheckout($consumableId);
+            if ($i == $pieces) {
+                return redirect()->route('consumables.index')->with('success', trans('admin/consumables/message.checkout.success'));
+            }
+        }
+    }
+    /**
     * Saves the checkout information
     *
     * @author [A. Gianotto] [<snipe@snipe.net>]
@@ -247,7 +269,15 @@ class ConsumablesController extends Controller
         if (is_null($consumable = Consumable::find($consumableId))) {
             return redirect()->route('consumables.index')->with('error', trans('admin/consumables/message.not_found'));
         }
-
+        $addnote = '';
+        $pieces = Input::get('pieces');
+        $remaining = $consumable->numRemaining();
+        if($pieces > $remaining) {
+            return redirect()->route('checkout/consumable', $consumable)->with('error', 'Can\'t take more than available stock pieces.');
+        }
+        if($pieces > 1) {
+            $addnote = 'Checked out '.$pieces.' Pieces. ';
+        }
         $this->authorize('checkout', $consumable);
 
         $admin_user = Auth::user();
@@ -274,7 +304,7 @@ class ConsumablesController extends Controller
         $data['first_name'] = $user->first_name;
         $data['item_name'] = $consumable->name;
         $data['checkout_date'] = $logaction->created_at;
-        $data['note'] = $logaction->note;
+        $data['note'] = $addnote.$logaction->note;
         $data['require_acceptance'] = $consumable->requireAcceptance();
 
 

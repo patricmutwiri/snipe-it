@@ -11,6 +11,10 @@
             '{consumableID}/checkout',
             [ 'as' => 'checkout/consumable', 'uses' => 'ConsumablesController@postCheckout' ]
         );
+        Route::post(
+            '{consumableID}/multicheckout',
+            [ 'as' => 'checkout/consumables', 'uses' => 'ConsumablesController@multiCheckout' ]
+        );
     });
 
     Route::resource('consumables', 'ConsumablesController', [

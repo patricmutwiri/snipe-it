@@ -12,7 +12,7 @@
 <div class="row">
   <div class="col-md-9">
 
-    <form class="form-horizontal" method="post" action="" autocomplete="off">
+    <form class="form-horizontal" method="post" action="{{ route('checkout/consumables', $consumable->id) }}" autocomplete="off">
       <!-- CSRF Token -->
       <input type="hidden" name="_token" value="{{ csrf_token() }}" />
 
@@ -66,6 +66,16 @@
                 </div>
               </div>
             @endif
+
+          <!-- amount/pieces -->
+          <div class="form-group {{ $errors->has('note') ? 'error' : '' }}">
+            <label for="pieces" class="col-md-3 control-label">Pieces</label>
+            <div class="col-md-7">
+              <input type="number" required="true" class="col-md-6 form-control" id="pieces" name="pieces" value="{{ Input::old('pieces', $consumable->pieces) }}" />
+              {!! $errors->first('pieces', '<span class="alert-msg"><i class="fa fa-times"></i> :message</span>') !!}
+            </div>
+          </div>
+          
           <!-- Note -->
           <div class="form-group {{ $errors->has('note') ? 'error' : '' }}">
             <label for="note" class="col-md-3 control-label">{{ trans('admin/hardware/form.notes') }}</label>
