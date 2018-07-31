@@ -38,7 +38,6 @@ class ReportsController extends Controller
     public function exportSelected(Request $request)
     {
         $ids = explode(',', $request->model_ids);
-        $headers = array('Name','Model Number','Total Assets','Checked Out','Remainder','Minimum Reorder Level','Normal Reorder Level');
         if(!empty($ids)) {
             $models = array();
             foreach ($ids as $key => $id) {

@@ -79,10 +79,12 @@
                         model_ids.push(checkedmodels[i].value);
                     }
                 }
-                document.getElementById('form-model_ids').value = model_ids;
-                document.getElementById('exportselected-form-submit').click();
-
-                console.log(model_ids);
+                if(model_ids.length) {
+                    document.getElementById('form-model_ids').value = model_ids;
+                    document.getElementById('exportselected-form-submit').click();
+                } else {
+                    alert('Yo, can\'t export a blank!');
+                }
                 e.preventDefault();
             });
         </script>
