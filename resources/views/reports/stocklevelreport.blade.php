@@ -37,6 +37,7 @@
                                     <th data-sortable="true" class="col-sm-1">#</th>
                                     <th data-sortable="true" class="col-sm-1">{{ trans('admin/models/general.model_name') }}</th>
                                     <th data-sortable="true" class="col-sm-1">{{ trans('admin/models/general.model_number') }}</th>
+                                    <th data-sortable="true" class="col-sm-1">Category</th>
                                     <th data-sortable="true" class="col-sm-1">{{ trans('admin/models/general.total') }}</th>
                                     <th data-sortable="true" class="col-sm-1">Checked Out</th>
                                     <th data-sortable="true" class="col-sm-1">Remainder</th>
@@ -50,6 +51,7 @@
                                         <td class="col-sm-1"><input type="checkbox" class="model-id" name="model_id[]" value="{{ $model->id }}"></td>
                                         <td><a href="/models/{{$model->id}}"> {{ $model->name }}</a></td>
                                         <td><a href="/models/{{$model->id}}"> {{ $model->model_number }}</a></td>
+                                        <td><a href="/categories/{{$model->category_id}}"> {{ \App\Models\Category::find($model->category_id)->name }}</a></td>
                                         <td>{{ $model->qty }}</td>
                                         <td>{{ $model->checkedout }}</td>
                                         <td>{{ $model->remainder }}</td>

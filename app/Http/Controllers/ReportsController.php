@@ -5,6 +5,7 @@ use App\Helpers\Helper;
 use App\Models\Accessory;
 use App\Models\Actionlog;
 use App\Models\Asset;
+use App\Models\Category;
 use App\Models\AssetModel;
 use App\Models\AssetMaintenance;
 use App\Models\CustomField;
@@ -42,12 +43,13 @@ class ReportsController extends Controller
             $models = array();
             foreach ($ids as $key => $id) {
                 $thismodel              = AssetModel::find($id);
-                $models[$key]['#']          = ++$key;
-                $models[$key]['Name']          = $thismodel->name;
-                $models[$key]['Model Number']  = $thismodel->model_number;
-                $models[$key]['Total Assets']  = $thismodel->assets()->count();
-                $models[$key]['Checked Out']   = Helper::getmodelTotals($thismodel->id)['totalcheckedout'];
-                $models[$key]['Remainder']     = Helper::getmodelTotals($thismodel->id)['remainder'];
+                $models[$key]['#']      = ++$key;
+                $models[$key]['Name']           = $thismodel->name;
+                $models[$key]['Model Number']   = $thismodel->model_number;
+                $models[$key]['Category']       = Category::find($thismodel->category_id)->name;
+                $models[$key]['Total Assets']   = $thismodel->assets()->count();
+                $models[$key]['Checked Out']    = Helper::getmodelTotals($thismodel->id)['totalcheckedout'];
+                $models[$key]['Remainder']      = Helper::getmodelTotals($thismodel->id)['remainder'];
                 $models[$key]['Minimum Reorder Level'] = $thismodel->min_amt;
                 $models[$key]['Normal Reorder Level']  = $thismodel->normal_amt;
             }
