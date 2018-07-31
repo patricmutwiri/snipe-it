@@ -29,6 +29,52 @@ class ReportsController extends Controller
 {
 
     /**
+    * Export selected models only.
+    *
+    * @author [Patrick Mutwiri] [<patrick.mutwiri@poainternet.net>]
+    * @since [v1.0]
+    * @return View
+    */
+    public function exportSelected(Request $request)
+    {
+        $ids = explode(',', $request->model_ids);
+        $headers = array('Name','Model Number','Total Assets','Checked Out','Remainder','Minimum Reorder Level','Normal Reorder Level');
+        if(!empty($ids)) {
+            $models = array();
+            foreach ($ids as $key => $id) {
+                $thismodel              = AssetModel::find($id);
+                $models[$key]['#']          = ++$key;
+                $models[$key]['Name']          = $thismodel->name;
+                $models[$key]['Model Number']  = $thismodel->model_number;
+                $models[$key]['Total Assets']  = $thismodel->assets()->count();
+                $models[$key]['Checked Out']   = Helper::getmodelTotals($thismodel->id)['totalcheckedout'];
+                $models[$key]['Remainder']     = Helper::getmodelTotals($thismodel->id)['remainder'];
+                $models[$key]['Minimum Reorder Level'] = $thismodel->min_amt;
+                $models[$key]['Normal Reorder Level']  = $thismodel->normal_amt;
+            }
+            header('Pragma: public');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+            header('Cache-Control: private', false);
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment;filename=' .date('D m-y h:i').' Stock Level Report.csv');    
+            if(isset($models)) {
+                //array_fill_keys('Name','Model Number','Total Assets','Checked Out','Remainder','Minimum Reorder Level','Normal Reorder Level', $models);
+                $fp = fopen('php://output', 'w');
+                foreach($models as $k => $model){
+                    if($k == 1) {
+                        fputcsv($fp, array_keys($models[$k]));
+                    }
+                    fputcsv($fp, $model);
+                }
+                fclose($fp);
+            }
+        } else {
+            return redirect(route('reports/stocklevelreport'))->with('error',"Select a value please");
+        }
+    }
+
+    /**
     * Returns a view that displays the accessories report.
     *
     * @author [Patrick Mutwiri] [<patrick.mutwiri@poainternet.net>]
@@ -38,8 +84,9 @@ class ReportsController extends Controller
     public function getStocklevelReport() {
         $models = AssetModel::orderBy('created_at', 'DESC')->get();
         foreach ($models as $key => $model) {
-            $assetsinmodel = Asset::where('model_id',$model->id)->count();
-            $models[$key]['qty'] = $assetsinmodel;
+            $models[$key]['qty']        = $model->assets()->count();
+            $models[$key]['checkedout']   = Helper::getmodelTotals($model->id)['totalcheckedout'];
+            $models[$key]['remainder']  = Helper::getmodelTotals($model->id)['remainder'];
         }
         return view('reports/stocklevelreport', compact('models'));
     }

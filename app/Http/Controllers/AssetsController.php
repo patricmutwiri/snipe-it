@@ -192,65 +192,74 @@ class AssetsController extends Controller
         $existing                       = array();
         $assetError = '';
         //dd($request);
-        $assettags  = array_filter($assettags, 'strlen');
+        $assettags  = array_filter($assettags);
         $lasttag    = end($assettags);
         foreach ($assettags as $key => $assettag) {
             $assettag = str_replace(' ', '', $assettag);
             $assettag = trim($assettag);
-            //save now
-            $getAsset = DB::table('assets')->where('asset_tag', $assettag)->exists();
-            if(!$getAsset) { //doesn't exist already
-                $saveasset = DB::table('assets')->insertGetId([
-                    'serial'       => $assettag,
-                    'asset_tag'    => $assettag,
-                    'status_id'    => $asset_status_id,
-                    'requestable'  => $asset_requestable,
-                    'company_id'   => $asset_company_id,
-                    'model_id' => $asset_model_id,
-                    'user_id'  => $asset_user_id,
-                    'archived' => $asset_archived,
-                    'physical' => $asset_physical,
-                    'depreciate'    => $asset_depreciate,
-                    'notes'         => $asset_notes,
-                    'last_checkout'    => $asset_last_checkout,
-                    'next_audit_date'  => $asset_next_audit_date,
-                    'assigned_to'  => $asset_assigned_to,
-                    'location_id'  => $asset_location_id,
-                    'created_at'   => date('Y-m-d H:i:s', time())
-                ]);
-                error_log('LOG Asset INSERT Method '. ' ID: '.$saveasset);
-                if(!empty($saveasset)) {
-                    $saved[]    = ' Asset : '. $assettag.' created successfully, ID: '.$saveasset;
-                    error_log('LOG Asset SAVED '.$assettag.'  '.  ' ID: '.$saveasset);
+            if(!empty($assettag)){
+                //save now
+                $getAsset = DB::table('assets')->where('asset_tag', $assettag)->exists();
+                if(!$getAsset) { //doesn't exist already
+                    $saveasset = DB::table('assets')->insertGetId([
+                        'serial'       => $assettag,
+                        'asset_tag'    => $assettag,
+                        'status_id'    => $asset_status_id,
+                        'requestable'  => $asset_requestable,
+                        'company_id'   => $asset_company_id,
+                        'model_id' => $asset_model_id,
+                        'user_id'  => $asset_user_id,
+                        'archived' => $asset_archived,
+                        'physical' => $asset_physical,
+                        'depreciate'    => $asset_depreciate,
+                        'notes'         => $asset_notes,
+                        'last_checkout'    => $asset_last_checkout,
+                        'next_audit_date'  => $asset_next_audit_date,
+                        'assigned_to'  => $asset_assigned_to,
+                        'location_id'  => $asset_location_id,
+                        'created_at'   => date('Y-m-d H:i:s', time())
+                    ]);
+                    error_log('LOG Asset INSERT Method '. ' ID: '.$saveasset);
+                    if(!empty($saveasset)) {
+                        $saved[]    = ' Asset : '. $assettag.' created successfully, ID: '.$saveasset;
+                        error_log('LOG Asset SAVED '.$assettag.'  '.  ' ID: '.$saveasset);
+                    } else {
+                        $notsaved[] = ' Asset : '. $assettag.' not created, ID: '.$saveasset;
+                        $assetError .= 'Serial: '.$assettag.', Error: '. ' ID: '.$saveasset. '<br/>';
+                        error_log('LOG Asset NOT Saved '.$assettag.'  '. json_encode($asset). ' || '. ' ID: '.$saveasset);
+                    }
                 } else {
-                    $notsaved[] = ' Asset : '. $assettag.' not created, ID: '.$saveasset;
-                    $assetError .= 'Serial: '.$assettag.', Error: '. ' ID: '.$saveasset. '<br/>';
-                    error_log('LOG Asset NOT Saved '.$assettag.'  '. json_encode($asset). ' || '. ' ID: '.$saveasset);
+                    $existing[] = $assettag;
+                    error_log('Asset '.$assettag.' NOT Saved, IT EXISTS.');
                 }
-            } else {
-                $existing[] = $assettag;
-                error_log('Asset '.$assettag.' NOT Saved, IT EXISTS.');
-            }
+            }            
         }
         sleep(7);
-        Mail::raw('Assets with serials '.implode(',', $existing).' NOT Saved, THEY EXIST.', function ($message){
-            $message->to('patrick.mutwiri@poainternet.net','Patrick Mutwiri');
-        });
-        //send mail
-        if(empty($notsaved)) {
+        //send mails
+        if(!empty($existing)) {
+            Mail::raw('Assets with serials '.implode(',', $existing).' NOT Saved, THEY EXIST.', function ($message){
+                $message->to('patrick.mutwiri@poainternet.net','Patrick Mutwiri');
+            });
+        }
+        if(!empty($saved)) {
             $assets = $saved;
             Mail::send('emails.bulkupload', ['assets' => $assets], function($message) use ($snipesettings) {
                 $message->replyTo(config('mail.reply_to.address'), config('mail.reply_to.name'));
                 $message->to(explode(',', $snipesettings->alert_email), $snipesettings->site_name)->cc($snipesettings->admin_cc_email, $snipesettings->site_name)->subject('Bulk Upload');
             });
-            \Session::flash('success', 'Assets Created Successfully ');
-            return response()->json(['redirect_url' => route('hardware.index'), 'notsaved' => json_encode($notsaved), 'saved' => json_encode($saved)]);
-        } else {
+        }
+        if(!empty($notsaved)) {
             $assets = $notsaved;
             Mail::send('emails.err-bulkupload', ['assets' => $assets], function($message) use ($snipesettings) {
                 $message->replyTo(config('mail.reply_to.address'), config('mail.reply_to.name'));
                 $message->to(explode(',', $snipesettings->alert_email), $snipesettings->site_name)->cc($snipesettings->admin_cc_email, $snipesettings->site_name)->subject('Bulk Upload Err');
             });
+        }
+
+        if(empty($notsaved)) {
+            \Session::flash('success', 'Assets Created Successfully ');
+            return response()->json(['redirect_url' => route('hardware.index'), 'notsaved' => json_encode($notsaved), 'saved' => json_encode($saved)]);
+        } else {
             \Input::flash();
             \Session::flash('errors', $assetError);
             return response()->json(['saved' => $saved, 'notsaved' => $notsaved, 'errors' => $assetError], 500);

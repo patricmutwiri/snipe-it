@@ -475,6 +475,45 @@ class Helper
         return $randomString;
     }
 
+    /**
+     *
+     * @author [Patrick Mutwiri] [<patwiri@gmail.com>]
+     * @since [v3.0]
+     * @return int
+     */
+    public static function getmodelTotals($model_id)
+    {
+        if(!empty($model_id)) {
+            $model = AssetModel::find($model_id);
+            $totalassets = Asset::where([
+                'model_id'      => $model_id,
+                'deleted_at'    => null,
+            ])->count();
+
+            $totalcheckedout  = Asset::where('model_id', $model_id)
+                ->where('assigned_to', '!=', null)
+                ->where('deleted_at', null)
+                ->count();
+
+            $totalunassigned  = Asset::where([
+                'model_id'      => $model_id,
+                'deleted_at'    => null,
+                'assigned_to'   => null
+            ])->count();
+            
+            $remainder = $totalassets-$totalcheckedout;
+
+            $totals = array(
+                'qty'               => $totalassets,
+                'totalcheckedout'   => $totalcheckedout,
+                'totalunassigned'   => $totalunassigned,
+                'remainder'         => $remainder
+            );
+            return $totals;
+        } else {
+            return false;
+        }
+    }
 
     /**
      * This nasty little method gets the low inventory info for the

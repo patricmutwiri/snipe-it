@@ -296,6 +296,11 @@ Route::group([ 'prefix' => 'account', 'middleware' => ['auth']], function () {
 
 Route::group(['middleware' => ['auth']], function () {
 
+    Route::post('reports/exportselected', [
+        'as' => 'reports.exportselected',
+        'uses' => 'ReportsController@exportSelected'
+    ]);
+
     Route::get('reports/audit', [
         'as' => 'reports.audit',
         'uses' => 'ReportsController@audit'
