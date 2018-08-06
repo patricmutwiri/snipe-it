@@ -50,8 +50,10 @@ class ReportsController extends Controller
                 $models[$key]['Total Assets']   = $thismodel->assets()->count();
                 $models[$key]['Checked Out']    = Helper::getmodelTotals($thismodel->id)['totalcheckedout'];
                 $models[$key]['Remainder']      = Helper::getmodelTotals($thismodel->id)['remainder'];
-                $models[$key]['Minimum Reorder Level'] = $thismodel->min_amt;
-                $models[$key]['Normal Reorder Level']  = $thismodel->normal_amt;
+                $models[$key]['Total UnDeployable']    = Helper::getmodelTotals($thismodel->id)['undeployable'];
+                $models[$key]['Total Deployable']       = Helper::getmodelTotals($thismodel->id)['deployable'];
+                $models[$key]['Minimum Reorder Level']  = $thismodel->min_amt;
+                $models[$key]['Normal Reorder Level']   = $thismodel->normal_amt;
             }
             header('Pragma: public');
             header('Expires: 0');
@@ -88,6 +90,11 @@ class ReportsController extends Controller
             $models[$key]['qty']        = $model->assets()->count();
             $models[$key]['checkedout']   = Helper::getmodelTotals($model->id)['totalcheckedout'];
             $models[$key]['remainder']  = Helper::getmodelTotals($model->id)['remainder'];
+            $models[$key]['undeployable']  = Helper::getmodelTotals($model->id)['undeployable'];
+            $models[$key]['deleted']  = Helper::getmodelTotals($model->id)['deleted'];
+            $models[$key]['pending']  = Helper::getmodelTotals($model->id)['pending'];
+            $models[$key]['deployable']  = Helper::getmodelTotals($model->id)['deployable'];
+
         }
         return view('reports/stocklevelreport', compact('models'));
     }

@@ -35,6 +35,14 @@ class AssetModelsTransformer
                 'name'=> e($assetmodel->depreciation->name)
             ]  : null,
             'assets_count' => (int) $assetmodel->assets_count,
+            'deployable' => Helper::getmodelTotals($assetmodel->id)['deployable'],
+            'remainder' => Helper::getmodelTotals($assetmodel->id)['remainder'],
+            'totalcheckedout' => Helper::getmodelTotals($assetmodel->id)['totalcheckedout'], 
+            'totalunassigned' => Helper::getmodelTotals($assetmodel->id)['totalunassigned'], 
+            'undeployable' => Helper::getmodelTotals($assetmodel->id)['undeployable'], 
+            'pending' => Helper::getmodelTotals($assetmodel->id)['pending'], 
+            'archived' => Helper::getmodelTotals($assetmodel->id)['archived'], 
+            'deleted' => Helper::getmodelTotals($assetmodel->id)['deleted'], 
             'category' => ($assetmodel->category) ? [
                 'id' => (int) $assetmodel->category->id,
                 'name'=> e($assetmodel->category->name)

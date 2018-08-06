@@ -490,24 +490,66 @@ class Helper
                 'deleted_at'    => null,
             ])->count();
 
-            $totalcheckedout  = Asset::where('model_id', $model_id)
+            $totalcheckedout = Asset::where('model_id', $model_id)
                 ->where('assigned_to', '!=', null)
                 ->where('deleted_at', null)
                 ->count();
 
-            $totalunassigned  = Asset::where([
-                'model_id'      => $model_id,
-                'deleted_at'    => null,
-                'assigned_to'   => null
-            ])->count();
+            $totalunassigned = Asset::where('model_id', $model_id)
+                ->where('deleted_at', null)
+                ->where('assigned_to', null)
+                ->count();
+            
+            // deleted
+            $deleted = Asset::where('model_id', $model_id)
+                ->where('deleted_at', '!=', null)
+                ->count();
+
+            // pending
+            $pending = Asset::select('assets.*')
+                ->where('assets.model_id', '=', $model_id)
+                ->whereNull('assets.assigned_to')
+                ->join('status_labels AS status_alias',function ($join) {
+                $join->on('status_alias.id', "=", "assets.status_id")
+                    ->where('status_alias.deployable','=',0)
+                    ->where('status_alias.pending','=',1)
+                    ->where('status_alias.archived', '=', 0);
+            })->count();
+
+            // undeployable
+            $undeployable = Asset::where('model_id', $model_id)->Undeployable()->count();
+
+            // archived
+            $archived = Asset::select('assets.*')
+                ->join('status_labels AS status_alias',function ($join) {
+                $join->on('status_alias.id', "=", "assets.status_id")
+                    ->where('status_alias.deployable','=',0)
+                    ->where('status_alias.pending','=',0)
+                    ->where('status_alias.archived', '=', 1);
+            })->count();
+            
+            // deployable
+            $deployable = Asset::select('assets.*')
+                ->where('assets.model_id', '=', $model_id)
+                ->whereNull('assets.assigned_to')
+                ->join('status_labels AS status_alias',function ($join) {
+                $join->on('status_alias.id', "=", "assets.status_id")
+                    ->where('status_alias.deployable','=',1)
+                    ->where('status_alias.pending','=',0)
+                    ->where('status_alias.archived', '=', 0);
+            })->count();
             
             $remainder = $totalassets-$totalcheckedout;
-
             $totals = array(
                 'qty'               => $totalassets,
                 'totalcheckedout'   => $totalcheckedout,
                 'totalunassigned'   => $totalunassigned,
-                'remainder'         => $remainder
+                'remainder'         => $remainder,
+                'deployable'        => $deployable,
+                'undeployable'      => $undeployable,
+                'pending'           => $pending,
+                'archived'          => $archived,
+                'deleted'           => $deleted,
             );
             return $totals;
         } else {

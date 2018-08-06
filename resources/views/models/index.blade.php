@@ -81,6 +81,9 @@
               <th data-sortable="true" data-field="manufacturer" data-formatter="manufacturersLinkObjFormatter">{{ trans('general.manufacturer') }}</th>
               <th data-sortable="true" data-field="model_number">{{ trans('admin/models/table.modelnumber') }}</th>
               <th data-sortable="true" data-field="assets_count">{{ trans('admin/models/table.numassets') }}</th>
+              <th data-sortable="false" data-field="remainder">Remainder</th>
+              <th data-sortable="false" data-field="undeployable">Un Deployable</th>
+              <th data-sortable="false" data-field="deployable">Deployable</th>
               <th data-sortable="false" data-field="depreciation" data-formatter="depreciationsLinkObjFormatter">{{ trans('general.depreciation') }}</th>
               <th data-sortable="false" data-field="category" data-formatter="categoriesLinkObjFormatter">{{ trans('general.category') }}</th>
               <th data-sortable="true" data-field="eol">{{ trans('general.eol') }}</th>

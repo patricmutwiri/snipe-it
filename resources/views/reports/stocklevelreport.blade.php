@@ -41,6 +41,11 @@
                                     <th data-sortable="true" class="col-sm-1">{{ trans('admin/models/general.total') }}</th>
                                     <th data-sortable="true" class="col-sm-1">Checked Out</th>
                                     <th data-sortable="true" class="col-sm-1">Remainder</th>
+                                    <th data-sortable="true" class="col-sm-1">Total Deployable</th>
+                                    <th data-sortable="true" class="col-sm-1">Deleted</th>
+                                    <th data-sortable="true" class="col-sm-1">Un Deployable</th>
+                                    <th data-sortable="true" class="col-sm-1">Pending</th>
+                                    <th data-sortable="true" class="col-sm-1">Deleted</th>
                                     <th data-sortable="true" class="col-sm-1">{{ trans('admin/models/general.min_amt') }}</th>
                                     <th data-sortable="true" class="col-sm-1">{{ trans('admin/models/general.normal_amt') }}</th>
                                 </tr>
@@ -55,6 +60,11 @@
                                         <td>{{ $model->qty }}</td>
                                         <td>{{ $model->checkedout }}</td>
                                         <td>{{ $model->remainder }}</td>
+                                        <td>{{ $model->deployable }}</td>
+                                        <td>{{ $model->deleted }} </td>
+                                        <td>{{ $model->undeployable }} </td>
+                                        <td>{{ $model->pending }} </td>
+                                        <td>{{ $model->deleted }} </td>
                                         <td>{{ $model->min_amt }}</td>
                                         <td>{{ $model->normal_amt }}</td>
                                     </tr>
