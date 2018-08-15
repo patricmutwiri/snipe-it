@@ -111,6 +111,13 @@ class ConsumablePresenter extends Presenter
                 "visible" => true,
                 "formatter" => "dateDisplayFormatter",
             ],[
+                "field" => "created_at",
+                "searchable" => true,
+                "sortable" => true,
+                "title" => trans('general.created_at'),
+                "visible" => true,
+                "formatter" => "dateDisplayFormatter",
+            ],[
                 "field" => "purchase_cost",
                 "searchable" => true,
                 "sortable" => true,

@@ -34,7 +34,7 @@ class ConsumablesTransformer
             'remaining'  => $consumable->numRemaining(),
             'order_number'  => e($consumable->order_number),
             'purchase_cost'  => Helper::formatCurrencyOutput($consumable->purchase_cost),
-            'purchase_date'  => Helper::getFormattedDateObject($consumable->purchase_date, 'date'),
+            'purchase_date'  => Helper::getFormattedDateObject($consumable->purchase_date, 'datetime'),
             'qty'           => (int) $consumable->qty,
             'created_at' => Helper::getFormattedDateObject($consumable->created_at, 'datetime'),
             'updated_at' => Helper::getFormattedDateObject($consumable->updated_at, 'datetime'),
