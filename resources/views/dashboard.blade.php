@@ -78,7 +78,7 @@
     </div>
   </div><!-- ./col -->
 
-  <div class="hidden col-lg-4 col-xs-6">
+  <div class="col-lg-4 col-xs-6">
     <!-- small box -->
     <div class="small-box bg-purple">
       <div class="inner">
