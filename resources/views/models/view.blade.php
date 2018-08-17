@@ -24,7 +24,7 @@
           @endif
       </ul>
   @endcan
-  @can('admin')
+  @can('create', \App\Models\Asset::class)
     <a href="{{ route('hardware/bulkcreate', ['model_id' => $model->id]) }}">
       <button class="btn btn-default"><i class="fa fa-list"></i>&nbsp;Bulk Upload</button>
     </a>
