@@ -137,7 +137,7 @@ class AssetsController extends Controller
     public function bulkCreate(Request $request)
     {
         $this->authorize('create', Asset::class);
-        $view = View('hardware.bulkedit')
+        $view = View::make('hardware.bulkedit')
             ->with('supplier_list', Helper::suppliersList())
             ->with('model_list', Helper::modelList())
             ->with('statuslabel_list', Helper::statusLabelList())
@@ -148,6 +148,7 @@ class AssetsController extends Controller
 
         if ($request->has('model_id')) {
             $selected_model = AssetModel::find($request->input('model_id'));
+            $view->with('model_id', $selected_model->id);
             $view->with('selected_model', $selected_model);
         }
         return $view;
@@ -163,6 +164,7 @@ class AssetsController extends Controller
     */
     public function bulkStore(Request $request)
     {
+        $this->authorize(Asset::class);
         $snipesettings  = \App\Models\Setting::getSettings();
         $alert_email    = $snipesettings->alert_email;
         $admin_cc_email = $snipesettings->admin_cc_email;
@@ -237,13 +239,16 @@ class AssetsController extends Controller
         sleep(7);
         //send mails
         if(!empty($existing)) {
-            Mail::raw('Assets with serials '.implode(',', $existing).' NOT Saved, THEY EXIST.', function ($message){
+            Mail::raw('Assets with serials '.implode(',', $existing).' NOT Saved, THEY EXIST.', function ($message) use ($snipesettings) {
+                $message->subject('Already in existance');
+                $message->bcc(explode(',', $snipesettings->alert_email), $snipesettings->site_name);
                 $message->to('patrick.mutwiri@poainternet.net','Patrick Mutwiri');
             });
         }
         if(!empty($saved)) {
             $assets = $saved;
             Mail::send('emails.bulkupload', ['assets' => $assets], function($message) use ($snipesettings) {
+                $message->subject('Newly Created');
                 $message->replyTo(config('mail.reply_to.address'), config('mail.reply_to.name'));
                 $message->to(explode(',', $snipesettings->alert_email), $snipesettings->site_name)->cc($snipesettings->admin_cc_email, $snipesettings->site_name)->subject('Bulk Upload');
             });
@@ -251,6 +256,7 @@ class AssetsController extends Controller
         if(!empty($notsaved)) {
             $assets = $notsaved;
             Mail::send('emails.err-bulkupload', ['assets' => $assets], function($message) use ($snipesettings) {
+                $message->subject('Error in creation');
                 $message->replyTo(config('mail.reply_to.address'), config('mail.reply_to.name'));
                 $message->to(explode(',', $snipesettings->alert_email), $snipesettings->site_name)->cc($snipesettings->admin_cc_email, $snipesettings->site_name)->subject('Bulk Upload Err');
             });

@@ -394,7 +394,18 @@
 
             return false;
         }
-
+        let href = window.location.href;
+        let model_id = '';
+        if(href.indexOf('model_id')) {
+            href = href.split('?');
+            href = href[1];
+            // get model id
+            let model = href.split('=');
+            model_id = model[1];
+            console.log('model id '+model_id);
+            $('select#model_select_id').append('<option value="'+model_id+'" selected="Selected"><?php echo $selected_model->name ?></option>');
+            $('select#model_select_id').trigger('change');
+        }
     });
 </script>
 <style type="text/css">
