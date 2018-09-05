@@ -1387,7 +1387,11 @@ class AssetsController extends Controller
             $target = Asset::find(request('assigned_asset'));
         } elseif (request('checkout_to_type')=='user') {
             $target = User::find(request('assigned_user'));
+            if(!$target) {
+                return redirect()->back()->with('error', 'Yo, You cannot check an asset out without a user selected.');
+            }
         }
+
         if (!is_array(Input::get('selected_assets'))) {
             return redirect()->route('hardware/bulkcheckout')->withInput()->with('error', trans('admin/hardware/message.checkout.no_assets_selected'));
         }
