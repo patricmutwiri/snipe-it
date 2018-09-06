@@ -5,16 +5,9 @@
 
     <div class="col-md-7 required">
         <select class="checkpurpose xjs-data-ajax" data-x-endpoint="checkpurpose" name="{{ $fieldname }}" style="padding:5px; width: 100%" id="checkpurpose">
-            @if ($reasonid = Input::old($fieldname, (isset($item)) ? $item->{$fieldname} : ''))
-                <option value="{{ $reasonid }}" selected="selected">
-                    {{ (\App\Models\Checkpurpose::find($reasonid)) ? \App\Models\AssetModel::find($reasonid)->name : '' }}
-                </option>
-            @else
-                @foreach (\App\Models\Checkpurpose::get() as $reason)
-                    <option class="check-reason-option" value="{{$reason->id}}">{{ $reason->name }}</option>
-                @endforeach
-            @endif
-
+            @foreach (\App\Models\Checkpurpose::get() as $reason)
+                <option class="check-reason-option" value="{{$reason->id}}">{{ $reason->name }}</option>
+            @endforeach
         </select>
     </div>
 

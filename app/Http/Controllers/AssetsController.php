@@ -605,7 +605,6 @@ class AssetsController extends Controller
         $this->authorize('checkout', $asset);
         $admin = Auth::user();
 
-
         // This item is checked out to a location
         if (request('checkout_to_type')=='location') {
             $target = Location::find(request('assigned_location'));
@@ -628,6 +627,9 @@ class AssetsController extends Controller
         } elseif (request('checkout_to_type')=='user') {
             // Fetch the target and set the asset's new location_id
             $target = User::find(request('assigned_user'));
+            if (!request('assigned_user')) {
+                return redirect()->back()->with('error', 'no user selected');
+            }
             $asset->location_id = ($target) ? $target->location_id : '';
         }
 
