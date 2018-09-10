@@ -164,13 +164,12 @@ class AssetsController extends Controller
     */
     public function bulkStore(Request $request)
     {
-        $this->authorize(Asset::class);
+        $this->authorize('create', Asset::class);
         $snipesettings  = \App\Models\Setting::getSettings();
         $alert_email    = $snipesettings->alert_email;
         $admin_cc_email = $snipesettings->admin_cc_email;
         $sitename       = $snipesettings->site_name;
-        $assettags = $request->asset_tag;
-        $this->authorize(Asset::class);
+        $assettags      = $request->asset_tag;
         $asset = new Asset();
         $asset->model()->associate(AssetModel::find($request->input('model_id')));
         $asset_status_id               = request('status_id', 0);
