@@ -282,6 +282,7 @@ class ConsumablesController extends Controller
 
         $admin_user = Auth::user();
         $assigned_to = e(Input::get('assigned_to'));
+        $checkout_at = Input::get('checkout_at');
 
         // Check if the user exists
         if (is_null($user = User::find($assigned_to))) {
@@ -304,6 +305,9 @@ class ConsumablesController extends Controller
         $data['first_name'] = $user->first_name;
         $data['item_name'] = $consumable->name;
         $data['checkout_date'] = $logaction->created_at;
+        if($checkout_at) {
+            $data['checkout_date'] = $checkout_at;
+        }
         $data['note'] = $addnote.$logaction->note;
         $data['require_acceptance'] = $consumable->requireAcceptance();
 

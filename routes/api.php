@@ -329,7 +329,20 @@ Route::group(['prefix' => 'v1','namespace' => 'Api'], function () {
             'as' => 'api.asset.audit',
             'uses' => 'AssetsController@audit'
         ]);
+        
+        Route::post('assignment-history/{id}',
+            [
+                'as' => 'api.asset.assignmenthistory',
+                'uses' => 'AssetsController@assignmentHistory'
+            ]
+        );
 
+        Route::post('update-device-history',
+            [
+                'as' => 'api.asset.updateassignment',
+                'uses' => 'AssetsController@updateAssignment'
+            ]
+        );
 
         Route::post('{asset_id}/checkout',
             [

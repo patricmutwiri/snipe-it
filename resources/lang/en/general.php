@@ -98,6 +98,7 @@
      'github_markdown'      => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/">Github flavored markdown</a>.',
     'groups'				=> 'Groups',
     'gravatar_email'        => 'Gravatar Email Address',
+    'assignment_history'    => 'Device User History',
     'history'  			    => 'History',
     'history_for'  			=> 'History for',
     'id'  					=> 'ID',

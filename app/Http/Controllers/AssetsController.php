@@ -769,6 +769,20 @@ class AssetsController extends Controller
         return redirect()->route("hardware.index")->with('error', trans('admin/hardware/message.checkin.error'));
     }
 
+    /**
+    * Returns a view that presents information from admin about an asset for detail history view.
+    *
+    * @author [P. Mutwiri] [<patwiri@gmail.com>]
+    * @param varchar $assetserial
+    * @since [v1.0]
+    * @return response
+    */
+    public function assignmentHistory($serial = null)
+    {
+        $assignmentHistory = Helper::getCustomerDevices($serial);
+        return response()->json($assignmentHistory);
+        //dd($assignmentHistory);
+    }
 
     /**
     * Returns a view that presents information about an asset for detail view.

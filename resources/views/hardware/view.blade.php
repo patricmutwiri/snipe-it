@@ -89,6 +89,9 @@
           <a href="#maintenances" data-toggle="tab"><span class="hidden-lg hidden-md"><i class="fa fa-wrench"></i></span> <span class="hidden-xs hidden-sm">{{ trans('general.maintenances') }}</span></a>
         </li>
         <li>
+          <a href="#assignment_history" data-toggle="tab"><span class="hidden-lg hidden-md"><i class="fa fa-history"></i></span> <span class="hidden-xs hidden-sm">{{ trans('general.assignment_history') }}</span></a>
+        </li>
+        <li>
           <a href="#history" data-toggle="tab"><span class="hidden-lg hidden-md"><i class="fa fa-history"></i></span> <span class="hidden-xs hidden-sm">{{ trans('general.history') }}</span></a>
         </li>
         <li>
@@ -731,6 +734,48 @@
           </div> <!-- /.row -->
         </div> <!-- /.tab-pane maintenances -->
 
+        <div class="tab-pane fade" id="assignment_history">
+          <!-- checked out assets table -->
+          <div class="row">
+            <div class="col-md-12">
+            <table class="table table-striped snipe-table"
+                  id="assignmentHistory"
+                  data-pagination="true"
+                  data-id-table="assignmentHistory"
+                  data-search="true"
+                  data-toggle="table"
+                  data-side-pagination="server"
+                  data-show-columns="true"
+                  data-show-refresh="true"
+                  data-show-export="true"
+                  data-method="post"
+                  data-export-options='{
+                     "fileName": "export-asset-{{ $asset->id }}-assignment-history",
+                     "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
+                   }'
+                  data-url="{{ route('api.asset.assignmenthistory', ['id' => $asset->id, 'item_type' => 'asset']) }}"
+                  data-cookie-id-table="assignmentHistory">
+                  <caption class="align-center">Assignment History</caption>
+                <thead>
+                  <tr>             
+                    <th class="col-xs-2" data-visible="true" data-field="device_id"> Device ID</th>
+                    <th class="col-xs-2" data-sortable="true" data-visible="true" data-field="customerid"> Customer ID</th>
+                    <th class="col-xs-2" data-visible="true" data-field="staffuid"> Staff ID</th>
+                    <th class="col-xs-2" data-visible="true" data-field="date_added"> Date Added</th>
+                    <th class="col-xs-2" data-visible="true" data-field="date_installed"> Date Installed</th>
+                    <th class="col-xs-2" data-visible="true" data-field="date_failed"> Date Failed</th>
+                    <th class="col-xs-2" data-visible="true" data-field="wan_macaddress"> MAC Address</th>
+                    <th class="col-xs-2" data-visible="true" data-field="active"> Active Status </th>
+                    <th class="col-xs-2" data-visible="true" data-html="enabled" data-field="enabled"> Enabled Status</th>
+                    <th class="col-xs-2" data-visible="true" data-field="edited_wifi_ssid"> Custom WIFI SSID</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div> <!-- /.row -->
+        </div> <!-- /.tab-pane history -->
+
         <div class="tab-pane fade" id="history">
           <!-- checked out assets table -->
           <div class="row">
@@ -894,7 +939,4 @@
 
 @section('moar_scripts')
   @include ('partials.bootstrap-table')
-
-
-
 @stop

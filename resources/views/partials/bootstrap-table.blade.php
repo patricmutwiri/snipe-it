@@ -16,25 +16,17 @@
 
 <script src="{{ asset('js/extensions/cookie/bootstrap-table-cookie.js?v=1') }}"></script>
 
-
 <script nonce="{{ csrf_token() }}">
-
-
-    $(function () {
-
+    $(function(){
         var stickyHeaderOffsetY = 0;
-
         if ( $('.navbar-fixed-top').css('height') ) {
             stickyHeaderOffsetY = +$('.navbar-fixed-top').css('height').replace('px','');
         }
         if ( $('.navbar-fixed-top').css('margin-bottom') ) {
             stickyHeaderOffsetY += +$('.navbar-fixed-top').css('margin-bottom').replace('px','');
         }
-
-
         $('.snipe-table').bootstrapTable('destroy').bootstrapTable({
             classes: 'table table-responsive table-no-bordered',
-
             ajaxOptions: {
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -42,7 +34,6 @@
             },
             stickyHeader: true,
             stickyHeaderOffsetY: stickyHeaderOffsetY + 'px',
-
             undefinedText: '',
             iconsPrefix: 'fa',
             cookie: true,
@@ -55,13 +46,12 @@
             paginationLastText: "{{ trans('general.last') }}",
             paginationPreText: "{{ trans('general.previous') }}",
             paginationNextText: "{{ trans('general.next') }}",
-            pageList: ['10','20', '30','50','100','150','200', '500'],
+            pageList: ['10','20', '30','50','100','150','200', '500','1000','1500','2000'],
             pageSize: {{  (($snipeSettings->per_page!='') && ($snipeSettings->per_page > 0)) ? $snipeSettings->per_page : 20 }},
             paginationVAlign: 'both',
             formatLoadingMessage: function () {
                 return '<h4><i class="fa fa-spinner fa-spin" aria-hidden="true"></i> Loading... please wait.... </h4>';
             },
-
             icons: {
                 advancedSearchIcon: 'fa fa-search-plus',
                 paginationSwitchDown: 'fa-caret-square-o-down',
@@ -70,15 +60,8 @@
                 refresh: 'fa-refresh'
             },
             exportTypes: ['csv', 'excel', 'doc', 'txt','json', 'xml', 'pdf'],
-
-
         });
-
     });
-
-
-
-
 
     function dateRowCheckStyle(value) {
         if ((value.days_to_next_audit) && (value.days_to_next_audit < {{ $snipeSettings->audit_warning_days ?: 0 }})) {
@@ -86,7 +69,6 @@
         }
         return {};
     }
-
 
     // Handle whether or not the edit button should be disabled
     $('.snipe-table').on('check.bs.table', function () {
@@ -107,7 +89,6 @@
         $('#bulkEdit').attr('disabled', 'disabled');
     });
 
-
     // This only works for model index pages because it uses the row's model ID
     function genericRowLinkFormatter(destination) {
         return function (value,row) {
@@ -121,7 +102,6 @@
     function genericColumnObjLinkFormatter(destination) {
         return function (value,row) {
             if ((value) && (value.status_meta)) {
-
                 var text_color;
                 var icon_style;
                 var text_help;
@@ -130,7 +110,6 @@
                   'deployable': '{{ strtolower(trans('admin/hardware/general.deployable')) }}',
                   'pending': '{{ strtolower(trans('general.pending')) }}'
                 }
-
                 switch (value.status_meta) {
                     case 'deployed':
                         text_color = 'blue';
@@ -152,16 +131,13 @@
                         icon_style = 'fa-times';
                         text_help = '';
                 }
-
                 return '<nobr><a href="{{ url('/') }}/' + destination + '/' + value.id + '" data-tooltip="true" title="'+ status_meta[value.status_meta] + '"> <i class="fa ' + icon_style + ' text-' + text_color + '"></i> ' + value.name + ' ' + text_help + ' </a> </nobr>';
             } else if ((value) && (value.name)) {
-
                 // Add some overrides for any funny urls we have
                 var dest = destination;
                 if (destination=='fieldsets') {
                     var dest = 'fields/fieldsets';
                 }
-
                 return '<nobr><a href="{{ url('/') }}/' + dest + '/' + value.id + '"> ' + value.name + '</a></span>';
             }
         };
@@ -170,12 +146,10 @@
     // Make the edit/delete buttons
     function genericActionsFormatter(destination) {
         return function (value,row) {
-
             var actions = '<nobr>';
-
             // Add some overrides for any funny urls we have
             var dest = destination;
-
+            
             if (destination=='groups') {
                 var dest = 'admin/groups';
             }
@@ -213,10 +187,8 @@
         };
     }
 
-
     // This handles the icons and display of polymorphic entries
     function polymorphicItemFormatter(value) {
-
         var item_destination = '';
         var item_icon;
 

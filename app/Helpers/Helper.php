@@ -23,6 +23,9 @@ use App\Models\Setting;
 use Crypt;
 use Mail;
 use Illuminate\Contracts\Encryption\DecryptException;
+use GuzzleHttp\Pool;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Request;
 
 class Helper
 {
@@ -137,6 +140,120 @@ class Helper
 
         $floatString = str_replace($currencySymbol, '', $floatString);
         return floatval($floatString);
+    }
+
+
+    /**
+     * Get a list of customers from admin
+     *
+     * @author [patrick Mutwiri] [<patwiri@gmail.com>]
+     * @since [v2.5]
+     * @return Array
+     */
+    public static function getCustomerDevices($serial=null, $type='cpe',$mac=null){
+        // Get the base URL
+        $data   = array();
+        $params = array();
+        if (!app()->runningInConsole()) {
+            if($type != 'cpe' && empty($mac)) {
+                $data[] = 'my guy,too little info. need serial and/or mac';
+                return response()->json($data);
+            }
+            if($type != 'cpe') {
+                $data[] = 'my guy, only checking for hAPs';
+                return response()->json($data);
+            }
+            $url = request()->server('SERVER_NAME');
+            if (strpos($url, '.im') > 0) {
+                $base = 'https://admin.poa.im';
+            } elseif (strpos($url, '.sh') > 0) {
+                $base = 'https://admin.poa.sh';
+            } else {
+                $base = 'https://admin.poa.one';
+            }
+            $endpoint = '/api/wtth/get-cpe-details';
+            $endpoint = $base.$endpoint;
+            // TODO: change this endpoint
+            $endpoint = 'https://admin.poa.one/api/wtth/get-cpe-details';
+            $params['endpoint'] = 'decoy url';
+            // TODO: set verify to true
+            $client = new Client();
+            $params['serial'] = $serial;
+            $params['authtoken'] = '9FP2AKsQZZCw';
+            $response = $client->request('POST', $endpoint, array('form_params' => $params));
+            $payload = $response;
+            dd($payload);
+            if($response->getStatusCode() != 200) {
+                error_log('GuzzleHttp Request for cpe serial no. ('.$serial.') '.json_encode($payload).'');
+            }
+            $data['history']['cpe_url']         =  $base.'/admin/wtth/cpe/edit/'.$payload->id;
+            $data['history']['device_id']       =  $payload->id;
+            $data['history']['customerid']      =  $payload->uid;
+            $data['history']['staffuid']        =  $payload->staffuid;
+            $data['history']['date_added']      =  date('D d-M-Y H:i:s', $payload->added);
+            $data['history']['date_installed']  =  date('D d-M-Y H:i:s', $payload->installed);
+            $data['history']['date_failed']     =  empty($payload->failed) ? 'n/a' : date('D d-M-Y H:i:s', $payload->failed);
+            $data['history']['wan_macaddress']  =  $payload->wan_macaddress;
+            $data['history']['active']          =  $payload->active;
+            $data['history']['enabled']         =  $payload->enabled;
+            $data['history']['edited_wifi_ssid']=  $payload->wifi_ssid_edited;
+
+        } else {
+            $data[] = 'Console not allowed my guy. ';
+        }
+        return $data;
+    }
+
+    /**
+     * Update ownership history
+     *
+     * @author [patrick Mutwiri] [<patwiri@gmail.com>]
+     * @since [v2.5]
+     * @return Array
+     */
+    public static function updateAssignment(Request $request){
+        $serial = $request->serial;
+        $user   = isset($request->uid) ? $request->uid : '';
+        $date   = isset($request->date) ? $request->date : '';
+        $newAssignment = array();
+        $message = array();
+        if(empty($serial)) {
+            $message['message'] = 'no serial found';
+        } else {
+            $device = Asset::where('asset_tag', $serial)->get();
+            if($device) {
+                $deviceId = $device->id;
+                $message['message'] = 'device found';
+                $history = $device->assignment_history;
+                $message['history'] = $history;
+                $oldAssignment = json_decode($history);
+                if(empty($uid)) {
+                    $message['message'] = 'user not found';
+                }
+                if(empty($date)) {
+                    $message['message'] = 'date not found';
+                } 
+                if(empty($uid) && empty($date)) {
+                    $message['message'] = 'user & date not found';
+                }
+                $newAssignment = array(
+                    'user' => $user,
+                    'date' => $date
+                );
+                $updatevalue = array_merge($oldAssignment,$newAssignment);
+                $updateDevice = Asset::find($deviceId);
+                $updateDevice->assignment_history = json_encode($updatevalue);
+                if($updateDevice->save()) {
+                    error_log('device updated....');
+                    $message['message'] = 'device assignment history updated';
+                    $message['history'] = $updatevalue;
+                    //TODO: mail admin??
+                }
+            } else {
+                $message['message'] = 'no device found';
+            }
+        }
+        return response()->json($message);
     }
 
 

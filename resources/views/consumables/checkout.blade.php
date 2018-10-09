@@ -76,6 +76,17 @@
             </div>
           </div>
           
+          <!-- Checkout/Checkin Date -->
+          <div class="form-group {{ $errors->has('checkout_at') ? 'error' : '' }}">
+            {{ Form::label('name', trans('admin/hardware/form.checkout_date'), array('class' => 'col-md-3 control-label')) }}
+            <div class="col-md-7">
+                <div class="input-group date c-xx-ol-md-5" data-provide="datepicker" data-date-format="yyyy-mm-dd" data-date-end-date="0d">
+                    <input type="text" class="form-control" placeholder="{{ trans('general.select_date') }}" name="checkout_at" id="checkout_at" value="{{ Input::old('checkout_at') }}">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                </div>
+              {!! $errors->first('checkout_at', '<span class="alert-msg"><i class="fa fa-times"></i> :message</span>') !!}
+            </div>
+          </div>
           <!-- Note -->
           <div class="form-group {{ $errors->has('note') ? 'error' : '' }}">
             <label for="note" class="col-md-3 control-label">{{ trans('admin/hardware/form.notes') }}</label>
