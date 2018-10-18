@@ -769,6 +769,20 @@ class AssetsController extends Controller
         return redirect()->route("hardware.index")->with('error', trans('admin/hardware/message.checkin.error'));
     }
 
+    
+    /**
+    * Update device assignment history
+    * Is silence is golden?
+    * @author [P. Mutwiri] [<patwiri@gmail.com>]
+    * @param varchar $assetserial
+    * @since [v1.0]
+    * @return response
+    */
+    public function xupdateAssignment(Request $request) {
+        $update = Helper::updateAssignment($request);
+        return response()->json($update);
+    }
+
     /**
     * Returns a view that presents information from admin about an asset for detail history view.
     *
@@ -777,11 +791,33 @@ class AssetsController extends Controller
     * @since [v1.0]
     * @return response
     */
-    public function assignmentHistory($serial = null)
+    public function assignmentHistory($id)
     {
-        $assignmentHistory = Helper::getCustomerDevices($serial);
-        return response()->json($assignmentHistory);
-        //dd($assignmentHistory);
+        $asset = Asset::find($id);
+        $this->authorize('view', $asset);
+        $current    = $asset->assignment_history;
+        $fromAdmin  = Helper::getCustomerDevices($asset->asset_tag);
+        $fromAdmin  = json_encode($fromAdmin);
+        if(empty($current)):
+            $asset->assignment_history = $fromAdmin;
+            if($asset->save()):
+                error_log('ownership updated for device '.$asset->asset_tag);
+            endif;
+        elseif ($current != $fromAdmin):
+            $merged         = json_encode(array_merge(json_decode($current, true),json_decode($fromAdmin, true)));
+            $asset->assignment_history = $merged;
+            if($asset->save()):
+                error_log('ownership updated for device '.$asset->asset_tag);
+            endif;
+        else:
+            // nothing
+            error_log('all good...use local');
+            $assignmentHistory = json_decode($current);
+        endif;
+        $asset = Asset::find($id);
+        $assignmentHistory = json_decode($asset->assignment_history, true);
+
+        return $assignmentHistory;
     }
 
     /**
@@ -792,7 +828,7 @@ class AssetsController extends Controller
     * @since [v1.0]
     * @return View
     */
-    public function show($assetId = null)
+    public function show($assetId = null, Request $request=null)
     {
 
         $asset = Asset::withTrashed()->find($assetId);
@@ -821,11 +857,12 @@ class AssetsController extends Controller
                 'display' => $settings->qr_code == '1',
                 'url' => route('qr_code/hardware', $asset->id)
             );
-
-            return view('hardware/view', compact('asset', 'qr_code', 'settings'))
+            //$ownership      = array();
+            $ownership    = array($this->assignmentHistory($asset->id));
+            return view('hardware/view', compact('ownership','asset', 'qr_code', 'settings'))
                 ->with('use_currency', $use_currency)->with('audit_log', $audit_log);
         }
-
+        
         return redirect()->route('hardware.index')->with('error', trans('admin/hardware/message.does_not_exist'));
     }
 

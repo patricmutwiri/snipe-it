@@ -735,42 +735,44 @@
         </div> <!-- /.tab-pane maintenances -->
 
         <div class="tab-pane fade" id="assignment_history">
-          <!-- checked out assets table -->
+          <!-- device user assignment history -->
           <div class="row">
             <div class="col-md-12">
-            <table class="table table-striped snipe-table"
-                  id="assignmentHistory"
-                  data-pagination="true"
-                  data-id-table="assignmentHistory"
-                  data-search="true"
-                  data-toggle="table"
-                  data-side-pagination="server"
-                  data-show-columns="true"
-                  data-show-refresh="true"
-                  data-show-export="true"
-                  data-method="post"
-                  data-export-options='{
-                     "fileName": "export-asset-{{ $asset->id }}-assignment-history",
-                     "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
-                   }'
-                  data-url="{{ route('api.asset.assignmenthistory', ['id' => $asset->id, 'item_type' => 'asset']) }}"
-                  data-cookie-id-table="assignmentHistory">
-                  <caption class="align-center">Assignment History</caption>
+            <table class="table table-striped" id="assignmentHistory">
                 <thead>
                   <tr>             
-                    <th class="col-xs-2" data-visible="true" data-field="device_id"> Device ID</th>
-                    <th class="col-xs-2" data-sortable="true" data-visible="true" data-field="customerid"> Customer ID</th>
-                    <th class="col-xs-2" data-visible="true" data-field="staffuid"> Staff ID</th>
-                    <th class="col-xs-2" data-visible="true" data-field="date_added"> Date Added</th>
-                    <th class="col-xs-2" data-visible="true" data-field="date_installed"> Date Installed</th>
-                    <th class="col-xs-2" data-visible="true" data-field="date_failed"> Date Failed</th>
-                    <th class="col-xs-2" data-visible="true" data-field="wan_macaddress"> MAC Address</th>
-                    <th class="col-xs-2" data-visible="true" data-field="active"> Active Status </th>
-                    <th class="col-xs-2" data-visible="true" data-html="enabled" data-field="enabled"> Enabled Status</th>
-                    <th class="col-xs-2" data-visible="true" data-field="edited_wifi_ssid"> Custom WIFI SSID</th>
+                    <th class="col-xs-2">Device ID</th>
+                    <th class="col-xs-2">Customer ID</th>
+                    <th class="col-xs-2">Staff ID</th>
+                    <th class="col-xs-2">Date Added</th>
+                    <th class="col-xs-2">Date Activated</th>
+                    <th class="col-xs-2">Date Failed</th>
+                    <th class="col-xs-2">MAC Address</th>
+                    <!-- <th class="col-xs-2">Active Status</th> -->
+                    <th class="col-xs-2">Enabled Status</th>
+                    <th class="col-xs-2">Custom WIFI SSID</th>
+                    <th class="col-xs-2">Action</th>
                   </tr>
                 </thead>
-                <tbody></tbody>
+                @if(count($ownership[0]) >= 4 )
+                    @foreach($ownership as $k => $owner)
+                      <tr>
+                        <td class="col-xs-2"><a href="{{ @$owner['cpe_url'] }}" target="_blank">{{ @$owner['id'] }}</a></td>
+                        <td class="col-xs-1"><a href="{{ @$owner['base'].'/user/'.$owner['uid'] }}" target="_blank">{{ @$owner['uid'] }} </a></td>
+                        <td class="col-xs-1"><a href="{{ @$owner['base'].'/user/'.$owner['staffuid'] }}" target="_blank">{{ @$owner['staffuid'] }}</a></td>
+                        <td class="col-xs-2">{{ @$owner['date_added'] }}</td>
+                        <td class="col-xs-2">{{ @$owner['date_installed'] }}</td>
+                        <td class="col-xs-2">{{ @$owner['date_failed'] }}</td>
+                        <td class="col-xs-2">{{ @$owner['wan_macaddress'] }}</td>
+                        <!-- <td class="col-xs-1">{{ @$owner['active'] }}</td> -->
+                        <td class="col-xs-1">{{ @$owner['enabled'] }}</td>
+                        <td class="col-xs-2">{{ @$owner['wifi_ssid_edited'] }}</td>
+                        <td class="col-xs-2">{{ @$owner['action'] }}</td>
+                      </tr>
+                    @endforeach
+                @else
+                    <tr><td colspan="10" class="text-center">{{ @$ownership[0]['message'] }}</td></tr>
+                @endif
               </table>
             </div>
           </div> <!-- /.row -->

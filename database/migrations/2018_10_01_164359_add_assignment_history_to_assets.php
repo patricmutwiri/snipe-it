@@ -14,7 +14,7 @@ class AddAssignmentHistoryToAssets extends Migration
     public function up()
     {
         Schema::table('assets', function (Blueprint $table) {
-            $table->string('assignment_history')->nullable();
+            $table->longText('assignment_history')->nullable();
         });
     }
 

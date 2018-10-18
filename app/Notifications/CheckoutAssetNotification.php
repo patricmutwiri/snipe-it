@@ -70,6 +70,7 @@ class CheckoutAssetNotification extends Notification
         // Make sure the target is a user and that its appropriate to send them an email
         if (($this->target_type == \App\Models\User::class) && (($this->item->requireAcceptance() == '1') || ($this->item->getEula())))
         {
+            \Log::debug('use mail');
             $notifyBy[] = 'mail';
         }
         return $notifyBy;

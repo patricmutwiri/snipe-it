@@ -61,6 +61,7 @@
             },
             exportTypes: ['csv', 'excel', 'doc', 'txt','json', 'xml', 'pdf'],
         });
+        
     });
 
     function dateRowCheckStyle(value) {

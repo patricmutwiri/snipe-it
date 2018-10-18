@@ -24,6 +24,14 @@ return [
     'name' => env('SITE_NAME', 'Snipe-IT'),
 
     /*
+    / -------------------------
+    / API endpoint base
+    / -------------------------
+    */
+    'stag_endpoint'  => env('STAG_ENDPOINT',''),
+    'live_endpoint'  => env('LIVE_ENDPOINT',''),
+    'local_endpoint' => env('LOCAL_ENDPOINT',''),
+    /*
     |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------

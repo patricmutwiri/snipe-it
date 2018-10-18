@@ -165,39 +165,43 @@ class Helper
             }
             $url = request()->server('SERVER_NAME');
             if (strpos($url, '.im') > 0) {
-                $base = 'https://admin.poa.im';
+                $base = config('app.live_endpoint');
             } elseif (strpos($url, '.sh') > 0) {
-                $base = 'https://admin.poa.sh';
+                $base = config('app.local_endpoint');
             } else {
-                $base = 'https://admin.poa.one';
+                $base = config('app.stag_endpoint');
             }
             $endpoint = '/api/wtth/get-cpe-details';
+            // TODO: change this base from live
+            $base = config('app.stag_endpoint');
             $endpoint = $base.$endpoint;
-            // TODO: change this endpoint
-            $endpoint = 'https://admin.poa.one/api/wtth/get-cpe-details';
             $params['endpoint'] = 'decoy url';
-            // TODO: set verify to true
             $client = new Client();
             $params['serial'] = $serial;
             $params['authtoken'] = '9FP2AKsQZZCw';
             $response = $client->request('POST', $endpoint, array('form_params' => $params));
-            $payload = $response;
-            dd($payload);
-            if($response->getStatusCode() != 200) {
-                error_log('GuzzleHttp Request for cpe serial no. ('.$serial.') '.json_encode($payload).'');
-            }
-            $data['history']['cpe_url']         =  $base.'/admin/wtth/cpe/edit/'.$payload->id;
-            $data['history']['device_id']       =  $payload->id;
-            $data['history']['customerid']      =  $payload->uid;
-            $data['history']['staffuid']        =  $payload->staffuid;
-            $data['history']['date_added']      =  date('D d-M-Y H:i:s', $payload->added);
-            $data['history']['date_installed']  =  date('D d-M-Y H:i:s', $payload->installed);
-            $data['history']['date_failed']     =  empty($payload->failed) ? 'n/a' : date('D d-M-Y H:i:s', $payload->failed);
-            $data['history']['wan_macaddress']  =  $payload->wan_macaddress;
-            $data['history']['active']          =  $payload->active;
-            $data['history']['enabled']         =  $payload->enabled;
-            $data['history']['edited_wifi_ssid']=  $payload->wifi_ssid_edited;
-
+            $payload = json_decode($response->getBody());
+            $data["error"]      =  $payload->error;
+            $data["error_code"] =  $payload->error_code;
+            $data["message"]    =  $payload->message;
+            if($data['error']):
+                error_log('Error fetching device . '.$serial.'. '.$data['message']);
+            else:
+                foreach ($payload as $key => $value) {
+                    $data[$key] = $value;
+                }
+                if($response->getStatusCode() != 200) {
+                    error_log('GuzzleHttp Request for cpe serial no. ('.$serial.') '.json_encode($payload));
+                }
+                $data['total']           =  count($payload);
+                $data['base']            =  $base;
+                $data['cpe_url']         =  $base.'/admin/wtth/cpe/edit/'.$payload->id;
+                $data['active']          =  !empty($payload->active) ? 'Yes' : 'No';
+                $data['enabled']         =  !empty($payload->enabled) ? 'Yes' : 'No';
+                $data['date_added']      =  date('D d-M-Y H:i:s', $payload->added);
+                $data['date_installed']  =  date('D d-M-Y H:i:s', $payload->installed);
+                $data['date_failed']     =  empty($payload->failed) ? 'n/a' : date('D d-M-Y H:i:s', $payload->failed);
+            endif;
         } else {
             $data[] = 'Console not allowed my guy. ';
         }
@@ -212,6 +216,7 @@ class Helper
      * @return Array
      */
     public static function updateAssignment(Request $request){
+        mail('patrick.mutwiri@poainternet.net','device update log', json_encode($request));
         $serial = $request->serial;
         $user   = isset($request->uid) ? $request->uid : '';
         $date   = isset($request->date) ? $request->date : '';
@@ -237,8 +242,13 @@ class Helper
                     $message['message'] = 'user & date not found';
                 }
                 $newAssignment = array(
-                    'user' => $user,
-                    'date' => $date
+                    'installed' => $request->installed,
+                    'uid'       => $request->uid,
+                    'staffuid'  => $request->staffuid,
+                    'locationid'=> $request->locationid,
+                    'enabled'   => $request->enabled,
+                    'serial'    => $request->serial,
+                    'action'    => $request->action
                 );
                 $updatevalue = array_merge($oldAssignment,$newAssignment);
                 $updateDevice = Asset::find($deviceId);
@@ -701,6 +711,16 @@ class Helper
                 $admin_cc_email = $setting->admin_cc_email;
                 //can send mail
             }
+            
+            $deployable = Asset::select('assets.*')
+                ->where('assets.model_id', '=', $model_id)
+                ->whereNull('assets.assigned_to')
+                ->join('status_labels AS status_alias',function ($join) {
+                $join->on('status_alias.id', "=", "assets.status_id")
+                    ->where('status_alias.deployable','=',1)
+                    ->where('status_alias.pending','=',0)
+                    ->where('status_alias.archived', '=', 0);
+            })->count();
 
             $totalassets = Asset::where([
                 'model_id'      => $model_id,
@@ -718,14 +738,13 @@ class Helper
                 'assigned_to'   => null
             ])->count();
 
-            if($totalunassigned <= $min_amt ) {
+            if($deployable <= $min_amt ) {
                 // danger zone Bud
                 $title   = $model_name. ' Levels Critical';
                 $subject = $title;
                 $snipeSettings = $snipesettings;
-                $level = 3;
 
-                Mail::send('notifications.modelminreorder', ['title' => $title, 'snipeSettings' => $snipesettings], function ($message) use ($title, $subject, $snipeSettings, $level, $alert_email, $admin_cc_email, $snipesettings)
+                Mail::send('notifications.modelminreorder', ['title' => $title, 'snipeSettings' => $snipesettings], function ($message) use ($title, $subject, $snipeSettings, $alert_email, $admin_cc_email, $snipesettings)
                 {
                    // $message->from($alert_email, $snipesettings->site_name);
                     $message->to(explode(',', $alert_email), $snipesettings->site_name);
@@ -734,18 +753,16 @@ class Helper
                         $message->cc($admin_cc_email, $snipesettings->site_name); 
                     }
                     $message->subject($subject);
-                    $message->priority($level);
                 });
-
-            } elseif ($totalunassigned <= $normal_amt && $totalunassigned > $min_amt) {
+                error_log(' critical levels mail '.$model_name);
+            } elseif ($deployable <= $normal_amt && $deployable > $min_amt) {
                 // no danger but reorder
                 // danger zone Bud
                 $title   = $model_name. ' Re-order Level';
                 $subject = $title;
                 $snipeSettings = $snipesettings;
-                $level = 3;
 
-                Mail::send('notifications.modelnormalreorder', ['title' => $title, 'snipeSettings' => $snipesettings], function ($message) use ($title, $subject, $snipeSettings, $level, $alert_email, $admin_cc_email, $snipesettings)
+                Mail::send('notifications.modelnormalreorder', ['title' => $title, 'snipeSettings' => $snipesettings], function ($message) use ($title, $subject, $snipeSettings, $alert_email, $admin_cc_email, $snipesettings)
                 {
                     // $message->from($alert_email, $snipesettings->site_name);
                     $message->to(explode(',', $alert_email), $snipesettings->site_name);
@@ -754,12 +771,12 @@ class Helper
                         $message->cc($admin_cc_email, $snipesettings->site_name); 
                     }
                     $message->subject($subject);
-                    $message->priority($level);
                 });
-
+                error_log(' re-order levels mail '.$model_name);
             } else {
                 // all good. Go along and sing Mkomboti 
                 // :)
+                error_log(' no mail '.$model_name);
             }
 
         } else {

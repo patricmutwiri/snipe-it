@@ -15,7 +15,6 @@ use Illuminate\Http\Request;
 
 
 Route::group(['prefix' => 'v1','namespace' => 'Api'], function () {
-
     Route::group(['prefix' => 'account'], function () {
         Route::get('requestable/hardware',
             [
@@ -334,13 +333,6 @@ Route::group(['prefix' => 'v1','namespace' => 'Api'], function () {
             [
                 'as' => 'api.asset.assignmenthistory',
                 'uses' => 'AssetsController@assignmentHistory'
-            ]
-        );
-
-        Route::post('update-device-history',
-            [
-                'as' => 'api.asset.updateassignment',
-                'uses' => 'AssetsController@updateAssignment'
             ]
         );
 

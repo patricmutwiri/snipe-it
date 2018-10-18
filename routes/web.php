@@ -1,5 +1,11 @@
 <?php
+Route::post('test',[
+    'uses' => 'assignmentController@index'
+]);
 
+Route::get('test',[
+    'uses' => 'assignmentController@index'
+]);
 
 Route::group(['middleware' => 'auth'], function () {
     /*

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AssetRequest;
 use App\Http\Requests\AssetCheckoutRequest;
 use App\Http\Transformers\AssetsTransformer;
+use App\Http\Transformers\ActionlogsTransformer;
 use App\Models\Asset;
 use App\Models\AssetModel;
 use App\Models\Company;
@@ -280,7 +281,7 @@ class AssetsController extends Controller
         $assets = $assets->skip($offset)->take($limit)->get();
         return (new AssetsTransformer)->transformAssets($assets, $total);
     }
-
+    
 
     /**
      * Returns JSON with information about an asset (by tag) for detail view.
@@ -318,38 +319,7 @@ class AssetsController extends Controller
         return response()->json(Helper::formatStandardApiResponse('error', null, 'Asset not found'), 404);
 
     }
-    /**
-    * Returns a view that presents information from admin about an asset for detail history view.
-    *
-    * @author [P. Mutwiri] [<patwiri@gmail.com>]
-    * @param varchar $assetserial
-    * @since [v1.0]
-    * @return response
-    */
-    public function assignmentHistory(Request $request)
-    {
-        $asset = Asset::find($request->id);
-        $this->authorize('view', $asset);
-        $current = $asset->assignment_history;
-        $assignmentHistory = Helper::getCustomerDevices($asset->asset_tag);
-        
-        echo json_encode($assignmentHistory);
-    }
      
-    /**
-    * new device ownership api
-    *
-    * @author [P. Mutwiri] [<patwiri@gmail.com>]
-    * @param varchar $request
-    * @since [v1.0]
-    * @return response
-    */
-
-    public function updateAssignment(Request $request) {
-        $update = Helper::updateAssignment($request);
-        return response()->json($update);
-    }
-
      /**
      * Returns JSON with information about an asset for detail view.
      *
