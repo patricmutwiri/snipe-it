@@ -7,20 +7,16 @@
 | Register all the asset routes.
 |
 */
-Route::post('update-device-history',[
-    'as' => 'asset.updateassignment',
-    'uses' => 'assignmentController@updateAssignment'
-]);
 
-Route::get('update-device-history',[
-    'as' => 'asset.updateassignment',
-    'uses' => 'assignmentController@updateAssignment'
-]);
 
 Route::group(
     ['prefix' => 'hardware',
     'middleware' => ['auth']],
     function () {
+        /*Route::post('update-device-history',[
+            'as' => 'updateassignment',
+            'uses' => 'AssetsController@updateAssignment'
+        ]);*/
         Route::get( 'bulkaudit',  [
             'as' => 'assets.bulkaudit',
             'uses' => 'AssetsController@quickScan'

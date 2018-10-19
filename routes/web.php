@@ -1,11 +1,4 @@
 <?php
-Route::post('test',[
-    'uses' => 'assignmentController@index'
-]);
-
-Route::get('test',[
-    'uses' => 'assignmentController@index'
-]);
 
 Route::group(['middleware' => 'auth'], function () {
     /*
@@ -473,6 +466,13 @@ Route::get(
 
 Route::group(['middleware' => 'web'], function () {
     //Route::auth();
+    Route::post(
+        'update-device-history',
+        [
+            'as' => 'updateassignment',
+            'uses' => 'AssetsController@updateAssignment' ]
+        );
+
     Route::get(
         'login',
         [
@@ -499,6 +499,3 @@ Route::group(['middleware' => 'web'], function () {
 });
 
 Auth::routes();
-
-
-

@@ -13,10 +13,10 @@ class assignmentController extends Controller
      *
      * @return void
      */
-    public function __construct()
-    {
-        $this->middleware('guest');
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('guest');
+    // }
     public function index()
     {
     	return 'test';
@@ -30,7 +30,7 @@ class assignmentController extends Controller
     * @return response
     */
     public function updateAssignment(Request $request) {
-    	dd($request);
+    	//dd($request);
         $update = Helper::updateAssignment($request);
         return response()->json($update);
     }

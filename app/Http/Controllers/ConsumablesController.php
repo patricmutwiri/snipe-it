@@ -285,7 +285,7 @@ class ConsumablesController extends Controller
         $remaining = $consumable->numRemaining();
         if($pieces > $remaining) {
             return redirect()->route('checkout/consumable', $consumable)->with('error', 'Can\'t take more than available stock pieces.');
-        }
+        } 
         if($pieces > 1) {
             $addnote = 'Checked out '.$pieces.' Pieces. ';
         }
