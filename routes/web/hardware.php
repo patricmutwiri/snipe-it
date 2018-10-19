@@ -12,7 +12,7 @@ Route::post('update-device-history',[
     'uses' => 'assignmentController@updateAssignment'
 ]);
 
-Route::post('update-device-history',[
+Route::get('update-device-history',[
     'as' => 'asset.updateassignment',
     'uses' => 'assignmentController@updateAssignment'
 ]);

@@ -30,6 +30,7 @@ class assignmentController extends Controller
     * @return response
     */
     public function updateAssignment(Request $request) {
+    	dd($request);
         $update = Helper::updateAssignment($request);
         return response()->json($update);
     }

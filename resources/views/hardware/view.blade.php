@@ -745,12 +745,13 @@
                     <th class="col-xs-2">Customer ID</th>
                     <th class="col-xs-2">Staff ID</th>
                     <th class="col-xs-2">Date Added</th>
-                    <th class="col-xs-2">Date Activated</th>
+                    <th class="hidden col-xs-2">Date Activated</th>
                     <th class="col-xs-2">Date Failed</th>
                     <th class="col-xs-2">MAC Address</th>
-                    <!-- <th class="col-xs-2">Active Status</th> -->
+                    <!-- <th class="col-xs-2 hidden">Active Status</th> -->
                     <th class="col-xs-2">Enabled Status</th>
                     <th class="col-xs-2">Custom WIFI SSID</th>
+                    <th class="col-xs-2">Timestamp</th>
                     <th class="col-xs-2">Action</th>
                   </tr>
                 </thead>
@@ -761,12 +762,13 @@
                         <td class="col-xs-1"><a href="{{ @$owner['base'].'/user/'.$owner['uid'] }}" target="_blank">{{ @$owner['uid'] }} </a></td>
                         <td class="col-xs-1"><a href="{{ @$owner['base'].'/user/'.$owner['staffuid'] }}" target="_blank">{{ @$owner['staffuid'] }}</a></td>
                         <td class="col-xs-2">{{ @$owner['date_added'] }}</td>
-                        <td class="col-xs-2">{{ @$owner['date_installed'] }}</td>
+                        <td class="col-xs-2 hidden">{{ @$owner['date_installed'] }}</td>
                         <td class="col-xs-2">{{ @$owner['date_failed'] }}</td>
                         <td class="col-xs-2">{{ @$owner['wan_macaddress'] }}</td>
-                        <!-- <td class="col-xs-1">{{ @$owner['active'] }}</td> -->
+                        <!-- <td class="col-xs-1 hidden">{{ @$owner['active'] }}</td> -->
                         <td class="col-xs-1">{{ @$owner['enabled'] }}</td>
                         <td class="col-xs-2">{{ @$owner['wifi_ssid_edited'] }}</td>
+                        <td class="col-xs-2">{{ @$owner['timestamp'] }}</td>
                         <td class="col-xs-2">{{ @$owner['action'] }}</td>
                       </tr>
                     @endforeach

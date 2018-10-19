@@ -778,7 +778,7 @@ class AssetsController extends Controller
     * @since [v1.0]
     * @return response
     */
-    public function xupdateAssignment(Request $request) {
+    public function updateAssignment(Request $request) {
         $update = Helper::updateAssignment($request);
         return response()->json($update);
     }

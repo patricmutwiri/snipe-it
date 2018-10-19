@@ -243,6 +243,7 @@ class Helper
                 }
                 $newAssignment = array(
                     'installed' => $request->installed,
+                    'timestamp' => $request->timestamp,
                     'uid'       => $request->uid,
                     'staffuid'  => $request->staffuid,
                     'locationid'=> $request->locationid,
@@ -254,7 +255,7 @@ class Helper
                 $updateDevice = Asset::find($deviceId);
                 $updateDevice->assignment_history = json_encode($updatevalue);
                 if($updateDevice->save()) {
-                    error_log('device updated....');
+                    error_log('device '.$serial.' updated....');
                     $message['message'] = 'device assignment history updated';
                     $message['history'] = $updatevalue;
                     //TODO: mail admin??

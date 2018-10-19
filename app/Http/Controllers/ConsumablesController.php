@@ -248,10 +248,21 @@ class ConsumablesController extends Controller
             return redirect()->route('consumables.index')->with('error', trans('admin/consumables/message.not_found'));
         }
         $pieces = Input::get('pieces');
-        for ($i=1; $i <= $pieces; $i++) { 
-            $this->postCheckout($consumableId);
-            if ($i == $pieces) {
-                return redirect()->route('consumables.index')->with('success', trans('admin/consumables/message.checkout.success'));
+        $assigned_to = Input::get('assigned_to');
+        if(empty($assigned_to)) {
+            return redirect()->route('consumables.index')->with('error', 'No user selected.');
+        }
+        if(!is_numeric($pieces)) {
+            return redirect()->route('consumables.index')->with('error', 'Check pieces value please. Number needed.');
+        }
+        if($pieces <= 0) {
+            return redirect()->route('consumables.index')->with('error', 'Check pieces quantity please');
+        } else {
+            for ($i=1; $i <= $pieces; $i++) { 
+                $this->postCheckout($consumableId);
+                if ($i == $pieces) {
+                    return redirect()->route('consumables.index')->with('success', trans('admin/consumables/message.checkout.success'));
+                }
             }
         }
     }
