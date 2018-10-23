@@ -173,7 +173,7 @@ class Helper
             }
             $endpoint = '/api/wtth/get-cpe-details';
             // TODO: change this base from live
-            $base = config('app.stag_endpoint');
+            // $base = config('app.stag_endpoint');
             $endpoint = $base.$endpoint;
             $params['endpoint'] = 'decoy url';
             $client = new Client();
@@ -215,17 +215,22 @@ class Helper
      * @since [v2.5]
      * @return Array
      */
-    public static function updateAssignment(Request $request){
+    public static function updateAssignment($request, $device){
         mail('patrick.mutwiri@poainternet.net','device update log', json_encode($request));
-        $serial = $request->serial;
-        $user   = isset($request->uid) ? $request->uid : '';
-        $date   = isset($request->date) ? $request->date : '';
+        $serial = $request['serial'];
+        $user   = isset($request['uid']) ? $request['uid'] : '';
+        $date   = isset($request['date']) ? $request['date'] : '';
+        $count = count($request);
+        if($count <= 4) {
+            return 'not enough data to continue';
+            die();
+        }
         $newAssignment = array();
         $message = array();
         if(empty($serial)) {
             $message['message'] = 'no serial found';
         } else {
-            $device = Asset::where('asset_tag', $serial)->get();
+            //$device = Asset::where('asset_tag', $serial)->get();
             if($device) {
                 $deviceId = $device->id;
                 $message['message'] = 'device found';
@@ -237,19 +242,25 @@ class Helper
                 }
                 if(empty($date)) {
                     $message['message'] = 'date not found';
+                }
+                if(empty($request['action'])) {
+                    $message['message'] = 'action not found';
+                }
+                if(empty($request['timestamp'])) {
+                    $message['message'] = 'timestamp not found';
                 } 
                 if(empty($uid) && empty($date)) {
                     $message['message'] = 'user & date not found';
                 }
                 $newAssignment = array(
-                    'installed' => $request->installed,
-                    'timestamp' => $request->timestamp,
-                    'uid'       => $request->uid,
-                    'staffuid'  => $request->staffuid,
-                    'locationid'=> $request->locationid,
-                    'enabled'   => $request->enabled,
-                    'serial'    => $request->serial,
-                    'action'    => $request->action
+                    'installed' => $request['installed'],
+                    'timestamp' => $request['timestamp'],
+                    'uid'       => $request['uid'],
+                    'staffuid'  => $request['staffuid'],
+                    'locationid'=> $request['locationid'],
+                    'enabled'   => $request['enabled'],
+                    'serial'    => $request['serial'],
+                    'action'    => $request['action']
                 );
                 $updatevalue = array_merge($oldAssignment,$newAssignment);
                 $updateDevice = Asset::find($deviceId);

@@ -461,18 +461,9 @@ Route::get(
     'middleware' => ['auth'],
     'uses' => 'DashboardController@getIndex' ]
 );
-
-
-
+Route::resource('assignment', 'assignmentController');
 Route::group(['middleware' => 'web'], function () {
     //Route::auth();
-    Route::post(
-        'update-device-history',
-        [
-            'as' => 'updateassignment',
-            'uses' => 'AssetsController@updateAssignment' ]
-        );
-
     Route::get(
         'login',
         [

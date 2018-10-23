@@ -13,10 +13,6 @@ Route::group(
     ['prefix' => 'hardware',
     'middleware' => ['auth']],
     function () {
-        /*Route::post('update-device-history',[
-            'as' => 'updateassignment',
-            'uses' => 'AssetsController@updateAssignment'
-        ]);*/
         Route::get( 'bulkaudit',  [
             'as' => 'assets.bulkaudit',
             'uses' => 'AssetsController@quickScan'
