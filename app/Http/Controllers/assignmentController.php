@@ -35,7 +35,7 @@ class assignmentController extends Controller
             // call update
             $request['serial'] = $serial;
             $update = $this->update($request,$asset);
-            dd($update);
+            error_log(' cpe update ownership hit .. '.json_encode($update).' -> request data '.json_encode($request));
         endif;
     }
 

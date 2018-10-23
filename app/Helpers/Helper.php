@@ -184,11 +184,14 @@ class Helper
             $data["error"]      =  $payload->error;
             $data["error_code"] =  $payload->error_code;
             $data["message"]    =  $payload->message;
+            $avoidKeys = array('signature', 'test');
             if($data['error']):
                 error_log('Error fetching device . '.$serial.'. '.$data['message']);
             else:
                 foreach ($payload as $key => $value) {
-                    $data[$key] = $value;
+                    if(!in_array($key, $avoidKeys)):
+                        $data[$key] = $value;
+                    endif;
                 }
                 if($response->getStatusCode() != 200) {
                     error_log('GuzzleHttp Request for cpe serial no. ('.$serial.') '.json_encode($payload));
