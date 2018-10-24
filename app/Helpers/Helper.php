@@ -168,43 +168,48 @@ class Helper
                 $base = config('app.live_endpoint');
             } elseif (strpos($url, '.sh') > 0) {
                 $base = config('app.local_endpoint');
+                $base = config('app.stag_endpoint');
             } else {
                 $base = config('app.stag_endpoint');
             }
             $endpoint = '/api/wtth/get-cpe-details';
-            // TODO: change this base from live
-            // $base = config('app.stag_endpoint');
             $endpoint = $base.$endpoint;
             $params['endpoint'] = 'decoy url';
             $client = new Client();
             $params['serial'] = $serial;
             $params['authtoken'] = '9FP2AKsQZZCw';
-            $response = $client->request('POST', $endpoint, array('form_params' => $params));
-            $payload = json_decode($response->getBody());
-            $data["error"]      =  $payload->error;
-            $data["error_code"] =  $payload->error_code;
-            $data["message"]    =  $payload->message;
-            $avoidKeys = array('signature', 'test');
-            if($data['error']):
-                error_log('Error fetching device . '.$serial.'. '.$data['message']);
-            else:
-                foreach ($payload as $key => $value) {
-                    if(!in_array($key, $avoidKeys)):
-                        $data[$key] = $value;
-                    endif;
-                }
-                if($response->getStatusCode() != 200) {
-                    error_log('GuzzleHttp Request for cpe serial no. ('.$serial.') '.json_encode($payload));
-                }
-                $data['total']           =  count($payload);
-                $data['base']            =  $base;
-                $data['cpe_url']         =  $base.'/admin/wtth/cpe/edit/'.$payload->id;
-                $data['active']          =  !empty($payload->active) ? 'Yes' : 'No';
-                $data['enabled']         =  !empty($payload->enabled) ? 'Yes' : 'No';
-                $data['date_added']      =  date('D d-M-Y H:i:s', $payload->added);
-                $data['date_installed']  =  date('D d-M-Y H:i:s', $payload->installed);
-                $data['date_failed']     =  empty($payload->failed) ? 'n/a' : date('D d-M-Y H:i:s', $payload->failed);
-            endif;
+            $response = $client->request('POST', $endpoint, array('verify' => false, 'form_params' => $params));
+            if($response->getStatusCode() != 200) {
+                error_log('GuzzleHttp Request for cpe serial no. ('.$serial.') '.json_encode($response));
+                $data["error"]      =  '';
+                $data["error_code"] =  $response->getStatusCode();
+                $data["message"]    =  '';
+            } else {
+                $payload = json_decode($response->getBody());
+                $data["error"]      =  $payload->error;
+                $data["error_code"] =  $payload->error_code;
+                $data["message"]    =  $payload->message;
+                $avoidKeys = array('locationid','signed','signature','custom_ratelimit','ratelimit');
+                if($data['error']):
+                    error_log('Error fetching device . '.$serial.'. '.$data['message']);
+                else:
+                    foreach ($payload as $key => $value) {
+                        if(!in_array($key, $avoidKeys)):
+                            $data[$key] = $value;
+                        endif;
+                    }
+                    $data['total']           =  count($payload);
+                    $data['action']          =  'fetch from admin '.date('d-m-y H:i:s',time());
+                    $data['timestamp']       =   time();
+                    $data['base']            =  $base;
+                    $data['cpe_url']         =  $base.'/admin/wtth/cpe/edit/'.$payload->id;
+                    $data['active']          =  !empty($payload->active) ? 'Yes' : 'No';
+                    $data['enabled']         =  !empty($payload->enabled) ? 'Yes' : 'No';
+                    $data['date_added']      =  date('D d-M-Y H:i:s', $payload->added);
+                    $data['date_installed']  =  date('D d-M-Y H:i:s', $payload->installed);
+                    $data['date_failed']     =  empty($payload->failed) ? 'n/a' : date('D d-M-Y H:i:s', $payload->failed);
+                endif;
+            }
         } else {
             $data[] = 'Console not allowed my guy. ';
         }
@@ -222,7 +227,7 @@ class Helper
         mail('patrick.mutwiri@poainternet.net','device update log', json_encode($request));
         $serial = $request['serial'];
         $user   = isset($request['uid']) ? $request['uid'] : '';
-        $date   = isset($request['date']) ? $request['date'] : '';
+        $date   = isset($request['timestamp']) ? $request['timestamp'] : '';
         $count = count($request);
         if($count <= 4) {
             return 'not enough data to continue';
@@ -239,10 +244,10 @@ class Helper
                 $message['message'] = 'device found';
                 $history = $device->assignment_history;
                 $message['history'] = $history;
-                $oldAssignment = json_decode($history);
-                if(empty($uid)) {
-                    $message['message'] = 'user not found';
-                }
+                $oldAssignment = $history;
+                // if(empty($uid)) {
+                //     $message['message'] = 'user not found';
+                // }
                 if(empty($date)) {
                     $message['message'] = 'date not found';
                 }
@@ -252,9 +257,9 @@ class Helper
                 if(empty($request['timestamp'])) {
                     $message['message'] = 'timestamp not found';
                 } 
-                if(empty($uid) && empty($date)) {
-                    $message['message'] = 'user & date not found';
-                }
+                // if(empty($uid) && empty($date)) {
+                //     $message['message'] = 'user & date not found';
+                // }
                 $newAssignment = array(
                     'installed' => $request['installed'],
                     'timestamp' => $request['timestamp'],
@@ -265,17 +270,18 @@ class Helper
                     'serial'    => $request['serial'],
                     'action'    => $request['action']
                 );
-                $updatevalue = array_merge($oldAssignment,$newAssignment);
-                $updateDevice = Asset::find($deviceId);
+                $newAssignment  = json_encode($newAssignment);
+                $updatevalue    = array($oldAssignment, $newAssignment);
+                $updateDevice   = Asset::find($deviceId);
                 $updateDevice->assignment_history = json_encode($updatevalue);
                 if($updateDevice->save()) {
-                    error_log('device '.$serial.' updated....');
+                    error_log('device '.$serial.' updated with data '.json_encode($updatevalue));
                     $message['message'] = 'device assignment history updated';
                     $message['history'] = $updatevalue;
                     //TODO: mail admin??
                 }
             } else {
-                $message['message'] = 'no device found';
+                $message['message'] = 'device not found';
             }
         }
         return response()->json($message);

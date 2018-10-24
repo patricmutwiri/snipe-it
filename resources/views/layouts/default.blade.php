@@ -357,6 +357,7 @@
                        <i class="fa fa-cogs fa-fw"></i>
                    </a>
                </li>
+               
                @endcan
             </ul>
           </div>

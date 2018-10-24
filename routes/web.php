@@ -2,6 +2,11 @@
 
 Route::group(['middleware' => 'auth'], function () {
     /*
+    * View log
+    */
+    Route::resource('mylog', 'MylogController');
+    
+    /*
     * Companies
     */
     Route::resource('companies', 'CompaniesController', [
