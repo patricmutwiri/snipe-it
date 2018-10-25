@@ -132,37 +132,44 @@
           <!-- Navbar Right Menu -->
             <div class="navbar-custom-menu">
               <ul class="nav navbar-nav">
+                  @can('admin')
+                    <li {!! (Request::is('mylog*') ? ' class="active"' : '') !!}>
+                      <a href="{{ url('mylog') }}" title="Error log">
+                          <i class="fa fa-exclamation-triangle"></i>
+                      </a>
+                    </li>
+                  @endcan
                   @can('index', \App\Models\Asset::class)
                   <li {!! (Request::is('hardware*') ? ' class="active"' : '') !!}>
-                      <a href="{{ url('hardware') }}">
+                      <a href="{{ url('hardware') }}" title="Assets">
                           <i class="fa fa-barcode"></i>
                       </a>
                   </li>
                   @endcan
                   @can('view', \App\Models\License::class)
                   <li {!! (Request::is('licenses*') ? ' class="active"' : '') !!}>
-                      <a href="{{ route('licenses.index') }}">
+                      <a href="{{ route('licenses.index') }}" title="Licenses">
                           <i class="fa fa-floppy-o"></i>
                       </a>
                   </li>
                   @endcan
                   @can('index', \App\Models\Accessory::class)
                   <li {!! (Request::is('accessories*') ? ' class="active"' : '') !!}>
-                      <a href="{{ route('accessories.index') }}">
+                      <a href="{{ route('accessories.index') }}" title="Accessories">
                           <i class="fa fa-keyboard-o"></i>
                       </a>
                   </li>
                   @endcan
                   @can('index', \App\Models\Consumable::class)
                   <li {!! (Request::is('consumables*') ? ' class="active"' : '') !!}>
-                      <a href="{{ url('consumables') }}">
+                      <a href="{{ url('consumables') }}" title="Consumables">
                           <i class="fa fa-tint"></i>
                       </a>
                   </li>
                   @endcan
                   @can('view', \App\Models\Component::class)
                   <li {!! (Request::is('components*') ? ' class="active"' : '') !!}>
-                      <a href="{{ route('components.index') }}">
+                      <a href="{{ route('components.index') }}" title="Components">
                           <i class="fa fa-hdd-o"></i>
                       </a>
                   </li>

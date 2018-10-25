@@ -248,9 +248,9 @@ class Helper
                 // if(empty($uid)) {
                 //     $message['message'] = 'user not found';
                 // }
-                if(empty($date)) {
-                    $message['message'] = 'date not found';
-                }
+                // if(empty($date)) {
+                //     $message['message'] = 'date not found';
+                // }
                 if(empty($request['action'])) {
                     $message['message'] = 'action not found';
                 }
@@ -271,7 +271,7 @@ class Helper
                     'action'    => $request['action']
                 );
                 $newAssignment  = json_encode($newAssignment);
-                $updatevalue    = array($oldAssignment, $newAssignment);
+                $updatevalue    = array($oldAssignment, json_encode($newAssignment));
                 $updateDevice   = Asset::find($deviceId);
                 $updateDevice->assignment_history = json_encode($updatevalue);
                 if($updateDevice->save()) {
