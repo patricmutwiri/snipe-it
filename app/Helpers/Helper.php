@@ -224,12 +224,14 @@ class Helper
      * @return Array
      */
     public static function updateAssignment($request, $device){
-        mail('patrick.mutwiri@poainternet.net','device update log', json_encode($request));
-        $serial = $request['serial'];
-        $user   = isset($request['uid']) ? $request['uid'] : '';
-        $date   = isset($request['timestamp']) ? $request['timestamp'] : '';
-        $count = count($request);
+        $cpedata = $request->all();
+        mail('patrick.mutwiri@poainternet.net','device update log', json_encode($cpedata));
+        $serial = $cpedata['serial'];
+        $user   = isset($cpedata['uid']) ? $cpedata['uid'] : '';
+        $date   = isset($cpedata['timestamp']) ? $cpedata['timestamp'] : '';
+        $count = count($cpedata);
         if($count <= 4) {
+            error_log('not enough data to continue '.json_encode($cpedata));
             return 'not enough data to continue';
             die();
         }
@@ -242,43 +244,47 @@ class Helper
             if($device) {
                 $deviceId = $device->id;
                 $message['message'] = 'device found';
-                $history = $device->assignment_history;
-                $message['history'] = $history;
-                $oldAssignment = $history;
-                // if(empty($uid)) {
-                //     $message['message'] = 'user not found';
-                // }
-                // if(empty($date)) {
-                //     $message['message'] = 'date not found';
-                // }
-                if(empty($request['action'])) {
+                if(empty($cpedata['action'])) {
                     $message['message'] = 'action not found';
                 }
-                if(empty($request['timestamp'])) {
+                if(empty($cpedata['timestamp'])) {
                     $message['message'] = 'timestamp not found';
-                } 
-                // if(empty($uid) && empty($date)) {
-                //     $message['message'] = 'user & date not found';
-                // }
-                $newAssignment = array(
-                    'installed' => $request['installed'],
-                    'timestamp' => $request['timestamp'],
-                    'uid'       => $request['uid'],
-                    'staffuid'  => $request['staffuid'],
-                    'locationid'=> $request['locationid'],
-                    'enabled'   => $request['enabled'],
-                    'serial'    => $request['serial'],
-                    'action'    => $request['action']
-                );
-                $newAssignment  = json_encode($newAssignment);
-                $updatevalue    = array($oldAssignment, json_encode($newAssignment));
-                $updateDevice   = Asset::find($deviceId);
-                $updateDevice->assignment_history = json_encode($updatevalue);
-                if($updateDevice->save()) {
-                    error_log('device '.$serial.' updated with data '.json_encode($updatevalue));
+                }
+/*                $newAssignment = array(
+                    'installed' => $cpedata['installed'],
+                    'timestamp' => $cpedata['timestamp'],
+                    'uid'       => $cpedata['uid'],
+                    'staffuid'  => $cpedata['staffuid'],
+                    'locationid'=> $cpedata['locationid'],
+                    'enabled'   => $cpedata['enabled'],
+                    'serial'    => $cpedata['serial'],
+                    'action'    => $cpedata['action']
+                );*/
+                $exclude = array('signature','serial','action','timestamp', 'action','id','wan_macaddress');            
+                $data = array();
+                foreach ($cpedata as $k => $v) {
+                    if(!in_array($k, $exclude)) {
+                        $data[$k] = $v;
+                    }
+                }
+                $updateDevice = DB::table('admin_history')->insertGetId([
+                    'item_id'   => $deviceId,
+                    'mac_address' => @$cpedata['wan_macaddress'],
+                    'timestamp' => $cpedata['timestamp'],
+                    'serial'    => $serial,
+                    'action'    => $cpedata['action'],
+                    'timestamp' => $cpedata['timestamp'],
+                    'data'      => json_encode($data),
+                    'created_at' => date('d-m-y H:i:s', time())
+                ]);
+                 error_log('LOG Asset history INSERT Method '. ' ID: '.$updateDevice);
+                if(!empty($updateDevice)) {
+                    error_log('LOG Asset history entered '.$serial.'  ID: '.$updateDevice);
+                    error_log('device history, serial '.$serial.' updated with data '.json_encode($cpedata));
                     $message['message'] = 'device assignment history updated';
-                    $message['history'] = $updatevalue;
-                    //TODO: mail admin??
+                    $message['history'] = DB::table('admin_history')->where('serial',$serial)->get();
+                } else {
+                    error_log('LOG Asset history NOT entered '.$serial.'  '. json_encode($cpedata));
                 }
             } else {
                 $message['message'] = 'device not found';

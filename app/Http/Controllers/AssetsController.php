@@ -794,30 +794,48 @@ class AssetsController extends Controller
     public function assignmentHistory($id)
     {
         $asset = Asset::find($id);
+        if(!$asset) {
+            return 'not found';
+            die();
+        }
         $this->authorize('view', $asset);
-        $current    = $asset->assignment_history;
-        $fromAdmin  = Helper::getCustomerDevices($asset->asset_tag);
-        $fromAdmin  = json_encode($fromAdmin);
-        if(empty($current)):
-            $asset->assignment_history = $fromAdmin;
-            if($asset->save()):
-                error_log('ownership updated for device '.$asset->asset_tag);
-            endif;
-        elseif ($current != $fromAdmin):
-            $merged         = json_encode(array_merge(json_decode($current, true),json_decode($fromAdmin, true)));
-            $asset->assignment_history = $merged;
-            if($asset->save()):
-                error_log('ownership updated for device '.$asset->asset_tag);
-            endif;
-        else:
-            // nothing
-            error_log('all good...use local');
-            $assignmentHistory = json_decode($current);
-        endif;
-        $asset = Asset::find($id);
-        $assignmentHistory = json_decode($asset->assignment_history, true);
-
-        return $assignmentHistory;
+        $serial = $asset->asset_tag;
+        $getAsset = DB::table('admin_history')->where('serial', $serial)->exists();
+        if(!$getAsset) { //doesn't exist already
+            // TODO make one
+            // $current    = $asset->assignment_history;
+            $liveinfo  = Helper::getCustomerDevices($serial);
+            $exclude = array('signature','serial','action','timestamp', 'action','id','wan_macaddress');            
+            $data = array();
+            foreach ($liveinfo as $k => $v) {
+                if(!in_array($k, $exclude)) {
+                    $data[$k] = $v;
+                }
+            }
+            $newlog = DB::table('admin_history')->insertGetId([
+                'item_id'   => $liveinfo['id'],
+                'mac_address' => $liveinfo['wan_macaddress'],
+                'timestamp' => $liveinfo['timestamp'],
+                'serial'    => $serial,
+                'action'    => $liveinfo['action'],
+                'timestamp' => $liveinfo['timestamp'],
+                'data'      => json_encode($data)
+            ]);
+             error_log('LOG Asset history INSERT Method '. ' ID: '.$newlog);
+            if(!empty($newlog)) {
+                error_log('LOG Asset history entered '.$serial.'  ID: '.$newlog);
+            } else {
+                error_log('LOG Asset history NOT entered '.$serial.'  '. json_encode($liveinfo));
+            }
+            $logs = DB::table('admin_history')->where('serial', $serial)->get();
+        } else {
+            $logs = DB::table('admin_history')->where('serial', $serial)->get();
+        }
+        if(empty($logs->count())) {
+            return 'device not found';
+        } else {
+            return $logs;
+        }
     }
 
     /**
@@ -858,7 +876,7 @@ class AssetsController extends Controller
                 'url' => route('qr_code/hardware', $asset->id)
             );
             //$ownership      = array();
-            $ownership    = array($this->assignmentHistory($asset->id));
+            $ownership    = $this->assignmentHistory($asset->id);
             return view('hardware/view', compact('ownership','asset', 'qr_code', 'settings'))
                 ->with('use_currency', $use_currency)->with('audit_log', $audit_log);
         }

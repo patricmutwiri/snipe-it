@@ -30,12 +30,13 @@ class assignmentController extends Controller
         //check existence
         $asset = Asset::where('asset_tag',$serial)->first();
         if(!$asset->id):
+            error_log('cpe with serial '.$serial.' update NOT POSSIBLE '.json_encode($asset).' ->> request data '.json_encode($request));
             return 'not found';
         else:
             // call update
             $request['serial'] = $serial;
-            $update = $this->update($request,$asset);
-            error_log(' cpe update ownership hit .. '.json_encode($update).' -> request data '.json_encode($request));
+            error_log(' cpe update ownership hit ..-> request data '.json_encode($request));
+            return $this->update($request,$asset);
         endif;
     }
 
@@ -47,6 +48,7 @@ class assignmentController extends Controller
      */
     public function store(Request $request)
     {
+        dd($request);
         return 'store';
     }
     /**
@@ -57,11 +59,11 @@ class assignmentController extends Controller
     * @since [v1.0]
     * @return response
     */
-    public function update($request,$device) {
-        if(empty($request)):
+    public function update($cpedata,$device) {
+        if(empty($cpedata)):
             return 'no data received';
         else:
-            $update = Helper::updateAssignment($request, $device);
+            $update = Helper::updateAssignment($cpedata, $device);
             return response()->json($update);
         endif;
     }

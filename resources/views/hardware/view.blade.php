@@ -741,39 +741,40 @@
             <table class="table table-striped" id="assignmentHistory">
                 <thead>
                   <tr>             
-                    <th class="col-xs-2">Device ID</th>
-                    <th class="col-xs-2">Customer ID</th>
+                    <!-- <th class="col-xs-2">Device ID</th> -->
+                  <!--   <th class="col-xs-2">Customer ID</th>
                     <th class="col-xs-2">Staff ID</th>
                     <th class="col-xs-2">Date Added</th>
                     <th class="hidden col-xs-2">Date Activated</th>
-                    <th class="col-xs-2">Date Failed</th>
+                    <th class="col-xs-2">Date Failed</th> -->
                     <th class="col-xs-2">MAC Address</th>
                     <!-- <th class="col-xs-2 hidden">Active Status</th> -->
-                    <th class="col-xs-2">Enabled Status</th>
-                    <th class="col-xs-2">Custom WIFI SSID</th>
+                    <!-- <th class="col-xs-2">Enabled Status</th>
+                    <th class="col-xs-2">Custom WIFI SSID</th> -->
                     <th class="col-xs-2">Timestamp</th>
                     <th class="col-xs-2">Action</th>
                   </tr>
                 </thead>
-                @if(count($ownership[0]) >= 4 )
-                    @foreach($ownership as $k => $owner)
+                @if($ownership->count() > 0)
+                    @foreach($ownership as $owner)
+                    {{ dd($owner) }}
                       <tr>
-                        <td class="col-xs-2"><a href="{{ @$owner['cpe_url'] }}" target="_blank">{{ @$owner['id'] }}</a></td>
-                        <td class="col-xs-1"><a href="{{ @$owner['base'].'/user/'.$owner['uid'] }}" target="_blank">{{ @$owner['uid'] }} </a></td>
-                        <td class="col-xs-1"><a href="{{ @$owner['base'].'/user/'.$owner['staffuid'] }}" target="_blank">{{ @$owner['staffuid'] }}</a></td>
-                        <td class="col-xs-2">{{ @$owner['date_added'] }}</td>
-                        <td class="col-xs-2 hidden">{{ @$owner['date_installed'] }}</td>
-                        <td class="col-xs-2">{{ @$owner['date_failed'] }}</td>
-                        <td class="col-xs-2">{{ @$owner['wan_macaddress'] }}</td>
-                        <!-- <td class="col-xs-1 hidden">{{ @$owner['active'] }}</td> -->
-                        <td class="col-xs-1">{{ @$owner['enabled'] }}</td>
-                        <td class="col-xs-2">{{ @$owner['wifi_ssid_edited'] }}</td>
-                        <td class="col-xs-2">{{ @$owner['timestamp'] }}</td>
-                        <td class="col-xs-2">{{ @$owner['action'] }}</td>
+                        <!-- <td class="col-xs-2"><a href="{{ @$owner->cpe_url }}" target="_blank">{{ @$owner->item_id }}</a></td>
+                        <td class="col-xs-1"><a href="{{ @$owner->base.'/user/'.$owner->uid }}" target="_blank">{{ @$owner->uid }} </a></td>
+                        <td class="col-xs-1"><a href="{{ @$owner->base.'/user/'.$owner->staffuid }}" target="_blank">{{ @$owner->staffuid }}</a></td>
+                        <td class="col-xs-2">{{ @$owner->date_added }}</td>
+                        <td class="col-xs-2 hidden">{{ @$owner->date_installed }}</td>
+                        <td class="col-xs-2">{{ @$owner->date_failed }}</td> -->
+                        <td class="col-xs-2">{{ @$owner->mac_address }}</td>
+                        <!-- <td class="col-xs-1 hidden">{{ @$owner->active }}</td> -->
+                        <!-- <td class="col-xs-1">{{ @$owner->enabled }}</td>
+                        <td class="col-xs-2">{{ @$owner->wifi_ssid_edited }}</td> -->
+                        <td class="col-xs-2">{{ @$owner->timestamp }}</td>
+                        <td class="col-xs-2">{{ @$owner->action }}</td>
                       </tr>
                     @endforeach
                 @else
-                    <tr><td colspan="10" class="text-center">{{ @$ownership[0]['message'] }}</td></tr>
+                    <tr><td colspan="10" class="text-center">{{ @$ownership['message'] }}</td></tr>
                 @endif
               </table>
             </div>
