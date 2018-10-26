@@ -805,6 +805,10 @@ class AssetsController extends Controller
             // TODO make one
             // $current    = $asset->assignment_history;
             $liveinfo  = Helper::getCustomerDevices($serial);
+            if($liveinfo['error']) {
+                return $liveinfo;
+                die();
+            }
             $exclude = array('signature','serial','action','timestamp', 'action','id','wan_macaddress');            
             $data = array();
             foreach ($liveinfo as $k => $v) {
