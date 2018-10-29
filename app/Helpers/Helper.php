@@ -168,7 +168,7 @@ class Helper
                 $base = config('app.live_endpoint');
             } elseif (strpos($url, '.sh') > 0) {
                 $base = config('app.local_endpoint');
-                $base = config('app.stag_endpoint');
+                // $base = config('app.stag_endpoint');
             } else {
                 $base = config('app.stag_endpoint');
             }
@@ -177,7 +177,7 @@ class Helper
             $params['endpoint'] = 'decoy url';
             $client = new Client();
             $params['serial'] = $serial;
-            $params['authtoken'] = '9FP2AKsQZZCw';
+            // $params['authtoken'] = '9FP2AKsQZZCw';
             $response = $client->request('POST', $endpoint, array('verify' => false, 'form_params' => $params));
             if($response->getStatusCode() != 200) {
                 error_log('GuzzleHttp Request for cpe serial no. ('.$serial.') '.json_encode($response));
@@ -267,6 +267,8 @@ class Helper
                         $data[$k] = $v;
                     }
                 }
+                $data['active']          =  !empty($data['active']) ? 'Yes' : 'No';
+                $data['enabled']         =  !empty($data['enabled']) ? 'Yes' : 'No';
                 $updateDevice = DB::table('admin_history')->insertGetId([
                     'item_id'   => $deviceId,
                     'mac_address' => @$cpedata['wan_macaddress'],
