@@ -35,15 +35,16 @@ class assignmentController extends Controller
             error_log('validate function _empty array. die');
             die('exit');
         endif;
-        // size
-        if(count($data)):
-            // dd(count($data));
-        endif;
+        /*
+        * TODO:  add more validations here, as deemed necessary
+        */
         return true;
     }
 
     public function show($serial, Request $request)
     {
+        $ref = $request->server('HTTP_REFERER');
+        error_log('show function http referer >> '.json_encode($ref));
         //check existence
         if(!$this->validaterequest($request)):
             error_log('can\'t proceed with request. Validation failed');
