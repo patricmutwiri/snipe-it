@@ -168,7 +168,6 @@ class Helper
                 $base = config('app.live_endpoint');
             } elseif (strpos($url, '.sh') > 0) {
                 $base = config('app.local_endpoint');
-                // $base = config('app.stag_endpoint');
             } else {
                 $base = config('app.stag_endpoint');
             }
@@ -189,7 +188,7 @@ class Helper
                 $data["error"]      =  $payload->error;
                 $data["error_code"] =  $payload->error_code;
                 $data["message"]    =  $payload->message;
-                $avoidKeys = array('locationid','signed','signature','custom_ratelimit','ratelimit');
+                $avoidKeys = array('signed','signature','custom_ratelimit','ratelimit');
                 if($data['error']):
                     error_log('Error fetching device . '.$serial.'. '.$data['message']);
                 else:
@@ -250,17 +249,7 @@ class Helper
                 if(empty($cpedata['timestamp'])) {
                     $message['message'] = 'timestamp not found';
                 }
-/*                $newAssignment = array(
-                    'installed' => $cpedata['installed'],
-                    'timestamp' => $cpedata['timestamp'],
-                    'uid'       => $cpedata['uid'],
-                    'staffuid'  => $cpedata['staffuid'],
-                    'locationid'=> $cpedata['locationid'],
-                    'enabled'   => $cpedata['enabled'],
-                    'serial'    => $cpedata['serial'],
-                    'action'    => $cpedata['action']
-                );*/
-                $exclude = array('signature','serial','action','timestamp', 'action','id','wan_macaddress');            
+                $exclude = array('signature','serial','action','timestamp');          
                 $data = array();
                 foreach ($cpedata as $k => $v) {
                     if(!in_array($k, $exclude)) {
@@ -272,7 +261,6 @@ class Helper
                 $updateDevice = DB::table('admin_history')->insertGetId([
                     'item_id'   => $deviceId,
                     'mac_address' => @$cpedata['wan_macaddress'],
-                    'timestamp' => $cpedata['timestamp'],
                     'serial'    => $serial,
                     'action'    => $cpedata['action'],
                     'timestamp' => $cpedata['timestamp'],

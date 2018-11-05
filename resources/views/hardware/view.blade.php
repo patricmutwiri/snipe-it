@@ -741,17 +741,17 @@
             <table class="table table-striped" id="assignmentHistory">
                 <thead>
                   <tr>             
-                    <th class="col-xs-2">Device ID</th>
-                    <th class="col-xs-2">Customer ID</th>
-                    <th class="col-xs-2">Staff ID</th>
-                    <th class="col-xs-2">Date Added</th>
-                    <th class="hidden col-xs-2">Date Activated</th>
-                    <th class="col-xs-2">Date Failed</th>
-                    <th class="col-xs-2">MAC Address</th>
-                    <th class="col-xs-2">Active Status</th>
-                    <th class="col-xs-2">Enabled Status</th>
-                    <th class="col-xs-2">Custom WIFI SSID</th>
-                    <th class="col-xs-2">Timestamp</th>
+                    <th class="col-xs-1">Device ID</th>
+                    <th class="col-xs-1">Customer ID</th>
+                    <th class="col-xs-1">Staff ID</th>
+                    <th class="col-xs-1">Date Added</th>
+                    <th class="hidden col-xs-1">Date Activated</th>
+                    <th class="col-xs-1">Date Failed</th>
+                    <th class="col-xs-1">MAC Address</th>
+                    <th class="col-xs-1">Active Status</th>
+                    <th class="col-xs-1">Enabled Status</th>
+                    <th class="col-xs-1">Custom WIFI SSID</th>
+                    <th class="col-xs-1">Timestamp</th>
                     <th class="col-xs-2">Action</th>
                   </tr>
                 </thead>
@@ -762,14 +762,14 @@
                         <td class="col-xs-1"><a href="{{ @json_decode($owner->data, true)['base'].'/user/'.@json_decode($owner->data, true)['uid'] }}" target="_blank">{{ @json_decode($owner->data, true)['uid'] }} </a></td>
                         <td class="col-xs-1"><a href="{{ @json_decode($owner->data, true)['staffuid'].'/user/'.@json_decode($owner->data, true)['staffuid'] }}" target="_blank">{{ @json_decode($owner->data, true)['staffuid'] }}</a></td>
                         <td class="col-xs-1">{{ @json_decode($owner->data, true)['date_added'] }}</td>
-                        <td class="col-xs-1 hidden">{{ @json_decode($owner->data, true)['date_installed'] }}</td>
+                        <td class="col-xs-1 hidden">{{ @json_decode($owner->data, true)['installed'] }}</td>
                         <td class="col-xs-1">{{ @json_decode($owner->data, true)['date_failed'] }}</td>
                         <td class="col-xs-1">{{ @$owner->mac_address }}</td>
                         <td class="col-xs-1">{{ @json_decode($owner->data, true)['active'] }}</td>
                         <td class="col-xs-1">{{ @json_decode($owner->data, true)['enabled'] }}</td>
-                        <td class="col-xs-2">{{ @json_decode($owner->data, true)['wifi_ssid_edited'] }}</td>
-                        <td class="col-xs-2">{{ @$owner->timestamp }}</td>
-                        <td class="col-xs-3">{{ @$owner->action }}</td>
+                        <td class="col-xs-1">{{ @json_decode($owner->data, true)['wifi_ssid_edited'] }}</td>
+                        <td class="col-xs-1">{{ @$owner->timestamp }}</td>
+                        <td class="col-xs-2">{{ @$owner->action }}</td>
                       </tr>
                     @endforeach
                 @else
